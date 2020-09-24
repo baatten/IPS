@@ -4,13 +4,15 @@ import { Button, Card, Input } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { createStackNavigator } from '@react-navigation/stack';
 import { AuthContext } from '../components/utils/authContext';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const SettingsStack = createStackNavigator();
 const url = 'https://1a15f1850a15.ngrok.io';
 
 type settingsState = {
     name: string,
-    email: string
+    email: string,
+    isLoading: boolean
 }
 
 export class SettingsScreen extends React.Component<any, settingsState> {
@@ -20,7 +22,7 @@ export class SettingsScreen extends React.Component<any, settingsState> {
     constructor(props: settingsState) {
         super(props)
 
-        this.state = { name: '', email: '' }
+        this.state = { name: '', email: '', isLoading: false }
         this.getUser();
     }
 
@@ -60,17 +62,23 @@ export class SettingsScreen extends React.Component<any, settingsState> {
         return (
             <AuthContext.Consumer>
                 { (value: any) => (
-                    <View style={{}}>
-                        <Card >
+                    <ScrollView>
+                        <Card containerStyle={{ marginLeft: 0, marginRight: 0, borderWidth: 0 }} >
                             <Input label='Name' placeholder="Name" value={this.state.name} errorStyle={{ color: 'red' }} />
 
                             <Input label='E-mail' placeholder="E-mail" value={this.state.email} errorStyle={{ color: 'red' }} />
                         </Card>
-                        <Card containerStyle={{padding:0,borderWidth:0}}>
-                        <Button title='Sign Out' onPress={() => context.signOut()} />
+
+                        <Card containerStyle={{ marginLeft: 0, marginRight: 0, borderWidth: 0 }} >
+                            <Text style={{ fontSize: 18, marginLeft: 10 }}>Personal details</Text>
                         </Card>
-                        
-                    </View>
+
+                        <Card containerStyle={{ marginLeft: 0, marginRight: 0, borderWidth: 0 }} >
+                            <Text style={{ fontSize: 16, marginLeft: 10 }}>Subscription</Text>
+                        </Card>
+
+                        <Button buttonStyle={{ margin: 25, padding: 15, borderRadius: 10 }} title='Sign Out' onPress={() => context.signOut()} />
+                    </ScrollView>
                 )}
             </AuthContext.Consumer>
         );
@@ -84,12 +92,12 @@ export function SettingsStackScreen() {
                 headerShown: true,
                 headerTintColor: '#fff',
                 headerStyle: { backgroundColor: '#2185d0' },
-                headerRight: () => (
+                headerLeft: () => (
                     <Button onPress={() => alert('This is a button!')} title="" type='clear' icon={
                         <Icon name="filter" size={20} style={{ color: 'white', padding: 3 }} />
                     } />
-                ), headerLeft: () => (
-                    <Button onPress={() => alert('This is a button!')} title="" containerStyle={{}} type='clear'>Save</Button>
+                ), headerRight: () => (
+                    <Button title='Save' onPress={() => alert('This is a button!')} style={{ paddingRight: 5 }} type='clear' titleStyle={{ color: 'white' }} />
                 )
             }} name="Settings" component={SettingsScreen} />
         </SettingsStack.Navigator>

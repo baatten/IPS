@@ -39,7 +39,7 @@ export default function App() {
       if (username !== undefined && password !== undefined) {
 
         try {
-          const res = await fetch(url + '/2api/client/login', {
+          const res = await fetch(url + '/api/client/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(
@@ -81,7 +81,7 @@ export default function App() {
       // After restoring token, we may need to validate it in production apps
       // This will switch to the App screen or Auth screen and this loading
       // screen will be unmounted and thrown away.
-      dispatch({ type: 'RESTORED_TOKEN'});
+      dispatch({ type: 'RESTORED_TOKEN' });
       console.log('RESTORED_TOKEN');
     };
     bootstrapAsync();
@@ -94,7 +94,7 @@ export default function App() {
       if (data && data.emailAddress !== undefined && data.password !== undefined) {
 
         try {
-          const res = await fetch(url +'/api/client/login', {
+          const res = await fetch(url + '/api/client/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(
@@ -125,7 +125,7 @@ export default function App() {
             //this.setState({loading:false,error:true})
             //throw new Error(await res.text())
             //console.log(await res.text());
-            Alert.alert('Error','Username or password is wrong.');
+            Alert.alert('Error', 'Username or password is wrong.');
 
             dispatch({ type: 'TO_SIGNIN_PAGE' });
           }
@@ -140,6 +140,9 @@ export default function App() {
     signOut: async (data: any) => {
 
       console.log('sign out');
+
+      await AsyncStorage.removeItem('username');
+      await AsyncStorage.removeItem('password');
 
       dispatch({ type: 'SIGN_OUT' });
     },
@@ -163,14 +166,13 @@ export default function App() {
     let navigateTo = stateConditionString(state);
     let arr = [];
 
-    console.log(state.navigateTo)
-
     switch (navigateTo) {
       case 'LOAD_APP':
-        arr.push(<Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="Splash" component={SplashScreen} />
+        arr.push(
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="Splash" component={SplashScreen} />
           </Stack.Navigator>
-          );
+        );
         break;
 
       case 'LOAD_SIGNUP':
@@ -196,28 +198,12 @@ export default function App() {
 
       case 'LOAD_HOME':
         arr.push(
-          <Tab.Navigator initialRouteName="Settings" screenOptions={({ route }) => ({
-            tabBarIcon: ({ focused, color, size }) => {
-              let iconName;
-
-              if (route.name === 'Home') {
-                iconName = focused
-                  ? 'home'
-                  : 'home';
-              } else if (route.name === 'Settings') {
-                iconName = focused ? 'gear' : 'gear';
-              } else { iconName = '' }
-
-              // You can return any component that you like here!
-              return <Icon name={iconName} size={size} color={color} />;
-            },
-          })}
-            tabBarOptions={{ activeTintColor: '#2185d0', inactiveTintColor: 'gray', }}>
-            <Tab.Screen name="Home" component={HomeStackScreen} />
-            <Tab.Screen name="Settings" component={SettingsStackScreen} />
-          </Tab.Navigator>,
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="Home" component={HomeTabs} />
+          </Stack.Navigator>
         );
         break;
+
       default:
         arr.push(<Stack.Screen name="SignIn" component={SignInScreen} />);
         break;
@@ -233,5 +219,30 @@ export default function App() {
         {chooseScreen(state)}
       </NavigationContainer>
     </AuthContext.Provider>
+  );
+}
+
+function HomeTabs() {
+  return (
+    <Tab.Navigator initialRouteName="Home" screenOptions={({ route }) => ({
+      tabBarIcon: ({ focused, color, size }) => {
+        let iconName;
+
+        if (route.name === 'Home') {
+          iconName = focused
+            ? 'home'
+            : 'home';
+        } else if (route.name === 'Settings') {
+          iconName = focused ? 'gear' : 'gear';
+        } else { iconName = '' }
+
+        // You can return any component that you like here!
+        return <Icon name={iconName} size={size} color={color} />;
+      },
+    })}
+      tabBarOptions={{ activeTintColor: '#2185d0', inactiveTintColor: 'gray', }}>
+      <Tab.Screen name="Home" component={HomeStackScreen} />
+      <Tab.Screen name="Settings" component={SettingsStackScreen} />
+    </Tab.Navigator>
   );
 }
