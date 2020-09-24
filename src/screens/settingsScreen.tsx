@@ -1,19 +1,79 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
-import { Button, Card } from 'react-native-elements';
+import { View, Text } from 'react-native';
+import { Button, Card, Input } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { createStackNavigator } from '@react-navigation/stack';
+import { AuthContext } from '../components/utils/authContext';
 
 const SettingsStack = createStackNavigator();
+const url = 'https://1a15f1850a15.ngrok.io';
 
-export class SettingsScreen extends React.Component<any, any> {
+type settingsState = {
+    name: string,
+    email: string
+}
+
+export class SettingsScreen extends React.Component<any, settingsState> {
+
+    static contextType = AuthContext;
+
+    constructor(props: settingsState) {
+        super(props)
+
+        this.state = { name: '', email: '' }
+        this.getUser();
+    }
+
+    async getUser() {
+
+        try {
+            const res = await fetch(url + '/api/client', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({})
+            })
+            if (res.status === 200) {
+
+                const data = await res.json();
+
+                if (data) {
+
+                    this.setState({ name: data.user.name, email: data.user.email })
+                    console.log(data)
+                }
+                else {
+
+                }
+
+            } else {
+
+            }
+        } catch (error) {
+            console.error('An unexpected error happened occurred:', error)
+        }
+    }
 
     render() {
-        return (<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
 
-            <Card ><Text>test</Text></Card>
+        const context = this.context;
 
-        </View>);
+        return (
+            <AuthContext.Consumer>
+                { (value: any) => (
+                    <View style={{}}>
+                        <Card >
+                            <Input label='Name' placeholder="Name" value={this.state.name} errorStyle={{ color: 'red' }} />
+
+                            <Input label='E-mail' placeholder="E-mail" value={this.state.email} errorStyle={{ color: 'red' }} />
+                        </Card>
+                        <Card containerStyle={{padding:0,borderWidth:0}}>
+                        <Button title='Sign Out' onPress={() => context.signOut()} />
+                        </Card>
+                        
+                    </View>
+                )}
+            </AuthContext.Consumer>
+        );
     }
 }
 
@@ -35,4 +95,3 @@ export function SettingsStackScreen() {
         </SettingsStack.Navigator>
     );
 }
-
