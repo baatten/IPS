@@ -7,7 +7,7 @@ import { AuthContext } from '../components/utils/authContext';
 import { ScrollView } from 'react-native-gesture-handler';
 
 const SettingsStack = createStackNavigator();
-const url = 'https://1a15f1850a15.ngrok.io';
+const url = 'https://85a7ef063595.ngrok.io';
 
 type settingsState = {
     name: string,
@@ -74,10 +74,10 @@ export class SettingsScreen extends React.Component<any, settingsState> {
                         </Card>
 
                         <Card containerStyle={{ marginLeft: 0, marginRight: 0, borderWidth: 0 }} >
-                            <Text style={{ fontSize: 16, marginLeft: 10 }}>Subscription</Text>
+                            <Text style={{ fontSize: 18, marginLeft: 10 }}>Subscription</Text>
                         </Card>
 
-                        <Button buttonStyle={{ margin: 25, padding: 15, borderRadius: 10 }} title='Sign Out' onPress={() => context.signOut()} />
+                        <Button buttonStyle={{backgroundColor:'red', margin: 25, padding: 15, borderRadius: 10 }} title='Sign Out' onPress={() => context.signOut()} />
                     </ScrollView>
                 )}
             </AuthContext.Consumer>

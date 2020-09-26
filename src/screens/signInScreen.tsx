@@ -70,7 +70,7 @@ export default function SignInScreen() {
                 />
                 <Button buttonStyle={{ margin: 10, marginTop: 5,padding:15,borderRadius:10 }} title="Sign in" onPress={() => handleSignIn()} />
                 <Text style={{fontSize:16,color: 'white',alignSelf:'center',  marginTop:10}} onPress={() => signUp()}>
-                    No Acount? Sign Up
+                    No Account? Sign Up
                 </Text>
             </View>
 

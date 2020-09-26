@@ -25,7 +25,7 @@ type Lead = {
     marker?: KmlMarker
 }
 
-const url = 'https://1a15f1850a15.ngrok.io';
+const url = 'https://85a7ef063595.ngrok.io';
 
 const HomeStack = createStackNavigator();
 
@@ -55,7 +55,7 @@ export class HomeScreen extends React.Component<any, HomeState> {
 
         //console.log('test goto map');
 
-        openMap({ travelType: 'drive', start: 'Houston, USA', end: address, provider: 'google' });
+        openMap({ travelType: 'drive', start: 'Houston, USA', end: address, provider: 'apple' });
     }
 
     async getLeads() {
