@@ -66,7 +66,8 @@ export function LoginReducer(state: LoginState, action: any): LoginState {
         ...state,
         isSignedOut: true,
         isSignedIn:false,
-        isSignedUp:true
+        isSignedUp:true,
+        isLoading:false
       };
   }
 

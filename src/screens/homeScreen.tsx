@@ -1,9 +1,9 @@
 import React from 'react';
-import { StyleSheet, View, Text, Alert } from 'react-native';
+import { StyleSheet, View, Text, } from 'react-native';
 import { Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { createStackNavigator } from '@react-navigation/stack';
-import MapView, { Marker, Callout } from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import ActionSheet from "react-native-actions-sheet";
 import openMap from 'react-native-open-maps';
 import type { KmlMarker } from 'react-native-maps';
@@ -25,7 +25,8 @@ type Lead = {
     marker?: KmlMarker
 }
 
-const url = 'https://85a7ef063595.ngrok.io';
+//const url = 'https://a0b79f3c31a0.ngrok.io';
+const url = 'http://localhost:3000';
 
 const HomeStack = createStackNavigator();
 
@@ -99,6 +100,9 @@ export class HomeScreen extends React.Component<any, HomeState> {
     }
 
     showLeadData(lead: Lead) {
+
+        console.log('test');
+
         this.setState({ activeLead: lead }, this.sheetRef.current?.setModalVisible())
     }
 
@@ -110,21 +114,23 @@ export class HomeScreen extends React.Component<any, HomeState> {
                         <Marker key={index} onPress={() => this.showLeadData(lead)} coordinate={lead.marker!.coordinate} />
                     ))}
                 </MapView>
-                <ActionSheet ref={this.sheetRef}>
+                <ActionSheet ref={this.sheetRef} bounceOnOpen={true}>
                     <View style={{
                         borderTopStartRadius: 0, borderTopRightRadius: 0, padding: 20, backgroundColor: 'white',
                         shadowColor: 'black', shadowOpacity: 0.15, shadowRadius: 5, shadowOffset: { width: 5, height: 50 }
                     }}>
-                        <Text style={styles.titleText}>{this.state.activeLead?.firstname} {this.state.activeLead?.lastName}</Text>
-                        <Text style={styles.baseText}>Turns 65 in 4 months</Text>
-
-                        <Text style={styles.baseText}>{this.state.activeLead?.address}</Text>
-                        <Text style={styles.baseText}>{this.state.activeLead?.city}</Text>
-                        <Text style={styles.baseText}>{this.state.activeLead?.zipCode} {this.state.activeLead?.county}</Text>
-
-                        <Text style={styles.baseText}>8 miles away</Text>
-
-                        <Button buttonStyle={{ borderRadius: 10,padding:10,marginTop:15,marginBottom:15 }} onPress={() => this.startNavigation(this.state.activeLead!.address + ' ' +
+                        <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
+                            <View style={[{ flex: 1, flexDirection: 'column' }]}>
+                                <Text style={styles.titleText}>{this.state.activeLead?.firstname} {this.state.activeLead?.lastName}</Text>
+                                <Text style={styles.baseText}>{this.state.activeLead?.address}</Text>
+                                <Text style={styles.baseText}>{this.state.activeLead?.city}</Text>
+                                <Text style={styles.baseText}>{this.state.activeLead?.zipCode} {this.state.activeLead?.county}</Text>
+                            </View>
+                            <View style={[{ justifyContent: 'space-evenly', flexDirection: 'column' }]}>
+                                <Text style={{ textAlign: 'center' }}>Turns 65 in{"\n"}4 months</Text>
+                            </View>
+                        </View>
+                        <Button buttonStyle={{ borderRadius: 10, padding: 10, marginTop: 15, marginBottom: 15 }} onPress={() => this.startNavigation(this.state.activeLead!.address + ' ' +
                             this.state.activeLead!.city + ' ' +
                             this.state.activeLead!.county + ' ' +
                             this.state.activeLead!.state

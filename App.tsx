@@ -15,7 +15,8 @@ import SignInScreen from './src/screens/signInScreen'
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
-const url = 'https://85a7ef063595.ngrok.io';
+//const url = 'https://a0b79f3c31a0.ngrok.io';
+const url = 'http://localhost:3000';
 
 export default function App() {
 
