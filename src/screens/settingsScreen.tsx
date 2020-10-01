@@ -131,7 +131,7 @@ export class SettingsScreen extends React.Component<Props, settingsState> {
 
                 const responseData = await res.json();
 
-                Alert.alert('')
+                Alert.alert('Your new details was saved.')
             }
             else {
 
@@ -156,10 +156,6 @@ export class SettingsScreen extends React.Component<Props, settingsState> {
                 ),
             })
             if (res.status === 200) {
-
-                console.log('password changed')
-                const responseData = await res.json();
-                console.log(responseData)
 
                 this.setModalVisible(false);
             }
