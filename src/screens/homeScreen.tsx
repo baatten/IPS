@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View, Text, } from 'react-native';
 import { Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { createStackNavigator } from '@react-navigation/stack';
+import {StackNavigationProp, createStackNavigator } from '@react-navigation/stack';
 import MapView, { Marker } from 'react-native-maps';
 import ActionSheet from "react-native-actions-sheet";
 import openMap from 'react-native-open-maps';
@@ -30,20 +30,30 @@ const url = 'http://localhost:3000';
 
 const HomeStack = createStackNavigator();
 
+type Props = {
+    navigation: StackNavigationProp<{}>;
+};
+
 type HomeState = {
     leads: Lead[],
     isLoading: boolean,
     activeLead?: Lead
 }
 
-export class HomeScreen extends React.Component<any, HomeState> {
+export class HomeScreen extends React.Component<Props, HomeState> {
 
     sheetRef: any;
 
-    constructor(props: HomeState) {
+    constructor(props: Props) {
         super(props);
 
         this.sheetRef = React.createRef();
+
+        this.props.navigation.setOptions({
+            headerShown: true,
+            headerTintColor: '#fff',
+            headerStyle: { backgroundColor: '#2185d0' }
+        })
 
         const leads: Lead[] = [];
 
@@ -146,18 +156,7 @@ export class HomeScreen extends React.Component<any, HomeState> {
 export function HomeStackScreen() {
     return (
         <HomeStack.Navigator>
-            <HomeStack.Screen options={{
-                headerShown: true,
-                headerTintColor: '#fff',
-                headerStyle: { backgroundColor: '#2185d0' },
-                headerRight: () => (
-                    <Button onPress={() => alert('This is a button!')} title="" type='clear' icon={
-                        <Icon name="filter" size={20} style={{ color: 'white', padding: 3 }} />
-                    } />
-                ), headerLeft: () => (
-                    <Button onPress={() => alert('This is a button!')} title="" containerStyle={{}} type='clear' icon={<Icon name="refresh" size={20} style={{ color: 'white', padding: 3 }} />}></Button>
-                )
-            }} name="Home" component={HomeScreen} />
+            <HomeStack.Screen name="Home" component={HomeScreen} />
         </HomeStack.Navigator>
     );
 }

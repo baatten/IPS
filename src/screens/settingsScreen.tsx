@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Alert, Modal, TouchableHighlight } from 'react-native';
 import { Button, Card, Input } from 'react-native-elements';
-import { StackNavigationProp, StackNavigationOptions, createStackNavigator } from '@react-navigation/stack';
+import { StackNavigationProp, createStackNavigator } from '@react-navigation/stack';
 import { AuthContext } from '../components/utils/authContext';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Formik, FormikBag } from 'formik';
