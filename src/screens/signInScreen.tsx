@@ -38,9 +38,7 @@ export default function SignInScreen() {
             })
             .catch(err => {
                 const formatError = {};
-                err.forEach((err: any) => {
-                    formatError[err.field] = err.message;
-                });
+                
                 setSignUpErrors(formatError);
             });
     };
@@ -61,8 +59,6 @@ export default function SignInScreen() {
                         leftIconContainerStyle={{ margin: 5 }}
                         value={emailAddress}
                         onChangeText={setemailAddress}
-                        errorStyle={{ color: 'red' }}
-                        errorMessage={SignUpErrors ? SignUpErrors.email : null}
                     />
                     <Input inputStyle={{ padding: 10 }}
                         inputContainerStyle={{ borderBottomWidth: 0, }}
@@ -72,9 +68,7 @@ export default function SignInScreen() {
                         leftIconContainerStyle={{ margin: 5 }}
                         value={password}
                         onChangeText={setPassword}
-                        secureTextEntry
-                        errorStyle={{ color: 'red' }}
-                        errorMessage={SignUpErrors ? SignUpErrors.password : null}
+                        secureTextEntry={true} autoCapitalize='none'
                     />
                     <Button buttonStyle={{ margin: 0, marginTop: 5, padding: 15, borderRadius: 10 }} title="Sign in" onPress={() => handleSignIn()} />
                     <Text style={{ fontSize: 16, color: 'white', alignSelf: 'center', marginTop: 10 }} onPress={() => signUp()}>

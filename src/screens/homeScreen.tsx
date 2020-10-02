@@ -1,14 +1,14 @@
 import React from 'react';
-import { StyleSheet, View, Text, Linking } from 'react-native';
-import { Button, ButtonGroup, ListItem } from 'react-native-elements';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { StyleSheet, View,ScrollView, Text, Linking } from 'react-native';
+import { Button, ButtonGroup, ListItem, Icon } from 'react-native-elements';
+
 import GLOBALS from '../globals';
 import { StackNavigationProp, createStackNavigator } from '@react-navigation/stack';
 import MapView, { Marker } from 'react-native-maps';
 import ActionSheet from "react-native-actions-sheet";
 import openMap from 'react-native-open-maps';
 import type { KmlMarker } from 'react-native-maps';
-import { ScrollView } from 'react-native-gesture-handler';
+import Popover, { PopoverPlacement } from 'react-native-popover-view';
 
 type Lead = {
     id?: number
@@ -37,6 +37,7 @@ type HomeState = {
     leads: Lead[],
     isLoading: boolean,
     activeLead?: Lead,
+    filterDistance:number
     activeView: number
 }
 
@@ -86,13 +87,31 @@ export class HomeScreen extends React.Component<Props, HomeState> {
 
         const leads: Lead[] = [];
 
-        this.state = { leads: leads, isLoading: true, activeView: 1 };
+        this.state = { leads: leads, isLoading: true, activeView: 0, filterDistance:50 };
 
         this.props.navigation.setOptions({
             headerShown: true,
             headerTitle: () => <LogoTitle activeView={this.state.activeView} updateView={this.changeView} />,
             headerTintColor: '#fff',
-            headerStyle: { backgroundColor: '#2185d0' }
+            headerStyle: { backgroundColor: '#2185d0' },
+            headerRight: () => <Popover popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}
+                from={(
+                    <Button icon={<Icon name='map-marked-alt' color='white' size={18} type='font-awesome-5' style={{color:'white'}}/>} buttonStyle={{marginRight:5,backgroundColor:'transparent'}}/>                    
+                )}>
+
+                <ListItem key={0} bottomDivider containerStyle={{ padding: 12 }}>
+                <Icon name='check' size={18} color='transparent'></Icon>
+                    <ListItem.Title>5 miles radius</ListItem.Title>
+                </ListItem>
+                <ListItem key={1} bottomDivider containerStyle={{ padding: 12 }}>
+                <Icon name='check' size={18} color='transparent'></Icon>
+                    <ListItem.Title>20 miles radius</ListItem.Title>
+                </ListItem>
+                <ListItem key={2} bottomDivider containerStyle={{ padding: 12}}>
+                    <Icon name='check' size={18}></Icon>
+                    <ListItem.Title>50 miles radius</ListItem.Title>
+                </ListItem>
+            </Popover>
         })
 
         this.getLeads();
@@ -105,9 +124,12 @@ export class HomeScreen extends React.Component<Props, HomeState> {
 
     startNavigation(address: string) {
 
-        //console.log('test goto map');
-
         openMap({ travelType: 'drive', start: 'Houston, USA', end: address, provider: 'apple' });
+    }
+
+    updateFilterDistance(filter:number){
+
+        this.setState({filterDistance:filter},()=> this.getLeads())
     }
 
     async getLeads() {
@@ -116,7 +138,7 @@ export class HomeScreen extends React.Component<Props, HomeState> {
             const res = await fetch(GLOBALS.BASE_URL + '/api/client/getLeads', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({})
+                body: JSON.stringify({radius:this.state.filterDistance})
             })
             if (res.status === 200) {
 
@@ -124,19 +146,7 @@ export class HomeScreen extends React.Component<Props, HomeState> {
 
                 if (data) {
 
-                    console.log(data.leads)
-
-                    const leads: Lead[] = data.leads;
-                    //const leadsWithMarker
-
-                    for (let index = 0; index < leads.length; index++) {
-                        const lead = leads[index];
-
-                    }
-
-                    console.log(leads)
-
-                    this.setState({ isLoading: false, leads: leads })
+                    this.setState({ isLoading: false, leads: data.leads })
                 }
                 else {
 
@@ -156,15 +166,8 @@ export class HomeScreen extends React.Component<Props, HomeState> {
     }
 
     monthsToAge65(dob: number) {
-        const month = new Date().getUTCMonth() + 1;
 
-        /*
-        console.log('-----')
-        console.log(dob, 'dob')
-        console.log(month, 'month')
-        console.log('-----')
-        console.log(dob - month, 'res')
-        */
+        const month = new Date().getUTCMonth() + 1;
 
         if (dob < month)
             return 'Already turned 65';
@@ -209,12 +212,12 @@ export class HomeScreen extends React.Component<Props, HomeState> {
                                         this.state.activeLead!.county + ' ' +
                                         this.state.activeLead!.state
                                     )} title="Get Directions" icon={
-                                        <Icon name="car" size={18} style={{ padding: 3, marginRight: 5 }} color="white" />
+                                        <Icon name="car" type='font-awesome' size={18} style={{ padding: 3, marginRight: 5 }} color="white" />
                                     } />
                                 </View>
                                 <View style={[{ flex: 2, flexDirection: 'column', marginLeft: 10 }]}>
                                     <Button buttonStyle={{ borderRadius: 10, padding: 10, marginTop: 15, marginBottom: 15 }} onPress={() => Linking.openURL(`tel:${this.state.activeLead?.phone}`)} title="Call" icon={
-                                        <Icon name="phone" size={18} style={{ padding: 3, marginRight: 5 }} color="white" />
+                                        <Icon name="phone" type='font-awesome' size={18} style={{ padding: 3, marginRight: 5 }} color="white" />
                                     } />
                                 </View>
                             </View>
@@ -260,12 +263,12 @@ export class HomeScreen extends React.Component<Props, HomeState> {
                                         this.state.activeLead!.county + ' ' +
                                         this.state.activeLead!.state
                                     )} title="Get Directions" icon={
-                                        <Icon name="car" size={18} style={{ padding: 3, marginRight: 5 }} color="white" />
+                                        <Icon name="car"  type='font-awesome' size={18} style={{ padding: 3, marginRight: 5 }} color="white" />
                                     } />
                                 </View>
                                 <View style={[{ flex: 2, flexDirection: 'column', marginLeft: 10 }]}>
                                     <Button buttonStyle={{ borderRadius: 10, padding: 10, marginTop: 15, marginBottom: 15 }} onPress={() => Linking.openURL(`tel:${this.state.activeLead?.phone}`)} title="Call" icon={
-                                        <Icon name="phone" size={18} style={{ padding: 3, marginRight: 5 }} color="white" />
+                                        <Icon name="phone"  type='font-awesome' size={18} style={{ padding: 3, marginRight: 5 }} color="white" />
                                     } />
                                 </View>
                             </View>
