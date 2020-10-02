@@ -1,6 +1,7 @@
-import React, { useReducer, useEffect, useMemo, createContext, useContext, useState } from 'react';
+import React, { useReducer, useEffect, useMemo } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-community/async-storage';
+import GLOBALS from './src/globals';
 import { Alert, StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -9,14 +10,12 @@ import { SettingsStackScreen } from './src/screens/settingsScreen'
 import { AuthContext } from './src/components/utils/authContext';
 import { LoginReducer, initialState } from './src/components/utils/reducers';
 import { stateConditionString } from './src/components/utils/stateCondition';
-import { createStackNavigator, HeaderTitle } from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import SplashScreen from './src/screens/splashScreen'
 import SignInScreen from './src/screens/signInScreen'
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
-//const url = 'https://a0b79f3c31a0.ngrok.io';
-const url = 'http://localhost:3000';
 
 export default function App() {
 
@@ -40,7 +39,7 @@ export default function App() {
       if (username !== undefined && password !== undefined) {
 
         try {
-          const res = await fetch(url + '/api/client/login', {
+          const res = await fetch(GLOBALS.BASE_URL + '/api/client/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(
@@ -95,7 +94,7 @@ export default function App() {
       if (data && data.emailAddress !== undefined && data.password !== undefined) {
 
         try {
-          const res = await fetch(url + '/api/client/login', {
+          const res = await fetch(GLOBALS.BASE_URL + '/api/client/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(
@@ -238,11 +237,11 @@ function HomeTabs() {
         } else { iconName = '' }
 
         // You can return any component that you like here!
-        return <Icon name={iconName} size={size} color={color} />;
+        return <Icon name={iconName} size={size} color={color} style={{padding:0,margin:-15}}/>;
       },
     })}
-      tabBarOptions={{ activeTintColor: '#2185d0', inactiveTintColor: 'gray', }}>
-      <Tab.Screen name="Home" component={HomeStackScreen} />
+      tabBarOptions={{ activeTintColor: '#2185d0', inactiveTintColor: 'gray' }}>
+      <Tab.Screen name="Home" component={HomeStackScreen}  />
       <Tab.Screen name="Settings" component={SettingsStackScreen} />
     </Tab.Navigator>
   );

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Alert, Modal, TouchableHighlight } from 'react-native';
+import GLOBALS from '../globals';
 import { Button, Card, Input } from 'react-native-elements';
 import { StackNavigationProp, createStackNavigator } from '@react-navigation/stack';
 import { AuthContext } from '../components/utils/authContext';
@@ -7,8 +8,6 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { Formik, FormikBag } from 'formik';
 
 const SettingsStack = createStackNavigator();
-//const url = 'https://a0b79f3c31a0.ngrok.io';
-const url = 'http://localhost:3000';
 
 type settingsState = {
     user: User
@@ -78,7 +77,7 @@ export class SettingsScreen extends React.Component<Props, settingsState> {
     async getUser() {
 
         try {
-            const res = await fetch(url + '/api/client', {
+            const res = await fetch(GLOBALS.BASE_URL + '/api/client', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({})
@@ -120,7 +119,7 @@ export class SettingsScreen extends React.Component<Props, settingsState> {
         //console.log(user);
 
         try {
-            const res = await fetch(url + '/api/client/updateDetails', {
+            const res = await fetch(GLOBALS.BASE_URL + '/api/client/updateDetails', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(
@@ -148,7 +147,7 @@ export class SettingsScreen extends React.Component<Props, settingsState> {
         console.log('trying to change password')
 
         try {
-            const res = await fetch(url + '/api/client/updatePassword', {
+            const res = await fetch(GLOBALS.BASE_URL + '/api/client/updatePassword', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(
@@ -196,8 +195,7 @@ export class SettingsScreen extends React.Component<Props, settingsState> {
             <Formik innerRef={p => (this.form = p)} enableReinitialize initialValues={this.state.user} onSubmit={values => this.saveUserDetails(values)}>
                 {({ handleChange, handleBlur, handleSubmit, values }) => (
                     <ScrollView>
-                        <Text style={{ fontSize: 16, color: 'grey', marginLeft: 15, marginTop: 15 }}>Personal Details</Text>
-                        <Card containerStyle={{ margin: 0, paddingTop: 15, paddingLeft: 5, paddingRight: 5, paddingBottom: 0, marginTop: 5 }}>
+                        <Card containerStyle={{ margin: 0, paddingTop: 15, paddingLeft: 5, paddingRight: 5, paddingBottom: 0 }}>
                             <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
                                 <View style={[{ flex: 1, flexDirection: 'column' }]}>
                                     <Input onChangeText={handleChange('name')} label='Name' placeholder="Name" value={values.name} errorStyle={{ color: 'red' }} />
