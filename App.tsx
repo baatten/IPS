@@ -13,6 +13,7 @@ import { stateConditionString } from './src/components/utils/stateCondition';
 import { createStackNavigator } from '@react-navigation/stack';
 import SplashScreen from './src/screens/splashScreen'
 import SignInScreen from './src/screens/signInScreen'
+import SignUpScreen from './src/screens/signUpScreen'
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -177,15 +178,8 @@ export default function App() {
 
       case 'LOAD_SIGNUP':
         arr.push(
-          <Stack.Navigator>
-            <Stack.Screen
-              name="SignUp"
-              component={SignUpScreen}
-              options={{
-                title: 'Sign Up',
-                animationTypeForReplace: state.isSignout ? 'pop' : 'push',
-              }}
-            />
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="SignUp" component={SignUpScreen} />
           </Stack.Navigator>,
         );
         break;

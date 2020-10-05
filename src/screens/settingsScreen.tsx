@@ -5,7 +5,7 @@ import { Button, Card, Input } from 'react-native-elements';
 import { StackNavigationProp, createStackNavigator } from '@react-navigation/stack';
 import { AuthContext } from '../components/utils/authContext';
 import { ScrollView } from 'react-native-gesture-handler';
-import { Formik, Field } from 'formik';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
 
 const SettingsStack = createStackNavigator();
@@ -24,7 +24,8 @@ type User = {
     city: string,
     state: string,
     zipCode: string
-    email: string
+    email: string,
+    phone:string
 }
 
 type Props = {
@@ -52,7 +53,7 @@ export class SettingsScreen extends React.Component<Props, settingsState> {
             )
         })
 
-        this.state = { user: { name: '', surname: '', address: '', city: '', state: '', zipCode: '', email: '' }, isLoading: false, accountDetailsIsValid: true, modalVisible: false }
+        this.state = { user: { name: '', surname: '', address: '', city: '', state: '', zipCode: '', email: '',phone:'' }, isLoading: false, accountDetailsIsValid: true, modalVisible: false }
         this.getUser();
     }
 
@@ -84,6 +85,8 @@ export class SettingsScreen extends React.Component<Props, settingsState> {
 
                 const data = await res.json();
 
+                console.log(data)
+
                 if (data) {
 
                     this.setState({
@@ -94,7 +97,8 @@ export class SettingsScreen extends React.Component<Props, settingsState> {
                             city: data.user.city,
                             state: data.user.state,
                             zipCode: data.user.zipCode,
-                            email: data.user.email
+                            email: data.user.email,
+                            phone:data.user.phone
                         }
                     })
                 }
@@ -111,6 +115,8 @@ export class SettingsScreen extends React.Component<Props, settingsState> {
     }
 
     async saveUserDetails(user: User) {
+
+        console.log(user)
 
         try {
             const res = await fetch(GLOBALS.BASE_URL + '/api/client/updateDetails', {
@@ -195,9 +201,9 @@ export class SettingsScreen extends React.Component<Props, settingsState> {
                 onSubmit={values => this.saveUserDetails(values)}>
                 {({ handleChange, handleBlur, handleSubmit, values, touched, errors }) => (
                     <ScrollView style={{backgroundColor:'white'}}>
-                        <Card containerStyle={{borderWidth:0, margin: 0, paddingTop: 15, paddingLeft: 5, paddingRight: 5, paddingBottom: 0 }}>
-                            <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
-                                <View style={[{ flex: 1, flexDirection: 'column', justifyContent: 'flex-start' }]}>
+                        <Card containerStyle={{ borderWidth:0, margin: 0, paddingTop: 15, paddingLeft: 5, paddingRight: 5, paddingBottom: 0 }}>
+                            <View style={[{ borderColor:'orange',flexDirection: 'row', alignItems: 'center' }]}>
+                                <View style={[{borderColor:'orange', flex: 1, flexDirection: 'column', justifyContent: 'flex-start' }]}>
 
                                     <Input errorMessage={errors.name} onChangeText={handleChange('name')} label='Name' placeholder="Name" value={values.name} labelStyle={{ fontSize: 12 }} inputStyle={{borderWidth:1,borderRadius:5,padding:5,marginTop:2,paddingLeft:12,borderColor:'lightgray',color:'#4b4b4b'}}inputContainerStyle={{ borderBottomWidth: 0 }}/>
 
@@ -210,7 +216,7 @@ export class SettingsScreen extends React.Component<Props, settingsState> {
                             </View>
                             <Input errorMessage={errors.address} onChangeText={handleChange('address')} label='Address' placeholder="Address" value={values.address} errorStyle={{ color: 'red' }} labelStyle={{ fontSize: 12 }} inputStyle={{borderWidth:1,borderRadius:5,padding:5,marginTop:2,paddingLeft:12,borderColor:'lightgray',color:'#4b4b4b'}}inputContainerStyle={{ borderBottomWidth: 0, }} />
                             <Input errorMessage={errors.city} onChangeText={handleChange('city')} label='City' placeholder="City" value={values.city} errorStyle={{ color: 'red' }} labelStyle={{ fontSize: 12 }}  inputStyle={{borderWidth:1,borderRadius:5,padding:5,marginTop:2,paddingLeft:12,borderColor:'lightgray',color:'#4b4b4b'}}inputContainerStyle={{ borderBottomWidth: 0, }}/>
-                            <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
+                            <View style={[{borderColor:'orange', flexDirection: 'row', alignItems: 'center' }]}>
                                 <View style={[{ flex: 2, flexDirection: 'column' }]}>
                                     <Input errorMessage={errors.state} onChangeText={handleChange('state')} label='State' placeholder="State" value={values.state} errorStyle={{ color: 'red' }} labelStyle={{ fontSize: 12}}  inputStyle={{borderWidth:1,borderRadius:5,padding:5,marginTop:2,paddingLeft:12,borderColor:'lightgray',color:'#4b4b4b'}}inputContainerStyle={{ borderBottomWidth: 0, }} />
                                 </View>
@@ -219,12 +225,10 @@ export class SettingsScreen extends React.Component<Props, settingsState> {
                                 </View>
 
                             </View>
-                        </Card>
-
-
-
-
-                        <View style={[{ flexDirection: 'row', alignItems: 'center',padding:15 }]}>
+                            <Input errorMessage={errors.email} onChangeText={handleChange('email')} label='E-mail' placeholder="E-mail" value={values.email} errorStyle={{ color: 'red' }} labelStyle={{ fontSize: 12 }}  inputStyle={{borderWidth:1,borderRadius:5,padding:5,marginTop:2,paddingLeft:12,borderColor:'lightgray',color:'#4b4b4b'}}inputContainerStyle={{ borderBottomWidth: 0, }}/>
+                            <Input errorMessage={errors.phone} onChangeText={handleChange('phone')} label='Phone' placeholder="Phone number" value={values.phone} errorStyle={{ color: 'red' }} labelStyle={{ fontSize: 12 }}  inputStyle={{borderWidth:1,borderRadius:5,padding:5,marginTop:2,paddingLeft:12,borderColor:'lightgray',color:'#4b4b4b'}}inputContainerStyle={{ borderBottomWidth: 0, }}/>
+                        
+                            <View style={[{margin:0,marginTop:-15,borderColor:'orange', flexDirection: 'row', alignItems: 'center',padding:15 }]}>
                                 <View style={[{ flex: 1, flexDirection: 'column', marginRight:7 }]}>
 
                                 <Button onPress={() => this.setModalVisible(true)} buttonStyle={{ backgroundColor: 'gray',padding:10 }} titleStyle={{  color: 'white',fontSize:16 }} title='Change Password' />
@@ -234,12 +238,8 @@ export class SettingsScreen extends React.Component<Props, settingsState> {
                                 <Button onPress={() => this.form.handleSubmit()} buttonStyle={{ backgroundColor: '#2185d0',padding:10 }} titleStyle={{ color: 'white',fontSize:16 }} title='Save Profile' />
                                 </View>
                             </View>
-
-
-
-
-
-                            
+                        
+                        </Card>
 
                         <Modal animationType="slide" presentationStyle='formSheet' visible={this.state.modalVisible} >
                             <View>
