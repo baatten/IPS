@@ -64,8 +64,9 @@ class LogoTitle extends React.Component<HomeTitleProps, HomeTitleState> {
         const buttons = ['Map', 'List']
 
         return (
-            <ButtonGroup containerStyle={{ width: 200, height: 30, backgroundColor: 'transparent' }}
-                textStyle={{ color: 'white' }}
+            <ButtonGroup containerStyle={{ width: 200, height: 28, backgroundColor: 'transparent',borderRadius:6 }}
+                textStyle={{ color: 'white',fontSize:14 }}
+                innerBorderStyle={{color:'transparent'}}
                 buttonStyle={{ borderColor: 'white' }}
                 selectedButtonStyle={{ backgroundColor: 'white' }}
                 selectedTextStyle={{ color: '#2185d0' }}

@@ -200,8 +200,8 @@ export class SettingsScreen extends React.Component<Props, settingsState> {
                 })}
                 onSubmit={values => this.saveUserDetails(values)}>
                 {({ handleChange, handleBlur, handleSubmit, values, touched, errors }) => (
-                    <ScrollView style={{backgroundColor:'white'}}>
-                        <Card containerStyle={{ borderWidth:0, margin: 0, paddingTop: 15, paddingLeft: 5, paddingRight: 5, paddingBottom: 0 }}>
+                    <View style={{backgroundColor:'white', borderWidth:0,shadowRadius:0}}>
+                        <Card wrapperStyle={{borderWidth:0,shadowRadius:0}} containerStyle={{ borderWidth:0, margin: 0, paddingTop: 15, paddingLeft: 5, paddingRight: 5, paddingBottom: 0, shadowRadius:0 }}>
                             <View style={[{ borderColor:'orange',flexDirection: 'row', alignItems: 'center' }]}>
                                 <View style={[{borderColor:'orange', flex: 1, flexDirection: 'column', justifyContent: 'flex-start' }]}>
 
@@ -223,19 +223,18 @@ export class SettingsScreen extends React.Component<Props, settingsState> {
                                 <View style={[{ flex: 1, flexDirection: 'column' }]}>
                                     <Input errorMessage={errors.zipCode} onChangeText={handleChange('zipCode')} label='Zip' placeholder="Zip" value={values.zipCode} errorStyle={{ color: 'red' }} labelStyle={{ fontSize: 12 }}  inputStyle={{borderWidth:1,borderRadius:5,padding:5,marginTop:2,paddingLeft:12,borderColor:'lightgray',color:'#4b4b4b'}}inputContainerStyle={{ borderBottomWidth: 0, }}/>
                                 </View>
-
                             </View>
                             <Input errorMessage={errors.email} onChangeText={handleChange('email')} label='E-mail' placeholder="E-mail" value={values.email} errorStyle={{ color: 'red' }} labelStyle={{ fontSize: 12 }}  inputStyle={{borderWidth:1,borderRadius:5,padding:5,marginTop:2,paddingLeft:12,borderColor:'lightgray',color:'#4b4b4b'}}inputContainerStyle={{ borderBottomWidth: 0, }}/>
                             <Input errorMessage={errors.phone} onChangeText={handleChange('phone')} label='Phone' placeholder="Phone number" value={values.phone} errorStyle={{ color: 'red' }} labelStyle={{ fontSize: 12 }}  inputStyle={{borderWidth:1,borderRadius:5,padding:5,marginTop:2,paddingLeft:12,borderColor:'lightgray',color:'#4b4b4b'}}inputContainerStyle={{ borderBottomWidth: 0, }}/>
                         
-                            <View style={[{margin:0,marginTop:-15,borderColor:'orange', flexDirection: 'row', alignItems: 'center',padding:15 }]}>
+                            <View style={[{margin:0,marginTop:-15,borderColor:'orange', flexDirection: 'row', alignItems: 'center',padding:10,paddingBottom:20 }]}>
                                 <View style={[{ flex: 1, flexDirection: 'column', marginRight:7 }]}>
 
-                                <Button onPress={() => this.setModalVisible(true)} buttonStyle={{ backgroundColor: 'gray',padding:10 }} titleStyle={{  color: 'white',fontSize:16 }} title='Change Password' />
+                                <Button onPress={() => this.setModalVisible(true)} buttonStyle={{ backgroundColor: 'gray',padding:10,borderRadius:10 }} titleStyle={{  color: 'white',fontSize:16 }} title='Change Password' />
                                 </View>
                                 <View style={[{ flex: 1, flexDirection: 'column',marginLeft:7 }]}>
 
-                                <Button onPress={() => this.form.handleSubmit()} buttonStyle={{ backgroundColor: '#2185d0',padding:10 }} titleStyle={{ color: 'white',fontSize:16 }} title='Save Profile' />
+                                <Button onPress={() => this.form.handleSubmit()} buttonStyle={{ backgroundColor: '#2185d0',padding:10,borderRadius:10 }} titleStyle={{ color: 'white',fontSize:16 }} title='Save Profile' />
                                 </View>
                             </View>
                         
@@ -283,7 +282,7 @@ export class SettingsScreen extends React.Component<Props, settingsState> {
 
                             </View>
                         </Modal>
-                    </ScrollView>
+                    </View>
                 )}
             </Formik>
         );
