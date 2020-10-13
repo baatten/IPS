@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View,ScrollView, Text, Linking } from 'react-native';
+import { StyleSheet, View, ScrollView, Text, Linking } from 'react-native';
 import { Button, ButtonGroup, ListItem, Icon } from 'react-native-elements';
 
 import GLOBALS from '../globals';
@@ -24,7 +24,15 @@ type Lead = {
     dobmon: any,
     latitude: number,
     longitude: number,
-    marker?: KmlMarker
+    marker?: KmlMarker,
+    leadInterActions?: LeadInteraction[]
+}
+
+type LeadInteraction = {
+    date: any
+    id: number
+    leadId: number
+    userId: number
 }
 
 const HomeStack = createStackNavigator();
@@ -37,7 +45,7 @@ type HomeState = {
     leads: Lead[],
     isLoading: boolean,
     activeLead?: Lead,
-    filterDistance:number
+    filterDistance: number
     activeView: number
 }
 
@@ -64,9 +72,9 @@ class LogoTitle extends React.Component<HomeTitleProps, HomeTitleState> {
         const buttons = ['Map', 'List']
 
         return (
-            <ButtonGroup containerStyle={{ width: 200, height: 28, backgroundColor: 'transparent',borderRadius:6 }}
-                textStyle={{ color: 'white',fontSize:14 }}
-                innerBorderStyle={{color:'transparent'}}
+            <ButtonGroup containerStyle={{ width: 200, height: 28, backgroundColor: 'transparent', borderRadius: 6 }}
+                textStyle={{ color: 'white', fontSize: 14 }}
+                innerBorderStyle={{ color: 'transparent' }}
                 buttonStyle={{ borderColor: 'white' }}
                 selectedButtonStyle={{ backgroundColor: 'white' }}
                 selectedTextStyle={{ color: '#2185d0' }}
@@ -88,7 +96,7 @@ export class HomeScreen extends React.Component<Props, HomeState> {
 
         const leads: Lead[] = [];
 
-        this.state = { leads: leads, isLoading: true, activeView: 0, filterDistance:50 };
+        this.state = { leads: leads, isLoading: true, activeView: 0, filterDistance: 50 };
 
         this.props.navigation.setOptions({
             headerShown: true,
@@ -97,18 +105,18 @@ export class HomeScreen extends React.Component<Props, HomeState> {
             headerStyle: { backgroundColor: '#2185d0' },
             headerRight: () => <Popover popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}
                 from={(
-                    <Button icon={<Icon name='map-marked-alt' color='white' size={18} type='font-awesome-5' style={{color:'white'}}/>} buttonStyle={{marginRight:5,backgroundColor:'transparent'}}/>                    
+                    <Button icon={<Icon name='map-marked-alt' color='white' size={18} type='font-awesome-5' style={{ color: 'white' }} />} buttonStyle={{ marginRight: 5, backgroundColor: 'transparent' }} />
                 )}>
 
                 <ListItem key={0} bottomDivider containerStyle={{ padding: 12 }}>
-                <Icon name='check' size={18} color='transparent'></Icon>
+                    <Icon name='check' size={18} color='transparent'></Icon>
                     <ListItem.Title>5 miles radius</ListItem.Title>
                 </ListItem>
                 <ListItem key={1} bottomDivider containerStyle={{ padding: 12 }}>
-                <Icon name='check' size={18} color='transparent'></Icon>
+                    <Icon name='check' size={18} color='transparent'></Icon>
                     <ListItem.Title>20 miles radius</ListItem.Title>
                 </ListItem>
-                <ListItem key={2} bottomDivider containerStyle={{ padding: 12}}>
+                <ListItem key={2} bottomDivider containerStyle={{ padding: 12 }}>
                     <Icon name='check' size={18}></Icon>
                     <ListItem.Title>50 miles radius</ListItem.Title>
                 </ListItem>
@@ -128,9 +136,9 @@ export class HomeScreen extends React.Component<Props, HomeState> {
         openMap({ travelType: 'drive', start: 'Houston, USA', end: address, provider: 'apple' });
     }
 
-    updateFilterDistance(filter:number){
+    updateFilterDistance(filter: number) {
 
-        this.setState({filterDistance:filter},()=> this.getLeads())
+        this.setState({ filterDistance: filter }, () => this.getLeads())
     }
 
     async getLeads() {
@@ -139,7 +147,7 @@ export class HomeScreen extends React.Component<Props, HomeState> {
             const res = await fetch(GLOBALS.BASE_URL + '/api/client/getLeads', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({radius:this.state.filterDistance})
+                body: JSON.stringify({ radius: this.state.filterDistance })
             })
             if (res.status === 200) {
 
@@ -161,9 +169,47 @@ export class HomeScreen extends React.Component<Props, HomeState> {
         }
     }
 
-    showLeadData(lead: Lead) {
+    async saveLeadInteraction(lead: Lead, index: number) {
+
+        //console.log(lead)
+
+        try {
+            const res = await fetch(GLOBALS.BASE_URL + '/api/client/saveLeadInteraction', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ leadId: lead.id })
+            })
+            if (res.status === 200) {
+
+                const data: any = await res.json();
+
+                if (data) {
+
+                    let leads = [...this.state.leads];
+                    let lead = { ...leads[index] };
+
+                    lead.leadInterActions?.push(data.leadInteraction)
+                    leads[index] = lead;
+
+                    this.setState({ isLoading: false, leads: leads })
+                }
+                else {
+
+                }
+
+            } else {
+
+            }
+        } catch (error) {
+            console.error('An unexpected error happened occurred:', error)
+        }
+    }
+
+    showLeadData(lead: Lead, index: number) {
 
         this.setState({ activeLead: lead }, this.sheetRef.current?.setModalVisible())
+
+        this.saveLeadInteraction(lead, index);
     }
 
     monthsToAge65(dob: number) {
@@ -187,7 +233,10 @@ export class HomeScreen extends React.Component<Props, HomeState> {
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                     <MapView initialRegion={{ latitude: 31.968599, longitude: -99.901810, latitudeDelta: 10, longitudeDelta: 10, }} style={{ flex: 1, height: 400, width: '100%', }} showsUserLocation={true}>
                         {this.state.leads.map((lead: Lead, index: any) => (
-                            <Marker key={index} onPress={() => this.showLeadData(lead)} coordinate={lead.marker!.coordinate} />
+                            <Marker key={index} pinColor={(lead.leadInterActions != undefined && lead.leadInterActions.length > 0) ?
+                                'green' :
+                                'red'}
+                                onPress={() => this.showLeadData(lead, index)} coordinate={lead.marker!.coordinate} />
                         ))}
                     </MapView>
                     <ActionSheet ref={this.sheetRef} bounceOnOpen={true}>
@@ -264,12 +313,12 @@ export class HomeScreen extends React.Component<Props, HomeState> {
                                         this.state.activeLead!.county + ' ' +
                                         this.state.activeLead!.state
                                     )} title="Get Directions" icon={
-                                        <Icon name="car"  type='font-awesome' size={18} style={{ padding: 3, marginRight: 5 }} color="white" />
+                                        <Icon name="car" type='font-awesome' size={18} style={{ padding: 3, marginRight: 5 }} color="white" />
                                     } />
                                 </View>
                                 <View style={[{ flex: 2, flexDirection: 'column', marginLeft: 10 }]}>
                                     <Button buttonStyle={{ borderRadius: 10, padding: 10, marginTop: 15, marginBottom: 15 }} onPress={() => Linking.openURL(`tel:${this.state.activeLead?.phone}`)} title="Call" icon={
-                                        <Icon name="phone"  type='font-awesome' size={18} style={{ padding: 3, marginRight: 5 }} color="white" />
+                                        <Icon name="phone" type='font-awesome' size={18} style={{ padding: 3, marginRight: 5 }} color="white" />
                                     } />
                                 </View>
                             </View>
