@@ -16,7 +16,8 @@ type Person = {
     address?: string,
     city?: string,
     state?: string,
-    zipCode?: string
+    zipCode?: string,
+    phone: string
 }
 
 type Props = {
@@ -31,7 +32,7 @@ type settingsState = {
     currentStep: any,
     isCurrentViewValid: boolean,
     currentForm: any,
-    subscrptionIndex: number
+    subscrptionIndex?: number
 }
 
 export default class SignUpScreen extends React.Component<Props, settingsState> {
@@ -51,7 +52,7 @@ export default class SignUpScreen extends React.Component<Props, settingsState> 
         this.wizard = React.createRef();
 
         this.state = {
-            user: { name: '', surname: '', address: '', city: '', state: '', zipCode: '', phone: '' },
+            user: { name: '', surname: '', address: '', city: '', state: '', zipCode: '', phone: '',email:'',password:'' },
             isLoading: false,
             isFirstStep: true,
             isLastStep: false,
@@ -161,6 +162,7 @@ export default class SignUpScreen extends React.Component<Props, settingsState> 
                         user.city = values.city;
                         user.zipCode = values.zipCode;
                         user.state = values.state;
+                        user.phone = values.phone;
 
                         this.setState({ user: user });
 
@@ -179,7 +181,7 @@ export default class SignUpScreen extends React.Component<Props, settingsState> 
                                     <Input errorMessage={errors.state} onChangeText={handleChange('state')} label='State' placeholder="State" value={values.state} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }} inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
                                 </View>
                             </View>
-
+                            <Input errorMessage={errors.phone} onChangeText={handleChange('phone')} label='Phone' placeholder="Phone" value={values.phone} errorStyle={{ color: 'red' }} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }} inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
                         </>
                     )}
                 </Formik>

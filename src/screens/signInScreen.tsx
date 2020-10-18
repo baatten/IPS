@@ -7,7 +7,7 @@ import { AuthContext } from '../components/utils/authContext';
 
 export default function SignInScreen() {
 
-    const [emailAddress, setemailAddress] = useState('svitlana@mscp.dk');
+    const [emailAddress, setemailAddress] = useState('baatten@gmail.com');
     const [password, setPassword] = useState('mmm');
     const [SignUpErrors, setSignUpErrors] = useState({});
 

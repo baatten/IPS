@@ -1,7 +1,6 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView, Text, Linking } from 'react-native';
-import { Button, ButtonGroup, ListItem, Icon } from 'react-native-elements';
-
+import { StyleSheet, View, ScrollView, Text, Linking, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
+import { Button, ButtonGroup, ListItem, Icon, Input, Divider } from 'react-native-elements';
 import GLOBALS from '../globals';
 import { StackNavigationProp, createStackNavigator } from '@react-navigation/stack';
 import MapView, { Marker } from 'react-native-maps';
@@ -25,14 +24,16 @@ type Lead = {
     latitude: number,
     longitude: number,
     marker?: KmlMarker,
-    leadInterActions?: LeadInteraction[]
+    LeadInteraction?: LeadInteraction[]
 }
 
 type LeadInteraction = {
-    date: any
+    date?: any
     id: number
     leadId: number
-    userId: number
+    userId?: number
+    action?: string
+    notes?: string
 }
 
 const HomeStack = createStackNavigator();
@@ -45,6 +46,9 @@ type HomeState = {
     leads: Lead[],
     isLoading: boolean,
     activeLead?: Lead,
+    activeIndex?: number,
+    savingLead: boolean,
+    activeLeadNotes?: string,
     filterDistance: number
     activeView: number
 }
@@ -88,15 +92,17 @@ class LogoTitle extends React.Component<HomeTitleProps, HomeTitleState> {
 export class HomeScreen extends React.Component<Props, HomeState> {
 
     sheetRef: any;
+    saveLeadSheetRef: any;
 
     constructor(props: Props) {
         super(props);
 
-        this.sheetRef = React.createRef();
+        this.sheetRef = React.createRef<ActionSheet>();
+        this.saveLeadSheetRef = React.createRef<ActionSheet>();
 
         const leads: Lead[] = [];
 
-        this.state = { leads: leads, isLoading: true, activeView: 0, filterDistance: 50 };
+        this.state = { leads: leads, isLoading: true, activeView: 0, filterDistance: 50, savingLead: false };
 
         this.props.navigation.setOptions({
             headerShown: true,
@@ -131,7 +137,9 @@ export class HomeScreen extends React.Component<Props, HomeState> {
         this.setState({ activeView: viewIndex });
     }
 
-    startNavigation(address: string) {
+    async startNavigation(address: string, lead: Lead, index: number) {
+
+        await this.saveLeadInteraction(lead, index, 'navigation');
 
         openMap({ travelType: 'drive', start: 'Houston, USA', end: address, provider: 'apple' });
     }
@@ -169,15 +177,25 @@ export class HomeScreen extends React.Component<Props, HomeState> {
         }
     }
 
-    async saveLeadInteraction(lead: Lead, index: number) {
+    async saveLeadInteraction(lead: Lead, index: number, action?: string) {
 
-        //console.log(lead)
+        let actionString = '';
+
+        if (action != null && action != '')
+            actionString = action;
+
+        if (lead.LeadInteraction == null || lead.LeadInteraction.length < 1)
+            lead.LeadInteraction = [{ id: 0, action: actionString, leadId: lead.id! }]
+        else {
+            if (lead.LeadInteraction[0].action == '')
+                lead.LeadInteraction[0].action = actionString;
+        }
 
         try {
             const res = await fetch(GLOBALS.BASE_URL + '/api/client/saveLeadInteraction', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ leadId: lead.id })
+                body: JSON.stringify({ lead: lead })
             })
             if (res.status === 200) {
 
@@ -185,11 +203,11 @@ export class HomeScreen extends React.Component<Props, HomeState> {
 
                 if (data) {
 
-                    let leads = [...this.state.leads];
-                    let lead = { ...leads[index] };
+                    let leads: Lead[] = [...this.state.leads];
+                    let lead2: Lead = { ...leads[index] };
 
-                    lead.leadInterActions?.push(data.leadInteraction)
-                    leads[index] = lead;
+                    lead2.LeadInteraction![0] = data.leadInteraction
+                    leads[index] = lead2;
 
                     this.setState({ isLoading: false, leads: leads })
                 }
@@ -203,13 +221,65 @@ export class HomeScreen extends React.Component<Props, HomeState> {
         } catch (error) {
             console.error('An unexpected error happened occurred:', error)
         }
+
+        return;
     }
 
     showLeadData(lead: Lead, index: number) {
 
-        this.setState({ activeLead: lead }, this.sheetRef.current?.setModalVisible())
+        this.setState({ activeLead: lead, activeIndex: index }, this.sheetRef.current?.setModalVisible())
 
         this.saveLeadInteraction(lead, index);
+    }
+
+    openDetails() {
+
+        this.sheetRef.current?.setModalVisible(false);
+
+        //this.sheetRef.current?.setModalVisible(true);
+        this.setState({ savingLead: true }, () => {
+
+            const self = this;
+            //this.sheetRef.current?.setModalVisible(false);
+            setTimeout(function () {
+
+                self.saveLeadSheetRef.current?.setModalVisible(true);
+
+            }, 200);
+        })
+    }
+
+    cancelSaveDetails() {
+
+        this.saveLeadSheetRef.current?.setModalVisible(false);
+
+        //this.sheetRef.current?.setModalVisible(true);
+        this.setState({ savingLead: false, activeLeadNotes: '' }, () => {
+
+            const self = this;
+            //this.sheetRef.current?.setModalVisible(false);
+            setTimeout(function () {
+
+                self.sheetRef.current?.setModalVisible(true);
+
+            }, 200);
+        })
+    }
+
+    saveLead() {
+
+        const lead = this.state.activeLead;
+
+        if (lead!.LeadInteraction!.length > 0) {
+            lead!.LeadInteraction![0].notes = this.state.activeLeadNotes;
+            lead!.LeadInteraction![0].action = 'saved';
+        }
+        else
+            lead!.LeadInteraction = [{ id: 0, action: 'saved', leadId: lead!.id!, notes: this.state.activeLeadNotes }]
+
+        this.saveLeadInteraction(lead!, this.state.activeIndex!);
+
+        this.cancelSaveDetails()
     }
 
     monthsToAge65(dob: number) {
@@ -219,11 +289,38 @@ export class HomeScreen extends React.Component<Props, HomeState> {
         if (dob < month)
             return 'Already turned 65';
         else if (dob > month)
-            return 'Turns 65 in under ' + (dob - month) + ' months'
+            return 'Turns 65 in ' + (dob - month) + ' months'
         else if (dob == month)
             return 'Turns 65 in under 1 months'
 
         return "error";
+    }
+
+    getPinColorForLead(lead: Lead) {
+        let color = 'green'
+
+        if (lead.LeadInteraction!.length > 0) {
+            if (lead.LeadInteraction![0].action == '')
+                color = 'orange';
+            else if (lead.LeadInteraction![0].action == 'saved')
+                color = 'purple';
+
+            else
+                color = 'red'
+        }
+
+        return color;
+    }
+
+    leadIsSaved = () => {
+        let saved = false;
+
+        const lead = this.state.activeLead
+
+        if (lead != null && lead.LeadInteraction!.length > 0 && lead.LeadInteraction![0].action == 'saved')
+            saved = true;
+
+        return saved;
     }
 
     render() {
@@ -233,13 +330,11 @@ export class HomeScreen extends React.Component<Props, HomeState> {
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                     <MapView initialRegion={{ latitude: 31.968599, longitude: -99.901810, latitudeDelta: 10, longitudeDelta: 10, }} style={{ flex: 1, height: 400, width: '100%', }} showsUserLocation={true}>
                         {this.state.leads.map((lead: Lead, index: any) => (
-                            <Marker key={index} pinColor={(lead.leadInterActions != undefined && lead.leadInterActions.length > 0) ?
-                                'green' :
-                                'red'}
+                            <Marker key={index} pinColor={this.getPinColorForLead(lead)}
                                 onPress={() => this.showLeadData(lead, index)} coordinate={lead.marker!.coordinate} />
                         ))}
                     </MapView>
-                    <ActionSheet ref={this.sheetRef} bounceOnOpen={true}>
+                    <ActionSheet ref={this.sheetRef} bounceOnOpen={true} onClose={() => this.setState({ savingLead: false })}>
                         <View style={{
                             borderTopStartRadius: 0, borderTopRightRadius: 0, padding: 20, backgroundColor: 'white',
                             shadowColor: 'black', shadowOpacity: 0.15, shadowRadius: 5, shadowOffset: { width: 5, height: 50 }
@@ -255,25 +350,72 @@ export class HomeScreen extends React.Component<Props, HomeState> {
                                     <Text style={{ textAlign: 'center' }}>{this.monthsToAge65(this.state.activeLead?.dobmon)}</Text>
                                 </View>
                             </View>
-                            <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
-                                <View style={[{ flex: 4, flexDirection: 'column' }]}>
-                                    <Button buttonStyle={{ borderRadius: 10, padding: 10, marginTop: 15, marginBottom: 15 }} onPress={() => this.startNavigation(this.state.activeLead!.address + ' ' +
-                                        this.state.activeLead!.city + ' ' +
-                                        this.state.activeLead!.county + ' ' +
-                                        this.state.activeLead!.state
-                                    )} title="Get Directions" icon={
-                                        <Icon name="car" type='font-awesome' size={18} style={{ padding: 3, marginRight: 5 }} color="white" />
-                                    } />
-                                </View>
-                                <View style={[{ flex: 2, flexDirection: 'column', marginLeft: 10 }]}>
-                                    <Button buttonStyle={{ borderRadius: 10, padding: 10, marginTop: 15, marginBottom: 15 }} onPress={() => Linking.openURL(`tel:${this.state.activeLead?.phone}`)} title="Call" icon={
-                                        <Icon name="phone" type='font-awesome' size={18} style={{ padding: 3, marginRight: 5 }} color="white" />
-                                    } />
-                                </View>
+
+                            <View style={[{ flexDirection: 'row', alignItems: 'center', marginTop: 20, marginBottom: 20 }]}>
+                                <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: '#2185d0', borderRadius: 10, padding: 15, marginRight: 5 }]} onPress={() => this.startNavigation(this.state.activeLead!.address + ' ' +
+                                    this.state.activeLead!.city + ' ' +
+                                    this.state.activeLead!.county + ' ' +
+                                    this.state.activeLead!.state, this.state.activeLead!, this.state.activeIndex!
+                                )}>
+                                    <Icon name="car" type='font-awesome' color='white' />
+                                    <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Navigation</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: '#2185d0', borderRadius: 10, padding: 15, marginLeft: 5, marginRight: 5 }]} onPress={() => Linking.openURL(`tel:${this.state.activeLead?.phone}`)}>
+                                    <Icon name="phone" type='font-awesome' color='white' />
+                                    <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Call</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity disabled={this.leadIsSaved()} style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: this.leadIsSaved()?('grey'):('#2185d0'), borderRadius: 10, padding: 15, marginLeft: 5, marginRight: 5 }]} onPress={() => this.openDetails()}>
+                                    <Icon name={this.leadIsSaved()?('check'):('plus')} type='font-awesome' color='white' />
+                                    <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Save{ this.leadIsSaved() && (<>d</>)}</Text>
+                                </TouchableOpacity>
                             </View>
+
 
                         </View>
                     </ActionSheet>
+                    <ActionSheet keyboardShouldPersistTaps='always' ref={this.saveLeadSheetRef} bounceOnOpen={true} onClose={() => this.setState({ savingLead: false })}>
+                        <View style={{ borderTopStartRadius: 0, borderTopRightRadius: 0, backgroundColor: 'white', shadowColor: 'black', shadowOpacity: 0.15, shadowRadius: 5, shadowOffset: { width: 5, height: 50 } }}>
+
+                            <View style={[{ flexDirection: 'row', padding: 20, }]}>
+                                <View style={{ flexDirection: 'column' }}>
+                                    <Icon name="user" type='font-awesome' color='white' backgroundColor='#2185d0' style={{ padding: 10, borderRadius: 10 }} />
+                                </View>
+                                <View style={{ flexDirection: 'column', marginLeft: 10 }}>
+                                    <Text style={styles.titleText}>{this.state.activeLead?.firstname} {this.state.activeLead?.lastName}</Text>
+                                    <Text style={{ fontSize: 16, color: 'gray', marginTop: 0 }}>{this.state.activeLead?.address}</Text>
+
+                                    <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.zipCode} {this.state.activeLead?.county}</Text>
+                                </View>
+                            </View>
+
+                            <Divider />
+
+                            <View style={{ padding: 10 }}>
+                                <Text style={{ fontSize: 18, fontWeight: '600', margin: 10 }}>Enter notes to help remind yourself of this lead</Text>
+                                <Input value={this.state.activeLeadNotes} onChange={(e) => this.setState({ activeLeadNotes: e.nativeEvent.text })}
+                                    style={{ borderWidth: 0 }}
+                                    inputContainerStyle={{ borderBottomWidth: 0 }}
+                                    inputStyle={{ margin: 0, padding: 0, height: 200, borderWidth: 0 }}
+                                    numberOfLines={10} multiline={true} placeholder='Add your notes here'></Input>
+                            </View>
+
+                            <KeyboardAvoidingView behavior='position' keyboardVerticalOffset={120} style={[{}]}>
+                                <Divider />
+                                <View style={{ flexDirection: 'row', paddingBottom: 30, paddingLeft: 20, paddingRight: 20, paddingTop: 10 }}>
+                                    <TouchableOpacity style={[{ flex: 1, flexDirection: 'column' }]} onPress={() => this.cancelSaveDetails()}>
+                                        <Text style={{ color: 'grey', marginTop: 5, fontSize: 16 }}>Cancel</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'flex-end' }]} onPress={() => this.saveLead()}>
+                                        <Text style={{ color: '#2185d0', marginTop: 5, fontSize: 16 }}>Save</Text>
+                                    </TouchableOpacity>
+
+
+                                </View>
+                            </KeyboardAvoidingView>
+                        </View>
+
+                    </ActionSheet>
+
                 </View>);
         }
         else {
@@ -281,9 +423,10 @@ export class HomeScreen extends React.Component<Props, HomeState> {
                 <ScrollView>
                     {
                         this.state.leads.map((lead: Lead, i) => (
-                            <ListItem key={i} bottomDivider onPress={() => this.showLeadData(lead)} >
+                            <ListItem key={i} bottomDivider onPress={() => this.showLeadData(lead, i)} >
                                 <ListItem.Content>
-                                    <ListItem.Title style={{ fontWeight: '600' }}>{lead.firstname} {lead.lastName}</ListItem.Title>
+                                    <ListItem.Title style={{
+                                        fontWeight: '600', color: this.getPinColorForLead(lead)}}>{lead.firstname} {lead.lastName}</ListItem.Title>
                                     <ListItem.Subtitle style={{ color: 'grey' }}>{lead.address}, {lead.city}</ListItem.Subtitle>
                                 </ListItem.Content>
                                 <ListItem.Subtitle >{this.monthsToAge65(lead.dobmon)}</ListItem.Subtitle>
@@ -312,9 +455,9 @@ export class HomeScreen extends React.Component<Props, HomeState> {
                                         this.state.activeLead!.city + ' ' +
                                         this.state.activeLead!.county + ' ' +
                                         this.state.activeLead!.state
-                                    )} title="Get Directions" icon={
-                                        <Icon name="car" type='font-awesome' size={18} style={{ padding: 3, marginRight: 5 }} color="white" />
-                                    } />
+                                        , this.state.activeLead!, this.state.activeIndex!)} title="Get Directions" icon={
+                                            <Icon name="car" type='font-awesome' size={18} style={{ padding: 3, marginRight: 5 }} color="white" />
+                                        } />
                                 </View>
                                 <View style={[{ flex: 2, flexDirection: 'column', marginLeft: 10 }]}>
                                     <Button buttonStyle={{ borderRadius: 10, padding: 10, marginTop: 15, marginBottom: 15 }} onPress={() => Linking.openURL(`tel:${this.state.activeLead?.phone}`)} title="Call" icon={
