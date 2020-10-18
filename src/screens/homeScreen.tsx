@@ -364,6 +364,13 @@ export class HomeScreen extends React.Component<Props, HomeState> {
                                 </View>
                             </View>
 
+                            {(this.state.activeLead?.LeadInteraction![0].notes != '' && this.state.activeLead?.LeadInteraction![0].notes != null) && (
+                                <View>
+                                    <Text style={{ fontSize: 18, fontWeight: '600', marginTop: 10 }}>Notes</Text>
+                                    <Text style={{ fontSize: 16, color: 'grey', marginTop: 5 }}>{this.state.activeLead?.LeadInteraction![0].notes}</Text>
+                                </View>
+                            )}
+
                             <View style={[{ flexDirection: 'row', alignItems: 'center', marginTop: 20, marginBottom: 20 }]}>
                                 <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: '#2185d0', borderRadius: 10, padding: 15, marginRight: 5 }]} onPress={() => this.startNavigation(this.state.activeLead!.address + ' ' +
                                     this.state.activeLead!.city + ' ' +
@@ -459,16 +466,23 @@ export class HomeScreen extends React.Component<Props, HomeState> {
                             shadowColor: 'black', shadowOpacity: 0.15, shadowRadius: 5, shadowOffset: { width: 5, height: 50 }
                         }}>
                             <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
-                                <View style={[{ flex: 1, flexDirection: 'column' }]}>
+                                <View style={[{ flex: 4, flexDirection: 'column' }]}>
                                     <Text style={styles.titleText}>{this.state.activeLead?.firstname} {this.state.activeLead?.lastName}</Text>
                                     <Text style={{ fontSize: 16, color: 'gray', marginTop: 5 }}>{this.state.activeLead?.address}</Text>
                                     <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.city}</Text>
                                     <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.zipCode} {this.state.activeLead?.county}</Text>
                                 </View>
-                                <View style={[{ justifyContent: 'space-evenly', flexDirection: 'column' }]}>
-                                    <Text style={{ textAlign: 'center',color:'#2185d0' }}>{this.monthsToAge65(this.state.activeLead?.dobmon)}</Text>
+                                <View style={[{flex:1, flexDirection: 'column',borderWidth:1,borderColor:'#2185d0',borderRadius:10,padding:10 }]}>
+                                    <Text style={{ textAlign: 'center',color:'#2185d0',fontSize:13 }}>{this.monthsToAge65(this.state.activeLead?.dobmon)}</Text>
                                 </View>
                             </View>
+
+                            {(this.state.activeLead?.LeadInteraction![0].notes != '' && this.state.activeLead?.LeadInteraction![0].notes != null) && (
+                                <View>
+                                    <Text style={{ fontSize: 18, fontWeight: '600', marginTop: 10 }}>Notes</Text>
+                                    <Text style={{ fontSize: 16, color: 'grey', marginTop: 5 }}>{this.state.activeLead?.LeadInteraction![0].notes}</Text>
+                                </View>
+                            )}
 
                             <View style={[{ flexDirection: 'row', alignItems: 'center', marginTop: 20, marginBottom: 20 }]}>
                                 <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: '#2185d0', borderRadius: 10, padding: 15, marginRight: 5 }]} onPress={() => this.startNavigation(this.state.activeLead!.address + ' ' +

@@ -256,16 +256,12 @@ export class SavedLeadsScreen extends React.Component<Props, HomeState> {
 
     monthsToAge65(dob: number) {
 
-        const month = new Date().getUTCMonth() + 1;
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-        if (dob < month)
-            return 'Already turned 65';
-        else if (dob > month)
-            return 'Turns 65 in ' + (dob - month) + ' months'
-        else if (dob == month)
-            return 'Turns 65 in under 1 months'
+        //let date:Date = new Date();
+        //date.setFullYear(2020, (dob - 1));
 
-        return "error";
+        return 'Turns 65 ' + monthNames[dob - 1] + ' 2020';
     }
 
     removeSavedLead() {
@@ -335,18 +331,18 @@ export class SavedLeadsScreen extends React.Component<Props, HomeState> {
                             shadowColor: 'black', shadowOpacity: 0.15, shadowRadius: 5, shadowOffset: { width: 5, height: 50 }
                         }}>
                             <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
-                                <View style={[{ flex: 1, flexDirection: 'column' }]}>
+                                <View style={[{ flex: 4, flexDirection: 'column' }]}>
                                     <Text style={styles.titleText}>{this.state.activeLead?.firstname} {this.state.activeLead?.lastName}</Text>
                                     <Text style={{ fontSize: 16, color: 'gray', marginTop: 5 }}>{this.state.activeLead?.address}</Text>
                                     <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.city}</Text>
                                     <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.zipCode} {this.state.activeLead?.county}</Text>
                                 </View>
-                                <View style={[{ justifyContent: 'space-evenly', flexDirection: 'column' }]}>
-                                    <Text style={{ textAlign: 'center' }}>{this.monthsToAge65(this.state.activeLead?.dobmon)}</Text>
+                                <View style={[{flex:1, flexDirection: 'column',borderWidth:1,borderColor:'#2185d0',borderRadius:10,padding:10 }]}>
+                                    <Text style={{ textAlign: 'center',color:'#2185d0',fontSize:13 }}>{this.monthsToAge65(this.state.activeLead?.dobmon)}</Text>
                                 </View>
                             </View>
 
-                            {(this.state.activeLead?.LeadInteraction![0].notes != '') && (
+                            {(this.state.activeLead?.LeadInteraction![0].notes != '' && this.state.activeLead?.LeadInteraction![0].notes != null) && (
                                 <>
                                     <Text style={{ fontSize: 18, fontWeight: '600', marginTop: 10 }}>Notes</Text>
                                     <Text style={{ fontSize: 16, color: 'grey', marginTop: 5 }}>{this.state.activeLead?.LeadInteraction![0].notes}</Text>
@@ -365,14 +361,12 @@ export class SavedLeadsScreen extends React.Component<Props, HomeState> {
                                     <Icon name="phone" type='font-awesome' color='white' />
                                     <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Call</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: 'red', borderRadius: 10, padding: 15, marginLeft: 5, marginRight: 5 }]}
+                                <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: '#FF4949', borderRadius: 10, padding: 15, marginLeft: 5, marginRight: 5 }]}
                                     onPress={() => this.removeSavedLead()}>
                                     <Icon name='close' type='font-awesome' color='white' />
                                     <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Remove</Text>
                                 </TouchableOpacity>
                             </View>
-
-
                         </View>
                     </ActionSheet>
                 </ScrollView>
