@@ -69,7 +69,6 @@ export default class SignUpScreen extends React.Component<Props, settingsState> 
 
         const account = this.state.user;
 
-
         let subscription = 'annually'
 
         if (this.state.subscrptionIndex == 1)
@@ -87,7 +86,6 @@ export default class SignUpScreen extends React.Component<Props, settingsState> 
 
                 const responseData = await res.json();
 
-                Alert.alert('Your new details was saved.')
                 this.setState({ isLoading: false })
             }
             else {
