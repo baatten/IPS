@@ -85,8 +85,6 @@ export class SettingsScreen extends React.Component<Props, settingsState> {
 
                 const data = await res.json();
 
-                console.log(data)
-
                 if (data) {
 
                     this.setState({

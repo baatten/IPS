@@ -129,7 +129,13 @@ export class HomeScreen extends React.Component<Props, HomeState> {
             </Popover>
         })
 
-        this.getLeads();
+        this.props.navigation.addListener('focus', (e) => {
+            // Prevent default behavior
+            this.getLeads();
+
+            // Do something manually
+            // ...
+        });
     }
 
     changeView = (viewIndex: number) => {
@@ -282,18 +288,25 @@ export class HomeScreen extends React.Component<Props, HomeState> {
         this.cancelSaveDetails()
     }
 
+    removeSavedLead() {
+
+        const lead = this.state.activeLead;
+
+        lead!.LeadInteraction![0].notes = '';
+        lead!.LeadInteraction![0].action = '';
+
+        this.saveLeadInteraction(lead!, this.state.activeIndex!);
+
+    }
+
     monthsToAge65(dob: number) {
 
-        const month = new Date().getUTCMonth() + 1;
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-        if (dob < month)
-            return 'Already turned 65';
-        else if (dob > month)
-            return 'Turns 65 in ' + (dob - month) + ' months'
-        else if (dob == month)
-            return 'Turns 65 in under 1 months'
+        //let date:Date = new Date();
+        //date.setFullYear(2020, (dob - 1));
 
-        return "error";
+        return 'Turns 65 ' + monthNames[dob - 1] + ' 2020';
     }
 
     getPinColorForLead(lead: Lead) {
@@ -340,14 +353,14 @@ export class HomeScreen extends React.Component<Props, HomeState> {
                             shadowColor: 'black', shadowOpacity: 0.15, shadowRadius: 5, shadowOffset: { width: 5, height: 50 }
                         }}>
                             <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
-                                <View style={[{ flex: 1, flexDirection: 'column' }]}>
+                                <View style={[{ flex: 4, flexDirection: 'column' }]}>
                                     <Text style={styles.titleText}>{this.state.activeLead?.firstname} {this.state.activeLead?.lastName}</Text>
                                     <Text style={{ fontSize: 16, color: 'gray', marginTop: 5 }}>{this.state.activeLead?.address}</Text>
                                     <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.city}</Text>
                                     <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.zipCode} {this.state.activeLead?.county}</Text>
                                 </View>
-                                <View style={[{ justifyContent: 'space-evenly', flexDirection: 'column' }]}>
-                                    <Text style={{ textAlign: 'center' }}>{this.monthsToAge65(this.state.activeLead?.dobmon)}</Text>
+                                <View style={[{flex:1, flexDirection: 'column',borderWidth:1,borderColor:'#2185d0',borderRadius:10,padding:10 }]}>
+                                    <Text style={{ textAlign: 'center',color:'#2185d0',fontSize:13 }}>{this.monthsToAge65(this.state.activeLead?.dobmon)}</Text>
                                 </View>
                             </View>
 
@@ -364,9 +377,15 @@ export class HomeScreen extends React.Component<Props, HomeState> {
                                     <Icon name="phone" type='font-awesome' color='white' />
                                     <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Call</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity disabled={this.leadIsSaved()} style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: this.leadIsSaved()?('grey'):('#2185d0'), borderRadius: 10, padding: 15, marginLeft: 5, marginRight: 5 }]} onPress={() => this.openDetails()}>
-                                    <Icon name={this.leadIsSaved()?('check'):('plus')} type='font-awesome' color='white' />
-                                    <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Save{ this.leadIsSaved() && (<>d</>)}</Text>
+                                <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: this.leadIsSaved() ? ('grey') : ('#2185d0'), borderRadius: 10, padding: 15, marginLeft: 5 }]}
+                                    onPress={
+                                        this.leadIsSaved() ?
+                                            () => this.removeSavedLead()
+                                            :
+                                            () => this.openDetails()
+                                    }>
+                                    <Icon name={this.leadIsSaved() ? ('check') : ('plus')} type='font-awesome' color='white' />
+                                    <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Save{this.leadIsSaved() && (<>d</>)}</Text>
                                 </TouchableOpacity>
                             </View>
 
@@ -426,14 +445,15 @@ export class HomeScreen extends React.Component<Props, HomeState> {
                             <ListItem key={i} bottomDivider onPress={() => this.showLeadData(lead, i)} >
                                 <ListItem.Content>
                                     <ListItem.Title style={{
-                                        fontWeight: '600', color: this.getPinColorForLead(lead)}}>{lead.firstname} {lead.lastName}</ListItem.Title>
+                                        fontWeight: '600', color: this.getPinColorForLead(lead)
+                                    }}>{lead.firstname} {lead.lastName}</ListItem.Title>
                                     <ListItem.Subtitle style={{ color: 'grey' }}>{lead.address}, {lead.city}</ListItem.Subtitle>
                                 </ListItem.Content>
                                 <ListItem.Subtitle >{this.monthsToAge65(lead.dobmon)}</ListItem.Subtitle>
                             </ListItem>
                         ))
                     }
-                    <ActionSheet ref={this.sheetRef} bounceOnOpen={true}>
+                     <ActionSheet ref={this.sheetRef} bounceOnOpen={true} onClose={() => this.setState({ savingLead: false })}>
                         <View style={{
                             borderTopStartRadius: 0, borderTopRightRadius: 0, padding: 20, backgroundColor: 'white',
                             shadowColor: 'black', shadowOpacity: 0.15, shadowRadius: 5, shadowOffset: { width: 5, height: 50 }
@@ -446,27 +466,79 @@ export class HomeScreen extends React.Component<Props, HomeState> {
                                     <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.zipCode} {this.state.activeLead?.county}</Text>
                                 </View>
                                 <View style={[{ justifyContent: 'space-evenly', flexDirection: 'column' }]}>
-                                    <Text style={{ textAlign: 'center' }}>{this.monthsToAge65(this.state.activeLead?.dobmon)}</Text>
-                                </View>
-                            </View>
-                            <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
-                                <View style={[{ flex: 4, flexDirection: 'column' }]}>
-                                    <Button buttonStyle={{ borderRadius: 10, padding: 10, marginTop: 15, marginBottom: 15 }} onPress={() => this.startNavigation(this.state.activeLead!.address + ' ' +
-                                        this.state.activeLead!.city + ' ' +
-                                        this.state.activeLead!.county + ' ' +
-                                        this.state.activeLead!.state
-                                        , this.state.activeLead!, this.state.activeIndex!)} title="Get Directions" icon={
-                                            <Icon name="car" type='font-awesome' size={18} style={{ padding: 3, marginRight: 5 }} color="white" />
-                                        } />
-                                </View>
-                                <View style={[{ flex: 2, flexDirection: 'column', marginLeft: 10 }]}>
-                                    <Button buttonStyle={{ borderRadius: 10, padding: 10, marginTop: 15, marginBottom: 15 }} onPress={() => Linking.openURL(`tel:${this.state.activeLead?.phone}`)} title="Call" icon={
-                                        <Icon name="phone" type='font-awesome' size={18} style={{ padding: 3, marginRight: 5 }} color="white" />
-                                    } />
+                                    <Text style={{ textAlign: 'center',color:'#2185d0' }}>{this.monthsToAge65(this.state.activeLead?.dobmon)}</Text>
                                 </View>
                             </View>
 
+                            <View style={[{ flexDirection: 'row', alignItems: 'center', marginTop: 20, marginBottom: 20 }]}>
+                                <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: '#2185d0', borderRadius: 10, padding: 15, marginRight: 5 }]} onPress={() => this.startNavigation(this.state.activeLead!.address + ' ' +
+                                    this.state.activeLead!.city + ' ' +
+                                    this.state.activeLead!.county + ' ' +
+                                    this.state.activeLead!.state, this.state.activeLead!, this.state.activeIndex!
+                                )}>
+                                    <Icon name="car" type='font-awesome' color='white' />
+                                    <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Navigation</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: '#2185d0', borderRadius: 10, padding: 15, marginLeft: 5, marginRight: 5 }]} onPress={() => Linking.openURL(`tel:${this.state.activeLead?.phone}`)}>
+                                    <Icon name="phone" type='font-awesome' color='white' />
+                                    <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Call</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: this.leadIsSaved() ? ('grey') : ('#2185d0'), borderRadius: 10, padding: 15, marginLeft: 5, marginRight: 5 }]}
+                                    onPress={
+                                        this.leadIsSaved() ?
+                                            () => this.removeSavedLead()
+                                            :
+                                            () => this.openDetails()
+                                    }>
+                                    <Icon name={this.leadIsSaved() ? ('check') : ('plus')} type='font-awesome' color='white' />
+                                    <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Save{this.leadIsSaved() && (<>d</>)}</Text>
+                                </TouchableOpacity>
+                            </View>
+
+
                         </View>
+                    </ActionSheet>
+                    <ActionSheet keyboardShouldPersistTaps='always' ref={this.saveLeadSheetRef} bounceOnOpen={true} onClose={() => this.setState({ savingLead: false })}>
+                        <View style={{ borderTopStartRadius: 0, borderTopRightRadius: 0, backgroundColor: 'white', shadowColor: 'black', shadowOpacity: 0.15, shadowRadius: 5, shadowOffset: { width: 5, height: 50 } }}>
+
+                            <View style={[{ flexDirection: 'row', padding: 20, }]}>
+                                <View style={{ flexDirection: 'column' }}>
+                                    <Icon name="user" type='font-awesome' color='white' backgroundColor='#2185d0' style={{ padding: 10, borderRadius: 10 }} />
+                                </View>
+                                <View style={{ flexDirection: 'column', marginLeft: 10 }}>
+                                    <Text style={styles.titleText}>{this.state.activeLead?.firstname} {this.state.activeLead?.lastName}</Text>
+                                    <Text style={{ fontSize: 16, color: 'gray', marginTop: 0 }}>{this.state.activeLead?.address}</Text>
+
+                                    <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.zipCode} {this.state.activeLead?.county}</Text>
+                                </View>
+                            </View>
+
+                            <Divider />
+
+                            <View style={{ padding: 10 }}>
+                                <Text style={{ fontSize: 18, fontWeight: '600', margin: 10 }}>Enter notes to help remind yourself of this lead</Text>
+                                <Input value={this.state.activeLeadNotes} onChange={(e) => this.setState({ activeLeadNotes: e.nativeEvent.text })}
+                                    style={{ borderWidth: 0 }}
+                                    inputContainerStyle={{ borderBottomWidth: 0 }}
+                                    inputStyle={{ margin: 0, padding: 0, height: 200, borderWidth: 0 }}
+                                    numberOfLines={10} multiline={true} placeholder='Add your notes here'></Input>
+                            </View>
+
+                            <KeyboardAvoidingView behavior='position' keyboardVerticalOffset={120} style={[{}]}>
+                                <Divider />
+                                <View style={{ flexDirection: 'row', paddingBottom: 30, paddingLeft: 20, paddingRight: 20, paddingTop: 10 }}>
+                                    <TouchableOpacity style={[{ flex: 1, flexDirection: 'column' }]} onPress={() => this.cancelSaveDetails()}>
+                                        <Text style={{ color: 'grey', marginTop: 5, fontSize: 16 }}>Cancel</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'flex-end' }]} onPress={() => this.saveLead()}>
+                                        <Text style={{ color: '#2185d0', marginTop: 5, fontSize: 16 }}>Save</Text>
+                                    </TouchableOpacity>
+
+
+                                </View>
+                            </KeyboardAvoidingView>
+                        </View>
+
                     </ActionSheet>
                 </ScrollView>
             )

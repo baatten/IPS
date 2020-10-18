@@ -14,6 +14,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import SplashScreen from './src/screens/splashScreen'
 import SignInScreen from './src/screens/signInScreen'
 import SignUpScreen from './src/screens/signUpScreen'
+import {SavedLeadsStackScreen} from './src/screens/savedLeads'
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -228,6 +229,8 @@ function HomeTabs() {
             : 'home';
         } else if (route.name === 'Settings') {
           iconName = focused ? 'gear' : 'gear';
+        } else if (route.name === 'Saved Leads') {
+          iconName = focused ? 'columns' : 'columns';
         } else { iconName = '' }
 
         // You can return any component that you like here!
@@ -236,6 +239,7 @@ function HomeTabs() {
     })}
       tabBarOptions={{ activeTintColor: '#2185d0', inactiveTintColor: 'gray' }}>
       <Tab.Screen name="Home" component={HomeStackScreen}  />
+      <Tab.Screen name="Saved Leads" component={SavedLeadsStackScreen} />
       <Tab.Screen name="Settings" component={SettingsStackScreen} />
     </Tab.Navigator>
   );
