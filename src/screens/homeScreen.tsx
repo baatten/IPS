@@ -9,6 +9,11 @@ import openMap from 'react-native-open-maps';
 import type { KmlMarker } from 'react-native-maps';
 import Popover, { PopoverPlacement } from 'react-native-popover-view';
 
+//GPS test inputs:
+//texas:                    Dallas:
+//LAT: 31.8160381           LAT: 32.7762719
+//LON: -99.5120986          LON: -96.7968559
+
 type Lead = {
     id?: number
     firstname: string
@@ -36,6 +41,16 @@ type LeadInteraction = {
     notes?: string
 }
 
+type Location = {
+    "accuracy": number,
+    "altitude": number,
+    "altitudeAccuracy": number,
+    "latitude": Number,
+    "longitude": number
+    "speed": number,
+    "timestamp": string,
+}
+
 const HomeStack = createStackNavigator();
 
 type Props = {
@@ -51,6 +66,7 @@ type HomeState = {
     activeLeadNotes?: string,
     filterDistance: number
     activeView: number
+    currentLocation?: Location
 }
 
 type HomeTitleProps = { activeView: number, updateView: any }
@@ -92,11 +108,13 @@ class LogoTitle extends React.Component<HomeTitleProps, HomeTitleState> {
 export class HomeScreen extends React.Component<Props, HomeState> {
 
     sheetRef: any;
+    mapRef: any;
     saveLeadSheetRef: any;
 
     constructor(props: Props) {
         super(props);
 
+        this.mapRef = React.createRef<MapView>();
         this.sheetRef = React.createRef<ActionSheet>();
         this.saveLeadSheetRef = React.createRef<ActionSheet>();
 
@@ -116,26 +134,33 @@ export class HomeScreen extends React.Component<Props, HomeState> {
 
                 <ListItem key={0} bottomDivider containerStyle={{ padding: 12 }}>
                     <Icon name='check' size={18} color='transparent'></Icon>
-                    <ListItem.Title>5 miles radius</ListItem.Title>
+                    <ListItem.Title onPress={() => this.changeFilterDistance(5)}>5 miles radius</ListItem.Title>
                 </ListItem>
                 <ListItem key={1} bottomDivider containerStyle={{ padding: 12 }}>
                     <Icon name='check' size={18} color='transparent'></Icon>
-                    <ListItem.Title>20 miles radius</ListItem.Title>
+                    <ListItem.Title onPress={() => this.changeFilterDistance(25)}>25 miles radius</ListItem.Title>
                 </ListItem>
                 <ListItem key={2} bottomDivider containerStyle={{ padding: 12 }}>
                     <Icon name='check' size={18}></Icon>
-                    <ListItem.Title>50 miles radius</ListItem.Title>
+                    <ListItem.Title onPress={() => this.changeFilterDistance(50)}>50 miles radius</ListItem.Title>
                 </ListItem>
             </Popover>
         })
 
         this.props.navigation.addListener('focus', (e) => {
             // Prevent default behavior
-            this.getLeads();
 
+            //this.getLeads();
             // Do something manually
             // ...
         });
+    }
+
+    changeFilterDistance(radius: number) {
+
+        console.log('changeFilterDistance');
+
+        this.setState({ filterDistance: radius }, () => this.getLeads())
     }
 
     changeView = (viewIndex: number) => {
@@ -150,37 +175,53 @@ export class HomeScreen extends React.Component<Props, HomeState> {
         openMap({ travelType: 'drive', start: 'Houston, USA', end: address, provider: 'apple' });
     }
 
-    updateFilterDistance(filter: number) {
-
-        this.setState({ filterDistance: filter }, () => this.getLeads())
-    }
-
     async getLeads() {
 
-        try {
-            const res = await fetch(GLOBALS.BASE_URL + '/api/client/getLeads', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ radius: this.state.filterDistance })
-            })
-            if (res.status === 200) {
+        console.log('getLeads');
 
-                const data: any = await res.json();
+        if (this.state.currentLocation != null) {
 
-                if (data) {
+            console.log('getting leads...');
 
-                    this.setState({ isLoading: false, leads: data.leads })
+            const location = this.state.currentLocation;
+
+            try {
+                const res = await fetch(GLOBALS.BASE_URL + '/api/client/getLeads', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ location: { lat: location.latitude, lon: location.longitude }, radius: this.state.filterDistance })
+                })
+                if (res.status === 200) {
+
+                    const data: any = await res.json();
+
+                    console.log(data)
+
+                    if (data) {
+
+                        this.setState({ isLoading: false, leads: data.leads },this.animateViewToMarkers)
+                    }
+                    else {
+
+                    }
+
+                } else {
+
                 }
-                else {
-
-                }
-
-            } else {
-
+            } catch (error) {
+                console.error('An unexpected error happened occurred:', error)
             }
-        } catch (error) {
-            console.error('An unexpected error happened occurred:', error)
         }
+    }
+
+    animateViewToMarkers(){
+
+        const markerIds:string[] = this.state.leads.map((lead:Lead) =>{
+
+            return lead.id!.toString();
+        })
+
+        this.mapRef.current.fitToSuppliedMarkers(markerIds);
     }
 
     async saveLeadInteraction(lead: Lead, index: number, action?: string) {
@@ -301,7 +342,7 @@ export class HomeScreen extends React.Component<Props, HomeState> {
 
     monthsToAge65(dob: number) {
 
-        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
         //let date:Date = new Date();
         //date.setFullYear(2020, (dob - 1));
@@ -336,14 +377,28 @@ export class HomeScreen extends React.Component<Props, HomeState> {
         return saved;
     }
 
+    userLocationChanged(e: any) {
+
+        const location: Location = e.nativeEvent.coordinate;
+
+        this.setState({ currentLocation: location }, () => {
+
+            if (this.state.leads.length < 1)
+                this.getLeads();
+        })
+
+        console.log('test:')
+        console.log(location);
+    }
+
     render() {
 
         if (this.state.activeView == 0) {
             return (
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                    <MapView initialRegion={{ latitude: 31.968599, longitude: -99.901810, latitudeDelta: 10, longitudeDelta: 10, }} style={{ flex: 1, height: 400, width: '100%', }} showsUserLocation={true}>
+                    <MapView ref={this.mapRef} showsMyLocationButton={true} onUserLocationChange={(e) => this.userLocationChanged(e)} initialRegion={{ latitude: 31.968599, longitude: -99.901810, latitudeDelta: 10, longitudeDelta: 10, }} style={{ flex: 1, height: 400, width: '100%', }} showsUserLocation={true}>
                         {this.state.leads.map((lead: Lead, index: any) => (
-                            <Marker key={index} pinColor={this.getPinColorForLead(lead)}
+                            <Marker identifier={lead.id?.toString()} key={index} pinColor={this.getPinColorForLead(lead)}
                                 onPress={() => this.showLeadData(lead, index)} coordinate={lead.marker!.coordinate} />
                         ))}
                     </MapView>
@@ -359,8 +414,8 @@ export class HomeScreen extends React.Component<Props, HomeState> {
                                     <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.city}</Text>
                                     <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.zipCode} {this.state.activeLead?.county}</Text>
                                 </View>
-                                <View style={[{flex:1, flexDirection: 'column',borderWidth:1,borderColor:'#2185d0',borderRadius:10,padding:10 }]}>
-                                    <Text style={{ textAlign: 'center',color:'#2185d0',fontSize:13 }}>{this.monthsToAge65(this.state.activeLead?.dobmon)}</Text>
+                                <View style={[{ flex: 1, flexDirection: 'column', borderWidth: 1, borderColor: '#2185d0', borderRadius: 10, padding: 10 }]}>
+                                    <Text style={{ textAlign: 'center', color: '#2185d0', fontSize: 13 }}>{this.monthsToAge65(this.state.activeLead?.dobmon)}</Text>
                                 </View>
                             </View>
 
@@ -385,11 +440,7 @@ export class HomeScreen extends React.Component<Props, HomeState> {
                                     <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Call</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: this.leadIsSaved() ? ('grey') : ('#2185d0'), borderRadius: 10, padding: 15, marginLeft: 5 }]}
-                                    onPress={
-                                        this.leadIsSaved() ?
-                                            () => this.removeSavedLead()
-                                            :
-                                            () => this.openDetails()
+                                    onPress={this.leadIsSaved() ? () => this.removeSavedLead() : () => this.openDetails()
                                     }>
                                     <Icon name={this.leadIsSaved() ? ('check') : ('plus')} type='font-awesome' color='white' />
                                     <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Save{this.leadIsSaved() && (<>d</>)}</Text>
@@ -460,7 +511,7 @@ export class HomeScreen extends React.Component<Props, HomeState> {
                             </ListItem>
                         ))
                     }
-                     <ActionSheet ref={this.sheetRef} bounceOnOpen={true} onClose={() => this.setState({ savingLead: false })}>
+                    <ActionSheet ref={this.sheetRef} bounceOnOpen={true} onClose={() => this.setState({ savingLead: false })}>
                         <View style={{
                             borderTopStartRadius: 0, borderTopRightRadius: 0, padding: 20, backgroundColor: 'white',
                             shadowColor: 'black', shadowOpacity: 0.15, shadowRadius: 5, shadowOffset: { width: 5, height: 50 }
@@ -472,8 +523,8 @@ export class HomeScreen extends React.Component<Props, HomeState> {
                                     <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.city}</Text>
                                     <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.zipCode} {this.state.activeLead?.county}</Text>
                                 </View>
-                                <View style={[{flex:1, flexDirection: 'column',borderWidth:1,borderColor:'#2185d0',borderRadius:10,padding:10 }]}>
-                                    <Text style={{ textAlign: 'center',color:'#2185d0',fontSize:13 }}>{this.monthsToAge65(this.state.activeLead?.dobmon)}</Text>
+                                <View style={[{ flex: 1, flexDirection: 'column', borderWidth: 1, borderColor: '#2185d0', borderRadius: 10, padding: 10 }]}>
+                                    <Text style={{ textAlign: 'center', color: '#2185d0', fontSize: 13 }}>{this.monthsToAge65(this.state.activeLead?.dobmon)}</Text>
                                 </View>
                             </View>
 

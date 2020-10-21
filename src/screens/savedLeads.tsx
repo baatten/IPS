@@ -374,7 +374,7 @@ export class SavedLeadsScreen extends React.Component<Props, HomeState> {
         } else
             return (
                 <View>
-                    <Text style={{ marginTop: 50, opacity: 0.5, fontSize: 18, fontWeight: '400', alignSelf: 'center' }}>You have no saved leads.</Text>
+                    <Text style={{ marginTop: 250, opacity: 0.5, fontSize: 20, fontWeight: '400', alignSelf: 'center' }}>You have no saved leads</Text>
                 </View>
             )
     }
