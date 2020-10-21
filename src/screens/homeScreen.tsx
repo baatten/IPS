@@ -199,7 +199,11 @@ export class HomeScreen extends React.Component<Props, HomeState> {
 
                     if (data) {
 
-                        this.setState({ isLoading: false, leads: data.leads },this.animateViewToMarkers)
+                        this.setState({ isLoading: false, leads: data.leads }, () => {
+
+                            if (this.state.leads.length > 0)
+                                this.animateViewToMarkers();
+                        })
                     }
                     else {
 
@@ -214,9 +218,9 @@ export class HomeScreen extends React.Component<Props, HomeState> {
         }
     }
 
-    animateViewToMarkers(){
+    animateViewToMarkers() {
 
-        const markerIds:string[] = this.state.leads.map((lead:Lead) =>{
+        const markerIds: string[] = this.state.leads.map((lead: Lead) => {
 
             return lead.id!.toString();
         })
@@ -379,16 +383,19 @@ export class HomeScreen extends React.Component<Props, HomeState> {
 
     userLocationChanged(e: any) {
 
-        const location: Location = e.nativeEvent.coordinate;
+        if (this.state.currentLocation == null) {
 
-        this.setState({ currentLocation: location }, () => {
+            const location: Location = e.nativeEvent.coordinate;
 
-            if (this.state.leads.length < 1)
-                this.getLeads();
-        })
+            this.setState({ currentLocation: location }, () => {
 
-        console.log('test:')
-        console.log(location);
+                if (this.state.leads.length < 1)
+                    this.getLeads();
+            })
+
+            console.log('test:')
+            console.log(location);
+        }
     }
 
     render() {
