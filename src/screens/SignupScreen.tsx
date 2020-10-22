@@ -35,7 +35,7 @@ type settingsState = {
     subscrptionIndex?: number
 }
 
-export default class SignUpScreen extends React.Component<Props, settingsState> {
+export class SignUpScreen extends React.Component<Props, settingsState> {
 
     static contextType = AuthContext;
     formUser: any;

@@ -122,6 +122,21 @@ export class HomeScreen extends React.Component<Props, HomeState> {
 
         this.state = { leads: leads, isLoading: true, activeView: 0, filterDistance: 50, savingLead: false };
 
+        
+        
+        
+
+        this.props.navigation.addListener('focus', (e) => {
+            // Prevent default behavior
+
+            //this.getLeads();
+            // Do something manually
+            // ...
+        });
+    }
+
+    componentDidMount() {
+        
         this.props.navigation.setOptions({
             headerShown: true,
             headerTitle: () => <LogoTitle activeView={this.state.activeView} updateView={this.changeView} />,
@@ -146,15 +161,7 @@ export class HomeScreen extends React.Component<Props, HomeState> {
                 </ListItem>
             </Popover>
         })
-
-        this.props.navigation.addListener('focus', (e) => {
-            // Prevent default behavior
-
-            //this.getLeads();
-            // Do something manually
-            // ...
-        });
-    }
+      }
 
     changeFilterDistance(radius: number) {
 

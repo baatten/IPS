@@ -44,6 +44,13 @@ export class SettingsScreen extends React.Component<Props, settingsState> {
         this.form = React.createRef();
         this.PasswordForm = React.createRef();
 
+
+        this.state = { user: { name: '', surname: '', address: '', city: '', state: '', zipCode: '', email: '',phone:'' }, isLoading: false, accountDetailsIsValid: true, modalVisible: false }
+        this.getUser();
+    }
+
+    componentDidMount(){
+
         this.props.navigation.setOptions({
             headerShown: true,
             headerTintColor: '#fff',
@@ -52,9 +59,6 @@ export class SettingsScreen extends React.Component<Props, settingsState> {
                 <Button title='Sign out' onPress={() => this.signout()} style={{ paddingLeft: 5 }} type='clear' titleStyle={{ color: 'white' }} />
             )
         })
-
-        this.state = { user: { name: '', surname: '', address: '', city: '', state: '', zipCode: '', email: '',phone:'' }, isLoading: false, accountDetailsIsValid: true, modalVisible: false }
-        this.getUser();
     }
 
     signout() {

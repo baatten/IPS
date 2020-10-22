@@ -68,6 +68,17 @@ export class SavedLeadsScreen extends React.Component<Props, HomeState> {
 
         this.state = { leads: leads, isLoading: true, activeView: 0, filterDistance: 50, savingLead: false };
 
+        this.props.navigation.addListener('focus', (e) => {
+            // Prevent default behavior
+            this.getLeads();
+
+            // Do something manually
+            // ...
+        });
+    }
+
+    componentDidMount(){
+
         this.props.navigation.setOptions({
             headerShown: true,
             headerTitle: 'Saved Leads',
@@ -92,14 +103,6 @@ export class SavedLeadsScreen extends React.Component<Props, HomeState> {
                 </ListItem>
             </Popover>
         })
-
-        this.props.navigation.addListener('focus', (e) => {
-            // Prevent default behavior
-            this.getLeads();
-
-            // Do something manually
-            // ...
-        });
     }
 
     changeView = (viewIndex: number) => {

@@ -13,8 +13,8 @@ import { stateConditionString } from './src/components/utils/stateCondition';
 import { createStackNavigator } from '@react-navigation/stack';
 import SplashScreen from './src/screens/splashScreen'
 import SignInScreen from './src/screens/signInScreen'
-import SignUpScreen from './src/screens/SignupScreen'
-import {SavedLeadsStackScreen} from './src/screens/savedLeads'
+import { SignUpScreen } from './src/screens/signUpScreen'
+import { SavedLeadsStackScreen } from './src/screens/savedLeads'
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -234,11 +234,11 @@ function HomeTabs() {
         } else { iconName = '' }
 
         // You can return any component that you like here!
-        return <Icon name={iconName} size={size} color={color} style={{padding:0,margin:-15}}/>;
+        return <Icon name={iconName} size={size} color={color} style={{ padding: 0, margin: -15 }} />;
       },
     })}
       tabBarOptions={{ activeTintColor: '#2185d0', inactiveTintColor: 'gray' }}>
-      <Tab.Screen name="Home" component={HomeStackScreen}  />
+      <Tab.Screen name="Home" component={HomeStackScreen} />
       <Tab.Screen name="Saved Leads" component={SavedLeadsStackScreen} />
       <Tab.Screen name="Settings" component={SettingsStackScreen} />
     </Tab.Navigator>
