@@ -8,6 +8,7 @@ import ActionSheet from "react-native-actions-sheet";
 import openMap from 'react-native-open-maps';
 import type { KmlMarker } from 'react-native-maps';
 import Popover, { PopoverPlacement } from 'react-native-popover-view';
+import { boolean } from 'yup';
 
 //GPS test inputs:
 //texas:                    Dallas:                 Austin
@@ -66,7 +67,8 @@ type HomeState = {
     activeLeadNotes?: string,
     filterDistance: number
     activeView: number
-    currentLocation?: Location
+    currentLocation?: Location,
+    showRadiusFilter: boolean
 }
 
 type HomeTitleProps = { activeView: number, updateView: any }
@@ -105,10 +107,49 @@ class LogoTitle extends React.Component<HomeTitleProps, HomeTitleState> {
     }
 }
 
+type FilterDropDownProps = { radius: number, updateView: any }
+type FilterDropDownState = { radius: number }
+
+class FilterDropDown extends React.Component<FilterDropDownProps, FilterDropDownState> {
+
+    constructor(props: FilterDropDownProps) {
+        super(props)
+
+        this.state = { radius: this.props.radius };
+        this.updateView = this.updateView.bind(this)
+    }
+
+    updateView(radius: number) {
+
+        this.setState({ radius: radius }, () => this.props.updateView(radius))
+    }
+
+    render() {
+
+        return (
+            <>
+                <ListItem key={0} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateView(10)}>
+                    <ListItem.Title>10 miles radius</ListItem.Title>
+                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon={null} checked={this.state.radius == 10} />
+                </ListItem>
+                <ListItem key={1} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateView(25)}>
+                    <ListItem.Title>25 miles radius</ListItem.Title>
+                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon={null} checked={this.state.radius == 25} />
+                </ListItem>
+                <ListItem key={2} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateView(50)}>
+                    <ListItem.Title>50 miles radius</ListItem.Title>
+                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon={null} checked={this.state.radius == 50} />
+                </ListItem>
+            </>
+        );
+    }
+}
+
 export class HomeScreen extends React.Component<Props, HomeState> {
 
     sheetRef: any;
     mapRef: any;
+    filterPopover: any;
     saveLeadSheetRef: any;
 
     constructor(props: Props) {
@@ -117,18 +158,11 @@ export class HomeScreen extends React.Component<Props, HomeState> {
         this.mapRef = React.createRef<MapView>();
         this.sheetRef = React.createRef<ActionSheet>();
         this.saveLeadSheetRef = React.createRef<ActionSheet>();
+        this.filterPopover = React.createRef<Popover>();
 
         const leads: Lead[] = [];
 
-        this.state = { leads: leads, isLoading: true, activeView: 0, filterDistance: 5, savingLead: false };
-
-        this.props.navigation.addListener('focus', (e) => {
-            // Prevent default behavior
-
-            //this.getLeads();
-            // Do something manually
-            // ...
-        });
+        this.state = { leads: leads, isLoading: true, activeView: 0, filterDistance: 10, savingLead: false, showRadiusFilter: false };
     }
 
     componentDidMount() {
@@ -138,37 +172,18 @@ export class HomeScreen extends React.Component<Props, HomeState> {
             headerTitle: () => <LogoTitle activeView={this.state.activeView} updateView={this.changeView} />,
             headerTintColor: '#fff',
             headerStyle: { backgroundColor: '#2185d0' },
-            headerRight: () => <Popover popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}
-                from={(
-                    <Button icon={<Icon name='map-marked-alt' color='white' size={18} type='font-awesome-5' style={{ color: 'white' }} />} buttonStyle={{ marginRight: 5, backgroundColor: 'transparent' }} />
-                )}>
-
-                <ListItem key={0} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.changeFilterDistance(5)}>
-                    <ListItem.Title>5 miles radius</ListItem.Title>
-                    <ListItem.CheckBox checkedIcon='check' checked={this.state.filterDistance == 5}/>
-                </ListItem>
-                <ListItem key={1} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.changeFilterDistance(25)}>
-                    <ListItem.Title>25 miles radius</ListItem.Title>
-                    <ListItem.CheckBox checkedIcon='check' checked={this.state.filterDistance == 25}/>
-                </ListItem>
-                <ListItem key={2} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.changeFilterDistance(50)}>
-                    <ListItem.Title>50 miles radius</ListItem.Title>
-                    <ListItem.CheckBox checkedIcon='check' checked={this.getRadius() == 50}/>
-                </ListItem>
-            </Popover>
+            headerRight: () => <Button ref={this.filterPopover} onPress={() => this.setState({ showRadiusFilter: true })} icon={<Icon name='map-marked-alt' color='white' size={18} type='font-awesome-5' style={{ color: 'white' }} />} buttonStyle={{ marginRight: 5, backgroundColor: 'transparent' }} />
         })
-      }
-
-    getRadius(){
-        return this.state.filterDistance;
     }
 
     changeFilterDistance(radius: number) {
 
         console.log('changeFilterDistance');
-
-        this.setState({ filterDistance: 5 })
-        //this.setState({ filterDistance: radius }, () => this.getLeads())
+        
+        this.setState({ filterDistance: radius }, () => {
+            this.setState({ showRadiusFilter: false })
+            this.getLeads()
+        })
     }
 
     changeView = (viewIndex: number) => {
@@ -411,6 +426,9 @@ export class HomeScreen extends React.Component<Props, HomeState> {
         if (this.state.activeView == 0) {
             return (
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                    <Popover onRequestClose={() => this.setState({ showRadiusFilter: false })} from={this.filterPopover} isVisible={this.state.showRadiusFilter} popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}>
+                        <FilterDropDown radius={this.state.filterDistance} updateView={(radius: number) => this.changeFilterDistance(radius)} />
+                    </Popover>
                     <MapView ref={this.mapRef} showsMyLocationButton={true} onUserLocationChange={(e) => this.userLocationChanged(e)} initialRegion={{ latitude: 31.968599, longitude: -99.901810, latitudeDelta: 10, longitudeDelta: 10, }} style={{ flex: 1, height: 400, width: '100%', }} showsUserLocation={true}>
                         {this.state.leads.map((lead: Lead, index: any) => (
                             <Marker identifier={lead.id?.toString()} key={index} pinColor={this.getPinColorForLead(lead)}
