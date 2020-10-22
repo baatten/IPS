@@ -30,7 +30,8 @@ type Lead = {
     latitude: number,
     longitude: number,
     marker?: KmlMarker,
-    LeadInteraction?: LeadInteraction[]
+    LeadInteraction?: LeadInteraction[],
+    distance:number
 }
 
 type LeadInteraction = {
@@ -179,7 +180,7 @@ export class HomeScreen extends React.Component<Props, HomeState> {
     changeFilterDistance(radius: number) {
 
         console.log('changeFilterDistance');
-        
+
         this.setState({ filterDistance: radius }, () => {
             this.setState({ showRadiusFilter: false })
             this.getLeads()
@@ -443,6 +444,8 @@ export class HomeScreen extends React.Component<Props, HomeState> {
                             <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
                                 <View style={[{ flex: 4, flexDirection: 'column' }]}>
                                     <Text style={styles.titleText}>{this.state.activeLead?.firstname} {this.state.activeLead?.lastName}</Text>
+                                    <Text style={{ fontSize: 16, color: 'gray', marginTop: 1 }}>{this.state.activeLead?.distance.toFixed(1)} miles away</Text>
+                                    <Text style={{ fontSize: 18, fontWeight: '600', marginTop: 10 }}>Address</Text>
                                     <Text style={{ fontSize: 16, color: 'gray', marginTop: 5 }}>{this.state.activeLead?.address}</Text>
                                     <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.city}</Text>
                                     <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.zipCode} {this.state.activeLead?.county}</Text>

@@ -24,7 +24,8 @@ type Lead = {
     latitude: number,
     longitude: number,
     marker?: KmlMarker,
-    LeadInteraction?: LeadInteraction[]
+    LeadInteraction?: LeadInteraction[],
+    distance:number
 }
 
 type LeadInteraction = {
@@ -83,25 +84,7 @@ export class SavedLeadsScreen extends React.Component<Props, HomeState> {
             headerShown: true,
             headerTitle: 'Saved Leads',
             headerTintColor: '#fff',
-            headerStyle: { backgroundColor: '#2185d0' },
-            headerRight: () => <Popover popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}
-                from={(
-                    <Button icon={<Icon name='filter' color='white' size={18} type='font-awesome-5' style={{ color: 'white' }} />} buttonStyle={{ marginRight: 5, backgroundColor: 'transparent' }} />
-                )}>
-
-                <ListItem key={0} bottomDivider containerStyle={{ padding: 12 }}>
-                    <Icon name='check' size={18} color='transparent'></Icon>
-                    <ListItem.Title>5 miles radius</ListItem.Title>
-                </ListItem>
-                <ListItem key={1} bottomDivider containerStyle={{ padding: 12 }}>
-                    <Icon name='check' size={18} color='transparent'></Icon>
-                    <ListItem.Title>20 miles radius</ListItem.Title>
-                </ListItem>
-                <ListItem key={2} bottomDivider containerStyle={{ padding: 12 }}>
-                    <Icon name='check' size={18}></Icon>
-                    <ListItem.Title>50 miles radius</ListItem.Title>
-                </ListItem>
-            </Popover>
+            headerStyle: { backgroundColor: '#2185d0' }
         })
     }
 
@@ -336,6 +319,8 @@ export class SavedLeadsScreen extends React.Component<Props, HomeState> {
                             <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
                                 <View style={[{ flex: 4, flexDirection: 'column' }]}>
                                     <Text style={styles.titleText}>{this.state.activeLead?.firstname} {this.state.activeLead?.lastName}</Text>
+                                    <Text style={{ fontSize: 16, color: 'gray', marginTop: 1 }}>{this.state.activeLead?.distance.toFixed(1)} miles away</Text>
+                                    <Text style={{ fontSize: 18, fontWeight: '600', marginTop: 10 }}>Address</Text>
                                     <Text style={{ fontSize: 16, color: 'gray', marginTop: 5 }}>{this.state.activeLead?.address}</Text>
                                     <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.city}</Text>
                                     <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.zipCode} {this.state.activeLead?.county}</Text>
