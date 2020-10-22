@@ -10,11 +10,6 @@ import type { KmlMarker } from 'react-native-maps';
 import Popover, { PopoverPlacement } from 'react-native-popover-view';
 import { boolean } from 'yup';
 
-//GPS test inputs:
-//texas:                    Dallas:                 Austin
-//LAT: 31.8160381           LAT: 32.7762719         30.267153
-//LON: -99.5120986          LON: -96.7968559        -97.7430608
-
 type Lead = {
     id?: number
     firstname: string
@@ -31,7 +26,7 @@ type Lead = {
     longitude: number,
     marker?: KmlMarker,
     LeadInteraction?: LeadInteraction[],
-    distance:number
+    distance: number
 }
 
 type LeadInteraction = {
@@ -44,13 +39,13 @@ type LeadInteraction = {
 }
 
 type Location = {
-    "accuracy": number,
-    "altitude": number,
-    "altitudeAccuracy": number,
-    "latitude": Number,
-    "longitude": number
-    "speed": number,
-    "timestamp": string,
+    accuracy?: number,
+    altitude?: number,
+    altitudeAccuracy?: number,
+    latitude: Number,
+    longitude: number
+    speed?: number,
+    timestamp?: string,
 }
 
 const HomeStack = createStackNavigator();
@@ -207,6 +202,12 @@ export class HomeScreen extends React.Component<Props, HomeState> {
 
             console.log('getting leads...');
 
+            //GPS test inputs:
+            //texas:                    Dallas:                 Austin
+            //LAT: 31.8160381           LAT: 32.7762719         30.267153
+            //LON: -99.5120986          LON: -96.7968559        -97.7430608
+
+            //const location:Location = {latitude: 30.267153,longitude: -97.7430608}
             const location = this.state.currentLocation;
 
             try {
