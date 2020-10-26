@@ -6,7 +6,7 @@ import { StackNavigationProp, createStackNavigator } from '@react-navigation/sta
 import MapView, { Marker } from 'react-native-maps';
 import ActionSheet from "react-native-actions-sheet";
 import openMap from 'react-native-open-maps';
-import type { KmlMarker } from 'react-native-maps';
+import type { KmlMarker, Camera } from 'react-native-maps';
 import Popover, { PopoverPlacement } from 'react-native-popover-view';
 
 type Lead = {
@@ -69,10 +69,11 @@ class LogoTitle extends React.Component<HomeTitleProps, HomeTitleState> {
         const buttons = ['Map', 'List']
 
         return (
-            <ButtonGroup containerStyle={{ width: 200, height: 28, backgroundColor: 'transparent', borderRadius: 6 }}
+            <ButtonGroup containerStyle={{ width: 200, height: 28, backgroundColor: 'transparent', borderRadius: 6,borderColor:'white' }}
                 textStyle={{ color: 'white', fontSize: 14 }}
                 innerBorderStyle={{ color: 'transparent' }}
                 buttonStyle={{ borderColor: 'white' }}
+
                 selectedButtonStyle={{ backgroundColor: 'white' }}
                 selectedTextStyle={{ color: '#2185d0' }}
                 onPress={this.updateView}
@@ -177,7 +178,8 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
     changeView = (viewIndex: number) => {
 
-        this.setState({ activeView: viewIndex });
+        
+        this.setState({ activeView: viewIndex },() => {if(viewIndex == 0)this.animateViewToMarkers()});
     }
 
     async startNavigation(address: string, lead: Lead, index: number) {
@@ -195,8 +197,8 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
             //LAT: 31.8160381           LAT: 32.7762719         30.267153
             //LON: -99.5120986          LON: -96.7968559        -97.7430608
 
-            //const location:Location = {latitude: 30.267153,longitude: -97.7430608}
-            const location = this.state.currentLocation;
+            const location: Location = { latitude: 30.267153, longitude: -97.7430608 }
+            //const location = this.state.currentLocation;
 
             this.setState({ isLoading: true })
 
@@ -207,7 +209,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                     body: JSON.stringify({ location: { lat: location.latitude, lon: location.longitude }, radius: this.state.filterDistance })
                 })
 
-                this.setState({isLoading: false})
+                this.setState({ isLoading: false })
 
                 if (res.status === 200) {
 
@@ -236,12 +238,14 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
     animateViewToMarkers() {
 
+        if(this.state?.leads != undefined && this.state.leads.length > 0){
         const markerIds: string[] = this.state.leads.map((lead: Lead) => {
 
             return lead.id!.toString();
         })
 
         this.mapRef.current.fitToSuppliedMarkers(markerIds);
+    }
     }
 
     async saveLeadInteraction(lead: Lead, index: number, action?: string) {
@@ -292,7 +296,16 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         return;
     }
 
-    showLeadData(lead: Lead, index: number) {
+    async showLeadData(lead: Lead, index: number) {
+
+        const camera: Camera = await this.mapRef.current.getCamera();
+
+        camera.center = {
+            latitude: lead.latitude,
+            longitude: lead.longitude,
+        };
+
+        this.mapRef.current.animateCamera(camera);
 
         this.setState({ activeLead: lead, activeIndex: index }, this.sheetRef.current?.setModalVisible())
 
@@ -409,10 +422,11 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                     this.getLeads();
             })
 
-            console.log('test:')
+            console.log('location:')
             console.log(location);
         }
     }
+
 
     render() {
 
@@ -420,22 +434,22 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
             return (
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                     {this.state.isLoading && (
-                    <View style={{ top: 25, position: 'absolute', zIndex: 99999, backgroundColor: 'white', paddingLeft:25,paddingRight:25,paddingBottom:10,paddingTop:10, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 5 }}>
-                        <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
-                            <View style={[{ flexDirection: 'column' }]}>
-                                <ActivityIndicator color="black" style={{ marginRight: 10 }} />
-                            </View>
-                            <View style={[{ flexDirection: 'column' }]}>
-                                <Text>Loading data...</Text>
-                            </View>
+                        <View style={{ top: 25, position: 'absolute', zIndex: 99999, backgroundColor: 'white', paddingLeft: 25, paddingRight: 25, paddingBottom: 10, paddingTop: 10, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 5 }}>
+                            <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
+                                <View style={[{ flexDirection: 'column' }]}>
+                                    <ActivityIndicator color="black" style={{ marginRight: 10 }} />
+                                </View>
+                                <View style={[{ flexDirection: 'column' }]}>
+                                    <Text>Loading data...</Text>
+                                </View>
 
+                            </View>
                         </View>
-                    </View>
                     )}
-                    <Popover onRequestClose={() => this.setState({ showRadiusFilter: false })} from={this.filterPopover} isVisible={this.state.showRadiusFilter} popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}>
+                    <Popover arrowShift={0} onRequestClose={() => this.setState({ showRadiusFilter: false })} from={this.filterPopover} isVisible={this.state.showRadiusFilter} popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}>
                         <FilterDropDown radius={this.state.filterDistance} updateView={(radius: number) => this.changeFilterDistance(radius)} />
                     </Popover>
-                    <MapView ref={this.mapRef} showsMyLocationButton={true} onUserLocationChange={(e) => this.userLocationChanged(e)} initialRegion={{ latitude: 31.968599, longitude: -99.901810, latitudeDelta: 10, longitudeDelta: 10, }} style={{ flex: 1, height: 400, width: '100%' }} showsUserLocation={true}>
+                    <MapView onMapReady={this.animateViewToMarkers} ref={this.mapRef} showsMyLocationButton={true} onUserLocationChange={(e) => this.userLocationChanged(e)} initialRegion={{ latitude: 31.968599, longitude: -99.901810, latitudeDelta: 10, longitudeDelta: 10, }} style={{ flex: 1, height: 400, width: '100%' }} showsUserLocation={true}>
                         {this.state.leads.map((lead: Lead, index: any) => (
                             <Marker identifier={lead.id?.toString()} key={index} pinColor={this.getPinColorForLead(lead)}
                                 onPress={() => this.showLeadData(lead, index)} coordinate={lead.marker!.coordinate} />
