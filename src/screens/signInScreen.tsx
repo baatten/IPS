@@ -70,12 +70,11 @@ export default function SignInScreen() {
                         onChangeText={setPassword}
                         secureTextEntry={true} autoCapitalize='none'
                     />
-                    <Button buttonStyle={{ margin: 0, marginTop: 5, padding: 15, borderRadius: 10 }} title="Sign in" onPress={() => handleSignIn()} />
+                    <Button buttonStyle={{ margin: 0, marginTop: 5, padding: 15, borderRadius: 10 }} title="Sign in" onPress={() => handleSignIn()}/>
                     <Text style={{ fontSize: 16, color: 'white', alignSelf: 'center', marginTop: 10 }} onPress={() => signUp()}>
                         No Account? Sign Up
                 </Text>
                 </View>
-
 
             </KeyboardAvoidingView>
         </ImageBackground>

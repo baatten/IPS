@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect, useMemo } from 'react';
+import React, { useReducer, useEffect, useMemo, useState } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-community/async-storage';
 import GLOBALS from './src/globals';
@@ -35,7 +35,7 @@ export default function App() {
         password = await AsyncStorage.getItem('password');
       } catch (e) {
         // Restoring token failed
-        console.log('Restoring token failed');
+
       }
 
       if (username !== undefined && password !== undefined) {
@@ -54,8 +54,6 @@ export default function App() {
 
             if (responseData.done) {
 
-              console.log('response data: ' + responseData)
-
               state.userToken = responseData.token;
               authContextValue.user = responseData.token;
 
@@ -63,7 +61,6 @@ export default function App() {
             }
             else {
               dispatch({ type: 'TO_SIGNIN_PAGE' });
-              console.log('TO_SIGNIN_PAGE')
             }
           } else {
             //this.setState({loading:false,error:true})
@@ -77,14 +74,12 @@ export default function App() {
         }
       } else {
         dispatch({ type: 'TO_SIGNIN_PAGE' });
-        console.log('TO_SIGNIN_PAGE')
       }
 
       // After restoring token, we may need to validate it in production apps
       // This will switch to the App screen or Auth screen and this loading
       // screen will be unmounted and thrown away.
       dispatch({ type: 'RESTORED_TOKEN' });
-      console.log('RESTORED_TOKEN');
     };
     bootstrapAsync();
   }, []);
@@ -109,9 +104,6 @@ export default function App() {
 
             if (responseData.done) {
 
-              //console.log(responseData)
-
-              //state.userToken = data.token;
               authContextValue.user = responseData.token;
 
               await AsyncStorage.setItem('username', data.emailAddress);
@@ -141,14 +133,11 @@ export default function App() {
     },
     signOut: async (data: any) => {
 
-      console.log('sign out');
-
       await AsyncStorage.removeItem('username');
       await AsyncStorage.removeItem('password');
 
       dispatch({ type: 'SIGN_OUT' });
     },
-
     signUp: async (data: any) => {
       if (
         data &&

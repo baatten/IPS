@@ -1,13 +1,11 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView, Text, Linking, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
-import { Button, ButtonGroup, ListItem, Icon, Input, Divider } from 'react-native-elements';
+import { StyleSheet, View, ScrollView, Text, Linking, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { ListItem, Icon } from 'react-native-elements';
 import GLOBALS from '../globals';
 import { StackNavigationProp, createStackNavigator } from '@react-navigation/stack';
-import MapView, { Marker } from 'react-native-maps';
 import ActionSheet from "react-native-actions-sheet";
 import openMap from 'react-native-open-maps';
 import type { KmlMarker } from 'react-native-maps';
-import Popover, { PopoverPlacement } from 'react-native-popover-view';
 
 type Lead = {
     id?: number
@@ -25,7 +23,7 @@ type Lead = {
     longitude: number,
     marker?: KmlMarker,
     LeadInteraction?: LeadInteraction[],
-    distance:number
+    distance: number
 }
 
 type LeadInteraction = {
@@ -39,11 +37,11 @@ type LeadInteraction = {
 
 const HomeStack = createStackNavigator();
 
-type Props = {
+type SaveLeadProps = {
     navigation: StackNavigationProp<{}>;
 };
 
-type HomeState = {
+type SaveLeadState = {
     leads: Lead[],
     isLoading: boolean,
     activeLead?: Lead,
@@ -54,12 +52,12 @@ type HomeState = {
     activeView: number
 }
 
-export class SavedLeadsScreen extends React.Component<Props, HomeState> {
+export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadState> {
 
     sheetRef: any;
     saveLeadSheetRef: any;
 
-    constructor(props: Props) {
+    constructor(props: SaveLeadProps) {
         super(props);
 
         this.sheetRef = React.createRef<ActionSheet>();
@@ -68,23 +66,26 @@ export class SavedLeadsScreen extends React.Component<Props, HomeState> {
         const leads: Lead[] = [];
 
         this.state = { leads: leads, isLoading: true, activeView: 0, filterDistance: 50, savingLead: false };
-
-        this.props.navigation.addListener('focus', (e) => {
-            // Prevent default behavior
-            this.getLeads();
-
-            // Do something manually
-            // ...
-        });
     }
 
-    componentDidMount(){
+    componentDidMount() {
 
         this.props.navigation.setOptions({
             headerShown: true,
             headerTitle: 'Saved Leads',
             headerTintColor: '#fff',
             headerStyle: { backgroundColor: '#2185d0' }
+        })
+
+        this.props.navigation.addListener('focus', (e) => {
+            
+            this.getLeads();
+        });
+    }
+
+    componentWillUnmount(){
+        this.props.navigation.removeListener('focus', () => {
+            
         })
     }
 
@@ -107,12 +108,17 @@ export class SavedLeadsScreen extends React.Component<Props, HomeState> {
 
     async getLeads() {
 
+        this.setState({ isLoading: true })
+        
         try {
             const res = await fetch(GLOBALS.BASE_URL + '/api/client/getSavedLeads', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ radius: this.state.filterDistance })
             })
+
+            this.setState({ isLoading: false })
+
             if (res.status === 200) {
 
                 const data: any = await res.json();
@@ -242,7 +248,7 @@ export class SavedLeadsScreen extends React.Component<Props, HomeState> {
 
     monthsToAge65(dob: number) {
 
-        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
         //let date:Date = new Date();
         //date.setFullYear(2020, (dob - 1));
@@ -299,6 +305,19 @@ export class SavedLeadsScreen extends React.Component<Props, HomeState> {
         if (this.state.leads != undefined && this.state.leads.length > 0) {
             return (
                 <ScrollView>
+                    {this.state.isLoading && (
+                        <View style={{ top: 25, alignSelf: 'center', position: 'absolute', zIndex: 99999, backgroundColor: 'white', paddingLeft: 25, paddingRight: 25, paddingBottom: 10, paddingTop: 10, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 5 }}>
+                            <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
+                                <View style={[{ flexDirection: 'column' }]}>
+                                    <ActivityIndicator color="black" style={{ marginRight: 10 }} />
+                                </View>
+                                <View style={[{ flexDirection: 'column' }]}>
+                                    <Text>Loading...</Text>
+                                </View>
+
+                            </View>
+                        </View>
+                    )}
                     {
                         this.state.leads.map((lead: Lead, i) => (
                             <ListItem key={i} bottomDivider onPress={() => this.showLeadData(lead, i)} >
@@ -319,14 +338,13 @@ export class SavedLeadsScreen extends React.Component<Props, HomeState> {
                             <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
                                 <View style={[{ flex: 4, flexDirection: 'column' }]}>
                                     <Text style={styles.titleText}>{this.state.activeLead?.firstname} {this.state.activeLead?.lastName}</Text>
-                                    <Text style={{ fontSize: 16, color: 'gray', marginTop: 1 }}>{this.state.activeLead?.distance.toFixed(1)} miles away</Text>
                                     <Text style={{ fontSize: 18, fontWeight: '600', marginTop: 10 }}>Address</Text>
                                     <Text style={{ fontSize: 16, color: 'gray', marginTop: 5 }}>{this.state.activeLead?.address}</Text>
                                     <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.city}</Text>
                                     <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.zipCode} {this.state.activeLead?.county}</Text>
                                 </View>
-                                <View style={[{flex:1, flexDirection: 'column',borderWidth:1,borderColor:'#2185d0',borderRadius:10,padding:10 }]}>
-                                    <Text style={{ textAlign: 'center',color:'#2185d0',fontSize:13 }}>{this.monthsToAge65(this.state.activeLead?.dobmon)}</Text>
+                                <View style={[{ flex: 1, flexDirection: 'column', borderWidth: 1, borderColor: '#2185d0', borderRadius: 10, padding: 10 }]}>
+                                    <Text style={{ textAlign: 'center', color: '#2185d0', fontSize: 13 }}>{this.monthsToAge65(this.state.activeLead?.dobmon)}</Text>
                                 </View>
                             </View>
 
@@ -359,9 +377,42 @@ export class SavedLeadsScreen extends React.Component<Props, HomeState> {
                     </ActionSheet>
                 </ScrollView>
             )
-        } else
+        }
+        else if (this.state.isLoading && this.state.leads.length == 0)
             return (
                 <View>
+                    {this.state.isLoading && (
+                        <View style={{ top: 25, alignSelf: 'center', position: 'absolute', zIndex: 99999, backgroundColor: 'white', paddingLeft: 25, paddingRight: 25, paddingBottom: 10, paddingTop: 10, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 5 }}>
+                            <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
+                                <View style={[{ flexDirection: 'column' }]}>
+                                    <ActivityIndicator color="black" style={{ marginRight: 10 }} />
+                                </View>
+                                <View style={[{ flexDirection: 'column' }]}>
+                                    <Text>Loading...</Text>
+                                </View>
+
+                            </View>
+                        </View>
+                    )}
+                </View>
+            )
+
+        else
+            return (
+                <View>
+                    {this.state.isLoading && (
+                        <View style={{ top: 25, alignSelf: 'center', position: 'absolute', zIndex: 99999, backgroundColor: 'white', padding: 15, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 5 }}>
+                            <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
+                                <View style={[{ flexDirection: 'column' }]}>
+                                    <ActivityIndicator color="black" style={{ marginRight: 10 }} />
+                                </View>
+                                <View style={[{ flexDirection: 'column' }]}>
+                                    <Text>Loading...</Text>
+                                </View>
+
+                            </View>
+                        </View>
+                    )}
                     <Text style={{ marginTop: 250, opacity: 0.5, fontSize: 20, fontWeight: '400', alignSelf: 'center' }}>You have no saved leads</Text>
                 </View>
             )

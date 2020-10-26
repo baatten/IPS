@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView, Text, Linking, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, View, ScrollView, Text, Linking, TouchableOpacity, KeyboardAvoidingView, ActivityIndicator } from 'react-native';
 import { Button, ButtonGroup, ListItem, Icon, Input, Divider } from 'react-native-elements';
 import GLOBALS from '../globals';
 import { StackNavigationProp, createStackNavigator } from '@react-navigation/stack';
@@ -8,7 +8,6 @@ import ActionSheet from "react-native-actions-sheet";
 import openMap from 'react-native-open-maps';
 import type { KmlMarker } from 'react-native-maps';
 import Popover, { PopoverPlacement } from 'react-native-popover-view';
-import { boolean } from 'yup';
 
 type Lead = {
     id?: number
@@ -48,28 +47,8 @@ type Location = {
     timestamp?: string,
 }
 
-const HomeStack = createStackNavigator();
-
-type Props = {
-    navigation: StackNavigationProp<{}>;
-};
-
-type HomeState = {
-    leads: Lead[],
-    isLoading: boolean,
-    activeLead?: Lead,
-    activeIndex?: number,
-    savingLead: boolean,
-    activeLeadNotes?: string,
-    filterDistance: number
-    activeView: number
-    currentLocation?: Location,
-    showRadiusFilter: boolean
-}
-
 type HomeTitleProps = { activeView: number, updateView: any }
 type HomeTitleState = { activeView: number }
-
 class LogoTitle extends React.Component<HomeTitleProps, HomeTitleState> {
 
     constructor(props: HomeTitleProps) {
@@ -105,7 +84,6 @@ class LogoTitle extends React.Component<HomeTitleProps, HomeTitleState> {
 
 type FilterDropDownProps = { radius: number, updateView: any }
 type FilterDropDownState = { radius: number }
-
 class FilterDropDown extends React.Component<FilterDropDownProps, FilterDropDownState> {
 
     constructor(props: FilterDropDownProps) {
@@ -141,14 +119,31 @@ class FilterDropDown extends React.Component<FilterDropDownProps, FilterDropDown
     }
 }
 
-export class HomeScreen extends React.Component<Props, HomeState> {
+const HomeStack = createStackNavigator();
+type HomeProps = {
+    navigation: StackNavigationProp<{}>;
+};
+
+type HomeState = {
+    leads: Lead[],
+    isLoading: boolean,
+    activeLead?: Lead,
+    activeIndex?: number,
+    savingLead: boolean,
+    activeLeadNotes?: string,
+    filterDistance: number
+    activeView: number
+    currentLocation?: Location,
+    showRadiusFilter: boolean
+}
+export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
     sheetRef: any;
     mapRef: any;
     filterPopover: any;
     saveLeadSheetRef: any;
 
-    constructor(props: Props) {
+    constructor(props: HomeProps) {
         super(props);
 
         this.mapRef = React.createRef<MapView>();
@@ -174,8 +169,6 @@ export class HomeScreen extends React.Component<Props, HomeState> {
 
     changeFilterDistance(radius: number) {
 
-        console.log('changeFilterDistance');
-
         this.setState({ filterDistance: radius }, () => {
             this.setState({ showRadiusFilter: false })
             this.getLeads()
@@ -196,12 +189,7 @@ export class HomeScreen extends React.Component<Props, HomeState> {
 
     async getLeads() {
 
-        console.log('getLeads');
-
         if (this.state.currentLocation != null) {
-
-            console.log('getting leads...');
-
             //GPS test inputs:
             //texas:                    Dallas:                 Austin
             //LAT: 31.8160381           LAT: 32.7762719         30.267153
@@ -210,21 +198,24 @@ export class HomeScreen extends React.Component<Props, HomeState> {
             //const location:Location = {latitude: 30.267153,longitude: -97.7430608}
             const location = this.state.currentLocation;
 
+            this.setState({ isLoading: true })
+
             try {
                 const res = await fetch(GLOBALS.BASE_URL + '/api/client/getLeads', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ location: { lat: location.latitude, lon: location.longitude }, radius: this.state.filterDistance })
                 })
+
+                this.setState({isLoading: false})
+
                 if (res.status === 200) {
 
                     const data: any = await res.json();
 
-                    console.log(data)
-
                     if (data) {
 
-                        this.setState({ isLoading: false, leads: data.leads }, () => {
+                        this.setState({ leads: data.leads }, () => {
 
                             if (this.state.leads.length > 0)
                                 this.animateViewToMarkers();
@@ -428,10 +419,23 @@ export class HomeScreen extends React.Component<Props, HomeState> {
         if (this.state.activeView == 0) {
             return (
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                    {this.state.isLoading && (
+                    <View style={{ top: 25, position: 'absolute', zIndex: 99999, backgroundColor: 'white', paddingLeft:25,paddingRight:25,paddingBottom:10,paddingTop:10, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 5 }}>
+                        <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
+                            <View style={[{ flexDirection: 'column' }]}>
+                                <ActivityIndicator color="black" style={{ marginRight: 10 }} />
+                            </View>
+                            <View style={[{ flexDirection: 'column' }]}>
+                                <Text>Loading data...</Text>
+                            </View>
+
+                        </View>
+                    </View>
+                    )}
                     <Popover onRequestClose={() => this.setState({ showRadiusFilter: false })} from={this.filterPopover} isVisible={this.state.showRadiusFilter} popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}>
                         <FilterDropDown radius={this.state.filterDistance} updateView={(radius: number) => this.changeFilterDistance(radius)} />
                     </Popover>
-                    <MapView ref={this.mapRef} showsMyLocationButton={true} onUserLocationChange={(e) => this.userLocationChanged(e)} initialRegion={{ latitude: 31.968599, longitude: -99.901810, latitudeDelta: 10, longitudeDelta: 10, }} style={{ flex: 1, height: 400, width: '100%', }} showsUserLocation={true}>
+                    <MapView ref={this.mapRef} showsMyLocationButton={true} onUserLocationChange={(e) => this.userLocationChanged(e)} initialRegion={{ latitude: 31.968599, longitude: -99.901810, latitudeDelta: 10, longitudeDelta: 10, }} style={{ flex: 1, height: 400, width: '100%' }} showsUserLocation={true}>
                         {this.state.leads.map((lead: Lead, index: any) => (
                             <Marker identifier={lead.id?.toString()} key={index} pinColor={this.getPinColorForLead(lead)}
                                 onPress={() => this.showLeadData(lead, index)} coordinate={lead.marker!.coordinate} />

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Alert, Modal, TouchableHighlight } from 'react-native';
+import { View, Text, Alert, Modal, ActivityIndicator } from 'react-native';
 import GLOBALS from '../globals';
 import { Button, Card, Input } from 'react-native-elements';
 import { StackNavigationProp, createStackNavigator } from '@react-navigation/stack';
@@ -28,25 +28,23 @@ type User = {
     phone:string
 }
 
-type Props = {
+type SettingsProps = {
     navigation: StackNavigationProp<{}>;
 };
 
-export class SettingsScreen extends React.Component<Props, settingsState> {
+export class SettingsScreen extends React.Component<SettingsProps, settingsState> {
 
     static contextType = AuthContext;
     form: any;
     PasswordForm: any;
 
-    constructor(props: Props) {
+    constructor(props: SettingsProps) {
         super(props)
 
         this.form = React.createRef();
         this.PasswordForm = React.createRef();
 
-
-        this.state = { user: { name: '', surname: '', address: '', city: '', state: '', zipCode: '', email: '',phone:'' }, isLoading: false, accountDetailsIsValid: true, modalVisible: false }
-        this.getUser();
+        this.state = { user: { name: '', surname: '', address: '', city: '', state: '', zipCode: '', email: '',phone:'' }, isLoading: true, accountDetailsIsValid: true, modalVisible: false }
     }
 
     componentDidMount(){
@@ -59,6 +57,8 @@ export class SettingsScreen extends React.Component<Props, settingsState> {
                 <Button title='Sign out' onPress={() => this.signout()} style={{ paddingLeft: 5 }} type='clear' titleStyle={{ color: 'white' }} />
             )
         })
+
+        this.getUser();
     }
 
     signout() {
@@ -79,12 +79,17 @@ export class SettingsScreen extends React.Component<Props, settingsState> {
 
     async getUser() {
 
+        this.setState({isLoading:true})
+
         try {
             const res = await fetch(GLOBALS.BASE_URL + '/api/client', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({})
             })
+
+            this.setState({isLoading:false})
+
             if (res.status === 200) {
 
                 const data = await res.json();
@@ -118,7 +123,7 @@ export class SettingsScreen extends React.Component<Props, settingsState> {
 
     async saveUserDetails(user: User) {
 
-        console.log(user)
+        this.setState({isLoading:true})
 
         try {
             const res = await fetch(GLOBALS.BASE_URL + '/api/client/updateDetails', {
@@ -128,6 +133,9 @@ export class SettingsScreen extends React.Component<Props, settingsState> {
                     { user }
                 ),
             })
+
+            this.setState({isLoading:false})
+
             if (res.status === 200) {
 
                 const responseData = await res.json();
@@ -202,7 +210,21 @@ export class SettingsScreen extends React.Component<Props, settingsState> {
                 })}
                 onSubmit={values => this.saveUserDetails(values)}>
                 {({ handleChange, handleBlur, handleSubmit, values, touched, errors }) => (
+                    
                     <View style={{backgroundColor:'white', borderWidth:0,shadowRadius:0}}>
+                        {this.state.isLoading && (
+                    <View style={{ top: 25,alignSelf:'center', position: 'absolute', zIndex: 99999, backgroundColor: 'white', paddingLeft:25,paddingRight:25,paddingBottom:10,paddingTop:10, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 5 }}>
+                        <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
+                            <View style={[{ flexDirection: 'column' }]}>
+                                <ActivityIndicator color="black" style={{ marginRight: 10 }} />
+                            </View>
+                            <View style={[{ flexDirection: 'column' }]}>
+                                <Text>Loading...</Text>
+                            </View>
+
+                        </View>
+                    </View>
+                    )}
                         <Card wrapperStyle={{borderWidth:0,shadowRadius:0}} containerStyle={{ borderWidth:0, margin: 0, paddingTop: 15, paddingLeft: 5, paddingRight: 5, paddingBottom: 0, shadowRadius:0 }}>
                             <View style={[{ borderColor:'orange',flexDirection: 'row', alignItems: 'center' }]}>
                                 <View style={[{borderColor:'orange', flex: 1, flexDirection: 'column', justifyContent: 'flex-start' }]}>
@@ -236,7 +258,7 @@ export class SettingsScreen extends React.Component<Props, settingsState> {
                                 </View>
                                 <View style={[{ flex: 1, flexDirection: 'column',marginLeft:7 }]}>
 
-                                <Button onPress={() => this.form.handleSubmit()} buttonStyle={{ backgroundColor: '#2185d0',padding:10,borderRadius:10 }} titleStyle={{ color: 'white',fontSize:16 }} title='Save Profile' />
+                                <Button loading={this.state.isLoading} onPress={() => this.form.handleSubmit()} buttonStyle={{ backgroundColor: '#2185d0',padding:10,borderRadius:10 }} titleStyle={{ color: 'white',fontSize:16 }} title='Save Profile' />
                                 </View>
                             </View>
                         
@@ -252,7 +274,7 @@ export class SettingsScreen extends React.Component<Props, settingsState> {
                                         <Text style={{ alignSelf: 'center', fontWeight: '500', fontSize: 18, color: 'white' }}>Change password</Text>
                                     </View>
                                     <View style={{ flex: 1, flexDirection: 'column', alignContent: 'flex-end' }}>
-                                        <Button type='clear' titleStyle={{ color: 'white' }} title='Save' onPress={() => { this.PasswordForm.handleSubmit(); }} />
+                                        <Button loading={this.state.isLoading} type='clear' titleStyle={{ color: 'white' }} title='Save' onPress={() => { this.PasswordForm.handleSubmit(); }} />
                                     </View>
                                 </View>
 
