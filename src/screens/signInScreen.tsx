@@ -38,7 +38,7 @@ export default function SignInScreen() {
             })
             .catch(err => {
                 const formatError = {};
-                
+
                 setSignUpErrors(formatError);
             });
     };
@@ -70,13 +70,24 @@ export default function SignInScreen() {
                         onChangeText={setPassword}
                         secureTextEntry={true} autoCapitalize='none'
                     />
-                    <Button buttonStyle={{ margin: 0, marginTop: 5, padding: 15, borderRadius: 10 }} title="Sign in" onPress={() => handleSignIn()}/>
-                    <Text style={{ fontSize: 16, color: 'white', alignSelf: 'center', marginTop: 10 }} onPress={() => signUp()}>
-                        No Account? Sign Up
-                </Text>
-                </View>
 
+                    <View style={[{ flexDirection: 'row',width:'100%' }]}>
+                        <View style={[{ flexDirection: 'column' ,width:'50%'}]}>
+                            <Button style={{width:'100%'}} buttonStyle={{ margin: 0, marginTop: 5, padding: 15, borderRadius: 10 }} title="Sign in" onPress={() => handleSignIn()} />
+                        </View>
+                        <View style={[{ flexDirection: 'column' ,width:'50%'}]}>
+                            <Button buttonStyle={{ margin: 0, marginTop: 5,marginLeft:10, padding: 15, borderRadius: 10,backgroundColor:'grey' }} title="Register" onPress={() => signUp()} />
+                        </View>
+
+                    </View>
+                    <Text style={{ fontSize: 16, color: 'white',alignSelf:'center', marginTop: 20 }}>
+                        Did you forget your Password? 
+                </Text>
+                    
+                </View>
+                
             </KeyboardAvoidingView>
+
         </ImageBackground>
     );
 };

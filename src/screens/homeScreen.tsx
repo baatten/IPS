@@ -154,7 +154,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
         const leads: Lead[] = [];
 
-        this.state = { leads: leads, isLoading: true, activeView: 0, filterDistance: 10, savingLead: false, showRadiusFilter: false };
+        this.state = {leads:leads, isLoading: true, activeView: 0, filterDistance: 10, savingLead: false, showRadiusFilter: false };
     }
 
     componentDidMount() {
@@ -238,8 +238,9 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
     animateViewToMarkers() {
 
-        if (this.state != undefined && this.state.leads.length > 0) {
+        if (this != null && this.state.leads.length > 0) {
 
+            
             const markerIds: string[] = this.state.leads.map((lead: Lead) => {
 
                 if (lead.id != null)
@@ -247,8 +248,8 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                 else
                     return ''
             })
-
-            //this.mapRef.current.fitToSuppliedMarkers(markerIds);
+            
+            this.mapRef.current.fitToSuppliedMarkers(markerIds);
         }
 
 
@@ -460,7 +461,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                     <Popover arrowShift={0} onRequestClose={() => this.setState({ showRadiusFilter: false })} from={this.filterPopover} isVisible={this.state.showRadiusFilter} popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}>
                         <FilterDropDown radius={this.state.filterDistance} updateView={(radius: number) => this.changeFilterDistance(radius)} />
                     </Popover>
-                    <MapView onMapReady={this.animateViewToMarkers} ref={this.mapRef} showsMyLocationButton={true} onUserLocationChange={(e) => this.userLocationChanged(e)} initialRegion={{ latitude: 31.968599, longitude: -99.901810, latitudeDelta: 10, longitudeDelta: 10, }} style={{ flex: 1, height: 400, width: '100%' }} showsUserLocation={true}>
+                    <MapView ref={this.mapRef} showsMyLocationButton={true} onUserLocationChange={(e) => this.userLocationChanged(e)} initialRegion={{ latitude: 31.968599, longitude: -99.901810, latitudeDelta: 10, longitudeDelta: 10, }} style={{ flex: 1, height: 400, width: '100%' }} showsUserLocation={true}>
                         {this.state.leads.map((lead: Lead, index: any) => (
                             <Marker identifier={lead.id?.toString()} key={index} pinColor={this.getPinColorForLead(lead)}
                                 onPress={() => this.showLeadData(lead, index)} coordinate={lead.marker!.coordinate} />
@@ -565,6 +566,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
             return (
                 <ScrollView>
                     {
+                        this.state.leads.length > 0 && (
                         this.state.leads.map((lead: Lead, i) => (
                             <ListItem key={i} bottomDivider onPress={() => this.showLeadData(lead, i)} >
                                 <ListItem.Content>
@@ -576,7 +578,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                 <ListItem.Subtitle >{this.monthsToAge65(lead.dobmon)}</ListItem.Subtitle>
                             </ListItem>
                         ))
-                    }
+                        )}
                     <ActionSheet ref={this.sheetRef} bounceOnOpen={true} onClose={() => this.setState({ savingLead: false })}>
                         <View style={{
                             borderTopStartRadius: 0, borderTopRightRadius: 0, padding: 20, backgroundColor: 'white',
