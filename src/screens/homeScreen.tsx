@@ -69,7 +69,7 @@ class LogoTitle extends React.Component<HomeTitleProps, HomeTitleState> {
         const buttons = ['Map', 'List']
 
         return (
-            <ButtonGroup containerStyle={{ width: 200, height: 28, backgroundColor: 'transparent', borderRadius: 6,borderColor:'white' }}
+            <ButtonGroup containerStyle={{ width: 200, height: 28, backgroundColor: 'transparent', borderRadius: 6, borderColor: 'white' }}
                 textStyle={{ color: 'white', fontSize: 14 }}
                 innerBorderStyle={{ color: 'transparent' }}
                 buttonStyle={{ borderColor: 'white' }}
@@ -178,8 +178,8 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
     changeView = (viewIndex: number) => {
 
-        
-        this.setState({ activeView: viewIndex },() => {if(viewIndex == 0)this.animateViewToMarkers()});
+
+        this.setState({ activeView: viewIndex }, () => { if (viewIndex == 0) this.animateViewToMarkers() });
     }
 
     async startNavigation(address: string, lead: Lead, index: number) {
@@ -238,14 +238,23 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
     animateViewToMarkers() {
 
-        if(this.state?.leads != undefined && this.state.leads.length > 0){
-        const markerIds: string[] = this.state.leads.map((lead: Lead) => {
+        if (this.state != undefined && this.state.leads.length > 0) {
 
-            return lead.id!.toString();
-        })
+            const markerIds: string[] = this.state.leads.map((lead: Lead) => {
 
-        this.mapRef.current.fitToSuppliedMarkers(markerIds);
-    }
+                if (lead.id != null)
+                    return lead.id.toString();
+                else
+                    return ''
+            })
+
+            //this.mapRef.current.fitToSuppliedMarkers(markerIds);
+        }
+
+
+
+        //error is here !!!!!!
+
     }
 
     async saveLeadInteraction(lead: Lead, index: number, action?: string) {
@@ -298,14 +307,16 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
     async showLeadData(lead: Lead, index: number) {
 
-        const camera: Camera = await this.mapRef.current.getCamera();
+        if (this.state.activeIndex == 0) {
+            const camera: Camera = await this.mapRef.current.getCamera();
 
-        camera.center = {
-            latitude: lead.latitude,
-            longitude: lead.longitude,
-        };
+            camera.center = {
+                latitude: lead.latitude,
+                longitude: lead.longitude,
+            };
 
-        this.mapRef.current.animateCamera(camera);
+            this.mapRef.current.animateCamera(camera);
+        }
 
         this.setState({ activeLead: lead, activeIndex: index }, this.sheetRef.current?.setModalVisible())
 
