@@ -251,11 +251,6 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
             
             this.mapRef.current.fitToSuppliedMarkers(markerIds);
         }
-
-
-
-        //error is here !!!!!!
-
     }
 
     async saveLeadInteraction(lead: Lead, index: number, action?: string) {
@@ -308,7 +303,9 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
     async showLeadData(lead: Lead, index: number) {
 
-        if (this.state.activeIndex == 0) {
+        this.saveLeadInteraction(lead, index);
+
+        if (this.state.activeView == 0) {
             const camera: Camera = await this.mapRef.current.getCamera();
 
             camera.center = {
@@ -319,9 +316,11 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
             this.mapRef.current.animateCamera(camera);
         }
 
-        this.setState({ activeLead: lead, activeIndex: index }, this.sheetRef.current?.setModalVisible())
+        this.setState({ activeLead: lead, activeIndex: index }, () => {
+            
+            this.sheetRef.current.setModalVisible()})
 
-        this.saveLeadInteraction(lead, index);
+            
     }
 
     openDetails() {
@@ -398,7 +397,8 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
     getPinColorForLead(lead: Lead) {
         let color = 'green'
 
-        if (lead.LeadInteraction!.length > 0) {
+        if (lead.LeadInteraction != null && lead.LeadInteraction.length > 0) {
+
             if (lead.LeadInteraction![0].action == '')
                 color = 'orange';
             else if (lead.LeadInteraction![0].action == 'saved')
@@ -486,10 +486,10 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                 </View>
                             </View>
 
-                            {(this.state.activeLead?.LeadInteraction![0].notes != '' && this.state.activeLead?.LeadInteraction![0].notes != null) && (
+                            {(this.state.activeLead?.LeadInteraction != null && this.state.activeLead?.LeadInteraction.length > 0 && this.state.activeLead.LeadInteraction[0].notes != null) && (
                                 <View>
                                     <Text style={{ fontSize: 18, fontWeight: '600', marginTop: 10 }}>Notes</Text>
-                                    <Text style={{ fontSize: 16, color: 'grey', marginTop: 5 }}>{this.state.activeLead?.LeadInteraction![0].notes}</Text>
+                                    <Text style={{ fontSize: 16, color: 'grey', marginTop: 5 }}>{this.state.activeLead.LeadInteraction[0].notes}</Text>
                                 </View>
                             )}
 
@@ -535,7 +535,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                             <Divider />
 
                             <View style={{ padding: 10 }}>
-                                <Text style={{ fontSize: 18, fontWeight: '600', margin: 10 }}>Enter notes to help remind yourself of this lead</Text>
+                                <Text style={{ fontSize: 18, fontWeight: '600', margin: 10 }}>Add notes to remind yourself of this lead</Text>
                                 <Input value={this.state.activeLeadNotes} onChange={(e) => this.setState({ activeLeadNotes: e.nativeEvent.text })}
                                     style={{ borderWidth: 0 }}
                                     inputContainerStyle={{ borderBottomWidth: 0 }}
@@ -627,8 +627,6 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                     <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Save{this.leadIsSaved() && (<>d</>)}</Text>
                                 </TouchableOpacity>
                             </View>
-
-
                         </View>
                     </ActionSheet>
                     <ActionSheet keyboardShouldPersistTaps='always' ref={this.saveLeadSheetRef} bounceOnOpen={true} onClose={() => this.setState({ savingLead: false })}>
@@ -649,7 +647,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                             <Divider />
 
                             <View style={{ padding: 10 }}>
-                                <Text style={{ fontSize: 18, fontWeight: '600', margin: 10 }}>Enter notes to help remind yourself of this lead</Text>
+                                <Text style={{ fontSize: 18, fontWeight: '600', margin: 10 }}>Add notes to remind yourself of this lead</Text>
                                 <Input value={this.state.activeLeadNotes} onChange={(e) => this.setState({ activeLeadNotes: e.nativeEvent.text })}
                                     style={{ borderWidth: 0 }}
                                     inputContainerStyle={{ borderBottomWidth: 0 }}
