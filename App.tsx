@@ -13,7 +13,7 @@ import { stateConditionString } from './src/components/utils/stateCondition';
 import { createStackNavigator } from '@react-navigation/stack';
 import SplashScreen from './src/screens/splashScreen'
 import SignInScreen from './src/screens/signInScreen'
-import {SignUpScreen} from './src/screens/SignUpScreen'
+import { SignUpScreen } from './src/screens/SignUpScreen'
 import { SavedLeadsStackScreen } from './src/screens/savedLeads'
 
 const Tab = createBottomTabNavigator();
@@ -85,10 +85,12 @@ export default function App() {
   }, []);
 
   const authContextValue = useMemo(() => ({
-    user: {},
+    user: {user:null},
     signIn: async (data: any) => {
 
       if (data && data.emailAddress !== undefined && data.password !== undefined) {
+
+        //Alert.alert('test');
 
         try {
           const res = await fetch(GLOBALS.BASE_URL + '/api/client/login', {
@@ -105,11 +107,12 @@ export default function App() {
             if (responseData.done) {
 
               authContextValue.user = responseData.token;
-
+              
               await AsyncStorage.setItem('username', data.emailAddress);
               await AsyncStorage.setItem('password', data.password);
 
               dispatch({ type: 'SIGNED_IN', token: responseData.token });
+              return {user:'test'}
             }
             else {
               dispatch({ type: 'TO_SIGNIN_PAGE' });

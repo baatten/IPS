@@ -4,14 +4,16 @@ import { View, Text, KeyboardAvoidingView, ImageBackground } from 'react-native'
 import { Input, Button, Icon } from 'react-native-elements';
 
 import { AuthContext } from '../components/utils/authContext';
+import { LoginReducer } from '../components/utils/reducers';
 
 export default function SignInScreen() {
 
     const [emailAddress, setemailAddress] = useState('baatten@gmail.com');
     const [password, setPassword] = useState('mmm');
+    const [isLoading, setisLoading] = useState(false);
     const [SignUpErrors, setSignUpErrors] = useState({});
 
-    const { signIn, signUp }: any = useContext(AuthContext);
+    const { signIn, signUp, user }: any = useContext(AuthContext);
 
     const handleSignIn = () => {
         const rules = {
@@ -33,8 +35,11 @@ export default function SignInScreen() {
 
         validateAll(data, rules, messages)
             .then(() => {
-                //console.log('success sign in');
-                signIn({ emailAddress, password });
+                console.log('success sign in');
+
+                setisLoading(true);
+                signInf();
+
             })
             .catch(err => {
                 const formatError = {};
@@ -42,6 +47,13 @@ export default function SignInScreen() {
                 setSignUpErrors(formatError);
             });
     };
+
+    const signInf = async() => {
+
+        const test = await signIn({ emailAddress, password });
+
+        setisLoading(false);
+    }
 
     return (
         <ImageBackground source={require('../../assets/images/background.png')} style={{ flex: 1, alignSelf: 'stretch' }}>
@@ -71,21 +83,21 @@ export default function SignInScreen() {
                         secureTextEntry={true} autoCapitalize='none'
                     />
 
-                    <View style={[{ flexDirection: 'row',width:'100%' }]}>
-                        <View style={[{ flexDirection: 'column' ,width:'50%'}]}>
-                            <Button style={{width:'100%'}} buttonStyle={{ margin: 0, marginTop: 5, padding: 15, borderRadius: 10 }} title="Sign in" onPress={() => handleSignIn()} />
+                    <View style={[{ flexDirection: 'row', width: '100%' }]}>
+                        <View style={[{ flexDirection: 'column', width: '50%' }]}>
+                            <Button loading={isLoading} style={{ width: '100%' }} buttonStyle={{ margin: 0, marginTop: 5, padding: 15, borderRadius: 10 }} title="Sign in" onPress={() => handleSignIn()} />
                         </View>
-                        <View style={[{ flexDirection: 'column' ,width:'50%'}]}>
-                            <Button buttonStyle={{ margin: 0, marginTop: 5,marginLeft:10, padding: 15, borderRadius: 10,backgroundColor:'grey' }} title="Register" onPress={() => signUp()} />
+                        <View style={[{ flexDirection: 'column', width: '50%' }]}>
+                            <Button buttonStyle={{ margin: 0, marginTop: 5, marginLeft: 10, padding: 15, borderRadius: 10, backgroundColor: 'grey' }} title="Register" onPress={() => signUp()} />
                         </View>
 
                     </View>
-                    <Text style={{ fontSize: 16, color: 'white',alignSelf:'center', marginTop: 20 }}>
-                        Did you forget your Password? 
+                    <Text style={{ fontSize: 16, color: 'white', alignSelf: 'center', marginTop: 20 }}>
+                        Did you forget your Password?
                 </Text>
-                    
+
                 </View>
-                
+
             </KeyboardAvoidingView>
 
         </ImageBackground>
