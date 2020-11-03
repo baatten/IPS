@@ -6,7 +6,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { AuthContext } from '../components/utils/authContext';
 import { ScrollView } from 'react-native-gesture-handler';
 
-const SettingsStack = createStackNavigator();
+const PersonalDetailsStack = createStackNavigator();
 //const url = 'https://a0b79f3c31a0.ngrok.io';
 const url = 'http://localhost:3000';
 
@@ -24,7 +24,7 @@ type settingsProps = {
     User:object
 }
 
-export class SettingsScreen extends React.Component<settingsProps, settingsState> {
+export class PersonalDetailsScreen extends React.Component<settingsProps, settingsState> {
 
     static contextType = AuthContext;
 
@@ -95,17 +95,17 @@ export class SettingsScreen extends React.Component<settingsProps, settingsState
     }
 }
 
-export function SettingsStackScreen() {
+export function PersonalDetailsStackScreen() {
     return (
-        <SettingsStack.Navigator>
-            <SettingsStack.Screen options={{
+        <PersonalDetailsStack.Navigator>
+            <PersonalDetailsStack.Screen options={{
                 headerShown: true,
                 headerTintColor: '#fff',
                 headerStyle: { backgroundColor: '#2185d0' },
                 headerRight: () => (
                     <Button title='Save' onPress={() => alert('This is a button!')} style={{ paddingRight: 5 }} type='clear' titleStyle={{ color: 'white' }} />
                 )
-            }} name="Settings" component={SettingsScreen} />
-        </SettingsStack.Navigator>
+            }} name="Settings" component={PersonalDetailsScreen} />
+        </PersonalDetailsStack.Navigator>
     );
 }

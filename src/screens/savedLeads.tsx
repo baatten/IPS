@@ -35,7 +35,7 @@ type LeadInteraction = {
     notes?: string
 }
 
-const HomeStack = createStackNavigator();
+const SaveLeadsStack = createStackNavigator();
 
 type SaveLeadProps = {
     navigation: StackNavigationProp<{}>;
@@ -421,9 +421,9 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
 
 export function SavedLeadsStackScreen() {
     return (
-        <HomeStack.Navigator>
-            <HomeStack.Screen name="Saved Leads" component={SavedLeadsScreen} />
-        </HomeStack.Navigator>
+        <SaveLeadsStack.Navigator>
+            <SaveLeadsStack.Screen name="Saved Leads" component={SavedLeadsScreen} />
+        </SaveLeadsStack.Navigator>
     );
 }
 

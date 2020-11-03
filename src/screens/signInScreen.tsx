@@ -56,7 +56,7 @@ export default function SignInScreen() {
     }
 
     return (
-        <ImageBackground source={require('../../assets/images/background.png')} style={{ flex: 1, alignSelf: 'stretch' }}>
+        <ImageBackground source={require('../../assets/splash.png')} style={{ flex: 1, alignSelf: 'stretch' }}>
             <KeyboardAvoidingView style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', }} behavior="padding" enabled keyboardVerticalOffset={0}>
                 <View style={{ padding: 25 }}>
                     <Text style={{ color: 'white', fontSize: 30, fontWeight: '700', textAlign: "center", paddingBottom: 10 }}>Company Name</Text>
