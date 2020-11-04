@@ -34,7 +34,8 @@
     "react-native-sensitive-info": "^5.5.8",
     "react-native-web": "~0.13.7",
     "react-native-wizard": "^2.1.0",
-    "yup": "^0.29.3"
+    "yup": "^0.29.3",
+    "expo-splash-screen": "~0.6.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",

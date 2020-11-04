@@ -611,7 +611,8 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                 </View>
                             </View>
 
-                            {(this.state.activeLead?.LeadInteraction![0].notes != '' && this.state.activeLead?.LeadInteraction![0].notes != null) && (
+                            {(this.state.activeLead?.LeadInteraction != null && this.state.activeLead?.LeadInteraction.length > 0 && this.state.activeLead.LeadInteraction[0].notes != null) && (
+                            
                                 <View>
                                     <Text style={{ fontSize: 18, fontWeight: '600', marginTop: 10 }}>Notes</Text>
                                     <Text style={{ fontSize: 16, color: 'grey', marginTop: 5 }}>{this.state.activeLead?.LeadInteraction![0].notes}</Text>
