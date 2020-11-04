@@ -15,6 +15,7 @@ import SplashScreen from './src/screens/splashScreen'
 import SignInScreen from './src/screens/signInScreen'
 import { SignUpScreen } from './src/screens/SignUpScreen'
 import { SavedLeadsStackScreen } from './src/screens/savedLeads'
+import * as Location from 'expo-location';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -27,6 +28,9 @@ export default function App() {
 
     // Fetch the token from storage then navigate to our appropriate place
     const bootstrapAsync = async () => {
+
+      // check for location permissions
+      let { status } = await Location.requestPermissionsAsync();
       let username;
       let password;
 
@@ -38,7 +42,7 @@ export default function App() {
 
       }
 
-      if (username !== undefined && password !== undefined) {
+      if (username !== undefined && password !== undefined && status == 'granted') {
 
         try {
           const res = await fetch(GLOBALS.BASE_URL + '/api/client/login', {
@@ -81,16 +85,16 @@ export default function App() {
       // screen will be unmounted and thrown away.
       dispatch({ type: 'RESTORED_TOKEN' });
     };
+
     bootstrapAsync();
   }, []);
 
   const authContextValue = useMemo(() => ({
-    user: {user:null},
+
+    user: { user: null },
     signIn: async (data: any) => {
 
       if (data && data.emailAddress !== undefined && data.password !== undefined) {
-
-        //Alert.alert('test');
 
         try {
           const res = await fetch(GLOBALS.BASE_URL + '/api/client/login', {
@@ -107,12 +111,12 @@ export default function App() {
             if (responseData.done) {
 
               authContextValue.user = responseData.token;
-              
+
               await AsyncStorage.setItem('username', data.emailAddress);
               await AsyncStorage.setItem('password', data.password);
 
               dispatch({ type: 'SIGNED_IN', token: responseData.token });
-              return {user:'test'}
+              return { user: 'test' }
             }
             else {
               dispatch({ type: 'TO_SIGNIN_PAGE' });

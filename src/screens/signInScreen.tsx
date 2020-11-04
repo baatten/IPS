@@ -1,54 +1,81 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { validateAll } from 'indicative/validator';
-import { View, Text, KeyboardAvoidingView, ImageBackground } from 'react-native';
+import { View, Text, KeyboardAvoidingView, ImageBackground, Alert } from 'react-native';
 import { Input, Button, Icon } from 'react-native-elements';
-
+import * as Location from 'expo-location';
 import { AuthContext } from '../components/utils/authContext';
-import { LoginReducer } from '../components/utils/reducers';
+import ActionSheet from "react-native-actions-sheet";
 
 export default function SignInScreen() {
 
+    const sheetRef: any = React.useRef();
     const [emailAddress, setemailAddress] = useState('baatten@gmail.com');
     const [password, setPassword] = useState('mmm');
     const [isLoading, setisLoading] = useState(false);
     const [SignUpErrors, setSignUpErrors] = useState({});
-
     const { signIn, signUp, user }: any = useContext(AuthContext);
 
-    const handleSignIn = () => {
-        const rules = {
-            email: 'required|email',
-            password: 'required|string|min:1|max:40'
-        };
+    // Similar to componentDidMount and componentDidUpdate:
+    useEffect(() => {
+        // Update the document title using the browser API
+        
+        checkLocationPermissions();
+    });
 
-        const data = {
-            email: emailAddress,
-            password: password
-        };
+    const checkLocationPermissions = async () => {
 
-        const messages = {
-            required: (field: any) => `${field} is required`,
-            'username.alpha': 'Username contains unallowed characters',
-            'email.email': 'Please enter a valid email address',
-            'password.min': 'Wrong Password?'
-        };
+        let { status } = await Location.requestPermissionsAsync();
 
-        validateAll(data, rules, messages)
-            .then(() => {
-                console.log('success sign in');
+        if (status != 'granted')
+        {
+            sheetRef.current.setModalVisible();
+        }
+    }
 
-                setisLoading(true);
-                signInf();
+    const handleSignIn = async () => {
 
-            })
-            .catch(err => {
-                const formatError = {};
+        let { status } = await Location.requestPermissionsAsync();
 
-                setSignUpErrors(formatError);
-            });
+        if (status == 'granted') {
+
+            const rules = {
+                email: 'required|email',
+                password: 'required|string|min:1|max:40'
+            };
+
+            const data = {
+                email: emailAddress,
+                password: password
+            };
+
+            const messages = {
+                required: (field: any) => `${field} is required`,
+                'username.alpha': 'Username contains unallowed characters',
+                'email.email': 'Please enter a valid email address',
+                'password.min': 'Wrong Password?'
+            };
+
+            validateAll(data, rules, messages)
+                .then(() => {
+                    console.log('success sign in');
+
+                    setisLoading(true);
+                    signInf();
+
+                })
+                .catch(err => {
+                    const formatError = {};
+
+                    setSignUpErrors(formatError);
+                });
+        }
+        else {
+            //Alert.alert('Location services not enabled.')
+            sheetRef.current.setModalVisible();
+        }
     };
 
-    const signInf = async() => {
+    const signInf = async () => {
 
         const test = await signIn({ emailAddress, password });
 
@@ -56,11 +83,12 @@ export default function SignInScreen() {
     }
 
     return (
+
         <ImageBackground source={require('../../assets/splash.png')} style={{ flex: 1, alignSelf: 'stretch' }}>
             <KeyboardAvoidingView style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', }} behavior="padding" enabled keyboardVerticalOffset={0}>
                 <View style={{ padding: 25 }}>
-                    <Text style={{ color: 'white', fontSize: 30, fontWeight: '700', textAlign: "center", paddingBottom: 10 }}>Company Name</Text>
-                    <Text style={{ color: 'white', fontSize: 16, fontWeight: '300', textAlign: "center", paddingBottom: 25 }}>Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs</Text>
+                    <Text style={{ color: 'white', fontSize: 30, fontWeight: '700', textAlign: "center", paddingBottom: 10 }}>Empower Brokerage</Text>
+                    <Text style={{ color: 'white', fontSize: 16, fontWeight: '300', textAlign: "center", paddingBottom: 25, lineHeight: 24 }}>We pride ourselves on our thorough and friendly support. We work in the trenches with you, like no other FMO in the country! </Text>
                     <Text style={{ color: 'white', fontSize: 20, fontWeight: '500', textAlign: "center", paddingBottom: 15 }}>Please sign in:</Text>
 
                     <Input inputStyle={{ padding: 10 }}
@@ -100,6 +128,15 @@ export default function SignInScreen() {
 
             </KeyboardAvoidingView>
 
+            <ActionSheet ref={sheetRef} closeOnPressBack={false} closeOnTouchBackdrop={false} bounceOnOpen={true} containerStyle={{backgroundColor:'#1D7DD7',padding:50}}>
+                <View style={{height:500}}>
+                <Text style={{fontWeight:'700',fontSize:24,alignSelf:'center',marginTop:50,color:'white'}}>Location</Text>
+                <Text style={{fontWeight:'300',fontSize:18,marginTop:30,color:'white', alignSelf:'center',textAlign:'center'}}>We'll need your location to show you leads nearby completely automatically and save your time.</Text>
+                <Icon name='street-view' type='font-awesome-5' color='white' size={150} style={{marginTop:25}}></Icon>
+                <Button title='Open Settings' titleStyle={{color:'#1D7DD7'}} style={{marginTop:50}} buttonStyle={{backgroundColor:'white',}}/>
+                </View>
+                
+            </ActionSheet>
         </ImageBackground>
     );
 };
