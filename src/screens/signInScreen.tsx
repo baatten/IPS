@@ -8,33 +8,23 @@ import ActionSheet from "react-native-actions-sheet";
 
 export default function SignInScreen() {
 
-    const sheetRef: any = React.useRef();
+    const locationSheetRef: any = React.useRef();
     const [emailAddress, setemailAddress] = useState('baatten@gmail.com');
     const [password, setPassword] = useState('mmm');
     const [isLoading, setisLoading] = useState(false);
     const [SignUpErrors, setSignUpErrors] = useState({});
-    const { signIn, signUp, user }: any = useContext(AuthContext);
+    const { signIn, signUp, checkPermissions, user }: any = useContext(AuthContext);
 
     // Similar to componentDidMount and componentDidUpdate:
     useEffect(() => {
         // Update the document title using the browser API
-        
-        checkLocationPermissions();
+
+        //checkLocationPermissions();
     });
-
-    const checkLocationPermissions = async () => {
-
-        let { status } = await Location.requestPermissionsAsync();
-
-        if (status != 'granted')
-        {
-            sheetRef.current.setModalVisible();
-        }
-    }
 
     const handleSignIn = async () => {
 
-        let { status } = await Location.requestPermissionsAsync();
+        let { status } = await Location.getPermissionsAsync();
 
         if (status == 'granted') {
 
@@ -69,16 +59,13 @@ export default function SignInScreen() {
                     setSignUpErrors(formatError);
                 });
         }
-        else {
-            //Alert.alert('Location services not enabled.')
-            sheetRef.current.setModalVisible();
-        }
+        else
+            checkPermissions();
     };
 
     const signInf = async () => {
 
-        const test = await signIn({ emailAddress, password });
-
+        await signIn({ emailAddress, password });
         setisLoading(false);
     }
 
@@ -127,16 +114,6 @@ export default function SignInScreen() {
                 </View>
 
             </KeyboardAvoidingView>
-
-            <ActionSheet ref={sheetRef} closeOnPressBack={false} closeOnTouchBackdrop={false} bounceOnOpen={true} containerStyle={{backgroundColor:'#1D7DD7',padding:50}}>
-                <View style={{height:500}}>
-                <Text style={{fontWeight:'700',fontSize:24,alignSelf:'center',marginTop:50,color:'white'}}>Location</Text>
-                <Text style={{fontWeight:'300',fontSize:18,marginTop:30,color:'white', alignSelf:'center',textAlign:'center'}}>We'll need your location to show you leads nearby completely automatically and save your time.</Text>
-                <Icon name='street-view' type='font-awesome-5' color='white' size={150} style={{marginTop:25}}></Icon>
-                <Button title='Open Settings' titleStyle={{color:'#1D7DD7'}} style={{marginTop:50}} buttonStyle={{backgroundColor:'white',}}/>
-                </View>
-                
-            </ActionSheet>
         </ImageBackground>
     );
 };

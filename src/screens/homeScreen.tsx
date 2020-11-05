@@ -63,7 +63,6 @@ class LogoTitle extends React.Component<HomeTitleProps, HomeTitleState> {
 
         this.props.updateView(selected);
         this.setState({ activeView: selected })
-
     }
 
     render() {

@@ -1,4 +1,6 @@
 import React, { useReducer, useEffect, useMemo, useState } from 'react';
+import { AppState, View, Text } from 'react-native'
+import { Button } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-community/async-storage';
 import GLOBALS from './src/globals';
@@ -16,6 +18,8 @@ import SignInScreen from './src/screens/signInScreen'
 import { SignUpScreen } from './src/screens/SignUpScreen'
 import { SavedLeadsStackScreen } from './src/screens/savedLeads'
 import * as Location from 'expo-location';
+import DisabledLocation from './src/screens/DisabledLocation';
+import ActionSheet from "react-native-actions-sheet";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -23,14 +27,68 @@ const Stack = createStackNavigator();
 export default function App() {
 
   const [state, dispatch] = useReducer(LoginReducer, initialState);
+  const sheetRef: any = React.useRef();
+  const [Undetermined, setUndetermined] = useState(false)
+  const [LocationEnabled, setLocationEnabled] = useState(false)
+
+  const allowPermissions = async () => {
+
+    sheetRef.current.setModalVisible(false);
+
+    let { status } = await Location.requestPermissionsAsync()
+
+      if (status == 'granted')
+      {
+        setLocationEnabled(true);
+        return true;
+      }
+        
+      else{
+        setUndetermined(false);
+        sheetRef.current.setModalVisible(true);
+      }
+  }
+
+  const checkPermissions = async () => {
+
+    let { status } = await Location.getPermissionsAsync();
+
+    if (status == 'granted'){
+
+      setLocationEnabled(true);
+      return true;
+    }
+      
+
+    if (status == 'undetermined') {
+      setUndetermined(true);
+      sheetRef.current.setModalVisible(true);
+    }
+    else {
+
+      let { status } = await Location.requestPermissionsAsync()
+
+      if (status == 'granted')
+        return true;
+      else
+        sheetRef.current.setModalVisible(true);
+    }
+
+    return false;
+  }
+
+  const handleAppStateChange = (state: any) => {
+
+    checkPermissions();
+  }
 
   useEffect(() => {
+
+    AppState.addEventListener('change', handleAppStateChange);
 
     // Fetch the token from storage then navigate to our appropriate place
     const bootstrapAsync = async () => {
 
-      // check for location permissions
-      let { status } = await Location.requestPermissionsAsync();
       let username;
       let password;
 
@@ -39,10 +97,9 @@ export default function App() {
         password = await AsyncStorage.getItem('password');
       } catch (e) {
         // Restoring token failed
-
       }
 
-      if (username !== undefined && password !== undefined && status == 'granted') {
+      if (username !== undefined && password !== undefined && await checkPermissions()) {
 
         try {
           const res = await fetch(GLOBALS.BASE_URL + '/api/client/login', {
@@ -92,6 +149,7 @@ export default function App() {
   const authContextValue = useMemo(() => ({
 
     user: { user: null },
+    checkPermissions: async() => checkPermissions(),
     signIn: async (data: any) => {
 
       if (data && data.emailAddress !== undefined && data.password !== undefined) {
@@ -165,6 +223,15 @@ export default function App() {
     let arr = [];
 
     switch (navigateTo) {
+
+      case 'LOAD_Location_Services_Disabled':
+        arr.push(
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="Location Services Disabled" component={DisabledLocation} />
+          </Stack.Navigator>
+        );
+        break;
+
       case 'LOAD_APP':
         arr.push(
           <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -195,6 +262,8 @@ export default function App() {
         );
         break;
 
+
+
       default:
         arr.push(<Stack.Screen name="SignIn" component={SignInScreen} />);
         break;
@@ -204,13 +273,46 @@ export default function App() {
   };
 
   return (
-    <AuthContext.Provider value={authContextValue}>
-      <NavigationContainer >
-        <StatusBar barStyle="light-content" hidden={false} backgroundColor="#00BCD4" translucent={false} />
-        {chooseScreen(state)}
-      </NavigationContainer>
-    </AuthContext.Provider>
-  );
+    <>
+      <AuthContext.Provider value={authContextValue}>
+        <NavigationContainer >
+          <StatusBar barStyle="light-content" hidden={false} backgroundColor="#00BCD4" translucent={false} />
+          {chooseScreen(state)}
+        </NavigationContainer>
+      </AuthContext.Provider>
+
+      <ActionSheet ref={sheetRef} closeOnPressBack={false} closeOnTouchBackdrop={false} bounceOnOpen={true} containerStyle={{ backgroundColor: '#1D7DD7', padding: 50, height: '100%', minHeight: '100%' }}>
+        {Undetermined ? (
+          <View>
+            <Icon name='street-view' color='white' size={150} style={{ marginTop: 25, textAlign: 'center' }}></Icon>
+            <Text style={{ fontWeight: '700', fontSize: 24, alignSelf: 'center', marginTop: 20, color: 'white' }}>Location Services</Text>
+            <Text style={{ fontWeight: '300', fontSize: 16, marginTop: 10, color: 'white', alignSelf: 'center', textAlign: 'center' }}>We'll need your location to show you leads nearby completely automatically and save your time.</Text>
+            <Button onPress={() => allowPermissions()} title='Sure, thank you' titleStyle={{ color: '#1D7DD7' }} style={{ marginTop: 25 }} buttonStyle={{ backgroundColor: 'white', }} />
+            <Button onPress={() => sheetRef.current.setModalVisible(false)} title='Not now' type='clear' titleStyle={{ color: 'white' }} style={{ marginTop: 10 }} />
+          </View>
+        ) : (
+            <View>
+              <Icon name='street-view' color='white' size={150} style={{ marginTop: 25, textAlign: 'center' }}></Icon>
+              <View>
+                <Text style={{ fontWeight: '700', fontSize: 24, alignSelf: 'center', marginTop: 20, color: 'white' }}>Location Services</Text>
+                <Text style={{ fontWeight: '300', fontSize: 16, marginTop: 10, color: 'white', alignSelf: 'center', textAlign: 'center' }}>We'll need your location to show you leads nearby completely automatically and save your time.</Text>
+                <Text style={{ fontWeight: '500', fontSize: 18, alignSelf: 'center', marginTop: 30, color: 'white' }}>How to enable location services?</Text>
+              </View>
+
+              <View>
+                <Text style={{ fontWeight: '300', fontSize: 16, marginTop: 15, color: 'white' }}>1. Go to settings.</Text>
+                <Text style={{ fontWeight: '300', fontSize: 16, marginTop: 10, color: 'white' }}>2. Scroll to the T65 and click the app icon.</Text>
+                <Text style={{ fontWeight: '300', fontSize: 16, marginTop: 10, color: 'white' }}>3. Click the location setting.</Text>
+                <Text style={{ fontWeight: '300', fontSize: 16, marginTop: 10, color: 'white' }}>4. choose "while using the app".</Text>
+                <Text style={{ fontWeight: '300', fontSize: 16, marginTop: 10, color: 'white' }}>5. Open T65 app again.</Text>
+              </View>
+
+              <Button title='Open Settings' titleStyle={{ color: '#1D7DD7' }} style={{ marginTop: 25 }} buttonStyle={{ backgroundColor: 'white', }} />
+            </View>
+          )}
+      </ActionSheet>
+    </>
+  )
 }
 
 function HomeTabs() {
