@@ -15,7 +15,7 @@ import { stateConditionString } from './src/components/utils/stateCondition';
 import { createStackNavigator } from '@react-navigation/stack';
 import SplashScreen from './src/screens/splashScreen'
 import SignInScreen from './src/screens/signInScreen'
-import { SignUpScreen } from './src/screens/SignUpScreen'
+import { SignUpScreen } from './src/screens/signUpScreen'
 import { SavedLeadsStackScreen } from './src/screens/savedLeads'
 import * as Location from 'expo-location';
 import DisabledLocation from './src/screens/DisabledLocation';
@@ -33,32 +33,36 @@ export default function App() {
 
   const allowPermissions = async () => {
 
+    console.log('allowPermissions')
+
     sheetRef.current.setModalVisible(false);
 
     let { status } = await Location.requestPermissionsAsync()
 
-      if (status == 'granted')
-      {
-        setLocationEnabled(true);
-        return true;
-      }
-        
-      else{
-        setUndetermined(false);
-        sheetRef.current.setModalVisible(true);
-      }
+    if (status == 'granted') {
+      setLocationEnabled(true);
+      sheetRef.current.setModalVisible(false);
+      return true;
+    }
+    else {
+      setUndetermined(false);
+      sheetRef.current.setModalVisible(true);
+    }
   }
 
   const checkPermissions = async () => {
 
+    console.log('checkPermissions')
+
     let { status } = await Location.getPermissionsAsync();
 
-    if (status == 'granted'){
+    console.log(status)
+
+    if (status == 'granted') {
 
       setLocationEnabled(true);
       return true;
     }
-      
 
     if (status == 'undetermined') {
       setUndetermined(true);
@@ -79,6 +83,7 @@ export default function App() {
 
   const handleAppStateChange = (state: any) => {
 
+    if (state == 'active')
     checkPermissions();
   }
 
@@ -149,7 +154,7 @@ export default function App() {
   const authContextValue = useMemo(() => ({
 
     user: { user: null },
-    checkPermissions: async() => checkPermissions(),
+    checkPermissions: async () => checkPermissions(),
     signIn: async (data: any) => {
 
       if (data && data.emailAddress !== undefined && data.password !== undefined) {
@@ -287,7 +292,7 @@ export default function App() {
             <Icon name='street-view' color='white' size={150} style={{ marginTop: 25, textAlign: 'center' }}></Icon>
             <Text style={{ fontWeight: '700', fontSize: 24, alignSelf: 'center', marginTop: 20, color: 'white' }}>Location Services</Text>
             <Text style={{ fontWeight: '300', fontSize: 16, marginTop: 10, color: 'white', alignSelf: 'center', textAlign: 'center' }}>We'll need your location to show you leads nearby completely automatically and save your time.</Text>
-            <Button onPress={() => allowPermissions()} title='Sure, thank you' titleStyle={{ color: '#1D7DD7' }} style={{ marginTop: 25 }} buttonStyle={{ backgroundColor: 'white', }} />
+            <Button onPress={() => allowPermissions()} title='Sure, thank you' titleStyle={{ color: '#1D7DD7' }} style={{ marginTop: 25 }} buttonStyle={{ backgroundColor: 'white', margin: 0, marginTop: 5, padding: 15, borderRadius: 10 }} />
             <Button onPress={() => sheetRef.current.setModalVisible(false)} title='Not now' type='clear' titleStyle={{ color: 'white' }} style={{ marginTop: 10 }} />
           </View>
         ) : (
