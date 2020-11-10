@@ -234,7 +234,7 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
         return (
             <KeyboardAvoidingView style={{ padding: 15, backgroundColor: '#f7fafb', flex: 1, flexDirection: 'column', justifyContent: 'center', }} behavior="padding" enabled keyboardVerticalOffset={0}>
                 <View>
-                    <Text style={{ color: 'rgba(0,0,0,0.7)', fontSize: 30, fontWeight: '700', textAlign: "center", paddingBottom: 10 }}>Company Name</Text>
+                    <Text style={{ color: 'rgba(0,0,0,0.7)', fontSize: 30, fontWeight: '700', textAlign: "center", paddingBottom: 10 }}>Empower Brokerage</Text>
 
                     {!this.state.isLastStep && (
                         <>

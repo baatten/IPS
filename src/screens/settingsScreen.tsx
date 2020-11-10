@@ -254,11 +254,11 @@ export class SettingsScreen extends React.Component<SettingsProps, settingsState
                             <View style={[{margin:0,marginTop:-15,borderColor:'orange', flexDirection: 'row', alignItems: 'center',padding:10,paddingBottom:20 }]}>
                                 <View style={[{ flex: 1, flexDirection: 'column', marginRight:7 }]}>
 
-                                <Button onPress={() => this.setModalVisible(true)} buttonStyle={{ backgroundColor: 'gray',padding:10,borderRadius:10 }} titleStyle={{  color: 'white',fontSize:16 }} title='Change Password' />
+                                <Button onPress={() => this.setModalVisible(true)} buttonStyle={{ backgroundColor: 'gray',padding:15,borderRadius:10 }} titleStyle={{  color: 'white',fontSize:16 }} title='Change Password' />
                                 </View>
                                 <View style={[{ flex: 1, flexDirection: 'column',marginLeft:7 }]}>
 
-                                <Button loading={this.state.isLoading} onPress={() => this.form.handleSubmit()} buttonStyle={{ backgroundColor: '#2185d0',padding:10,borderRadius:10 }} titleStyle={{ color: 'white',fontSize:16 }} title='Save Profile' />
+                                <Button loading={this.state.isLoading} onPress={() => this.form.handleSubmit()} buttonStyle={{ backgroundColor: '#2185d0',padding:15,borderRadius:10 }} titleStyle={{ color: 'white',fontSize:16 }} title='Save Profile' />
                                 </View>
                             </View>
                         
@@ -274,7 +274,7 @@ export class SettingsScreen extends React.Component<SettingsProps, settingsState
                                         <Text style={{ alignSelf: 'center', fontWeight: '500', fontSize: 18, color: 'white' }}>Change password</Text>
                                     </View>
                                     <View style={{ flex: 1, flexDirection: 'column', alignContent: 'flex-end' }}>
-                                        <Button loading={this.state.isLoading} type='clear' titleStyle={{ color: 'white' }} title='Save' onPress={() => { this.PasswordForm.handleSubmit(); }} />
+                                        <Button loading={this.state.isLoading} type='clear' titleStyle={{ color: 'white' }} buttonStyle={{ borderRadius: 10, padding: 15 }}  title='Save' onPress={() => { this.PasswordForm.handleSubmit(); }} />
                                     </View>
                                 </View>
 

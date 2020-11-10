@@ -1,5 +1,5 @@
 import React, { useReducer, useEffect, useMemo, useState } from 'react';
-import { AppState, View, Text } from 'react-native'
+import { AppState, View, Text,Linking } from 'react-native'
 import { Button } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -15,7 +15,7 @@ import { stateConditionString } from './src/components/utils/stateCondition';
 import { createStackNavigator } from '@react-navigation/stack';
 import SplashScreen from './src/screens/splashScreen'
 import SignInScreen from './src/screens/signInScreen'
-import { SignUpScreen } from './src/screens/signUpScreen'
+import { SignUpScreen } from './src/screens/SignUpScreen2'
 import { SavedLeadsStackScreen } from './src/screens/savedLeads'
 import * as Location from 'expo-location';
 import DisabledLocation from './src/screens/DisabledLocation';
@@ -29,18 +29,16 @@ export default function App() {
   const [state, dispatch] = useReducer(LoginReducer, initialState);
   const sheetRef: any = React.useRef();
   const [Undetermined, setUndetermined] = useState(false)
-  const [LocationEnabled, setLocationEnabled] = useState(false)
+  //const [LocationEnabled, setLocationEnabled] = useState(false)
 
   const allowPermissions = async () => {
-
-    console.log('allowPermissions')
 
     sheetRef.current.setModalVisible(false);
 
     let { status } = await Location.requestPermissionsAsync()
 
     if (status == 'granted') {
-      setLocationEnabled(true);
+      //setLocationEnabled(true);
       sheetRef.current.setModalVisible(false);
       return true;
     }
@@ -52,15 +50,12 @@ export default function App() {
 
   const checkPermissions = async () => {
 
-    console.log('checkPermissions')
-
     let { status } = await Location.getPermissionsAsync();
-
-    console.log(status)
 
     if (status == 'granted') {
 
-      setLocationEnabled(true);
+      //setLocationEnabled(true);
+      sheetRef.current.setModalVisible(false);
       return true;
     }
 
@@ -84,7 +79,7 @@ export default function App() {
   const handleAppStateChange = (state: any) => {
 
     if (state == 'active')
-    checkPermissions();
+      checkPermissions();
   }
 
   useEffect(() => {
@@ -312,7 +307,7 @@ export default function App() {
                 <Text style={{ fontWeight: '300', fontSize: 16, marginTop: 10, color: 'white' }}>5. Open T65 app again.</Text>
               </View>
 
-              <Button title='Open Settings' titleStyle={{ color: '#1D7DD7' }} style={{ marginTop: 25 }} buttonStyle={{ backgroundColor: 'white', }} />
+              <Button onPress={() => Linking.openSettings()} title='Open Settings' titleStyle={{ color: '#1D7DD7' }} style={{ marginTop: 25 }} buttonStyle={{ backgroundColor: 'white', borderRadius: 10, padding: 15 }} />
             </View>
           )}
       </ActionSheet>

@@ -103,7 +103,7 @@ export default function SignInScreen() {
                             <Button loading={isLoading} style={{ width: '100%' }} buttonStyle={{ margin: 0, marginTop: 5, padding: 15, borderRadius: 10 }} title="Sign in" onPress={() => handleSignIn()} />
                         </View>
                         <View style={[{ flexDirection: 'column', width: '50%' }]}>
-                            <Button buttonStyle={{ margin: 0, marginTop: 5, marginLeft: 10, padding: 15, borderRadius: 10, backgroundColor: 'grey' }} title="Register" onPress={() => signUp()} />
+                            <Button buttonStyle={{ margin: 0, marginTop: 5, marginLeft: 10, padding: 15, borderRadius: 10, backgroundColor: 'gray' }} title="Register" onPress={() => signUp()} />
                         </View>
 
                     </View>

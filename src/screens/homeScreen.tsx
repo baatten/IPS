@@ -528,9 +528,9 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                     <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Save{this.leadIsSaved() && (<>d</>)}</Text>
                                 </TouchableOpacity>
                             </View>
-
-
+                            <Text style={{color:'grey',fontSize:15,textAlign:'center',marginBottom:10}}>Build by <Text onPress={() => Linking.openURL('http://www.empowerbrokerage.com')} style={{color:'#2185d0',fontSize:15,padding:0,margin:0}}>Empower Brokerage</Text></Text>
                         </View>
+
                     </ActionSheet>
                     <ActionSheet keyboardShouldPersistTaps='always' ref={this.saveLeadSheetRef} bounceOnOpen={true} onClose={() => this.setState({ savingLead: false, activeLead: undefined })}>
                         <View style={{ borderTopStartRadius: 0, borderTopRightRadius: 0, backgroundColor: 'white', shadowColor: 'black', shadowOpacity: 0.15, shadowRadius: 5, shadowOffset: { width: 5, height: 50 } }}>
@@ -572,7 +572,6 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                 </View>
                             </KeyboardAvoidingView>
                         </View>
-
                     </ActionSheet>
 
                 </View>);
@@ -643,6 +642,8 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                     <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Save{this.leadIsSaved() && (<>d</>)}</Text>
                                 </TouchableOpacity>
                             </View>
+                            <Text style={{color:'grey',fontSize:15,textAlign:'center',marginBottom:10}}>Build by <Text onPress={() => Linking.openURL('http://www.empowerbrokerage.com')} style={{color:'#2185d0',fontSize:15,padding:0,margin:0}}>Empower Brokerage</Text></Text>
+
                         </View>
                     </ActionSheet>
                     <ActionSheet keyboardShouldPersistTaps='always' ref={this.saveLeadSheetRef} bounceOnOpen={true} onClose={() => this.setState({ savingLead: false })}>
