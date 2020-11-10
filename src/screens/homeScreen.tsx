@@ -103,15 +103,19 @@ class FilterDropDown extends React.Component<FilterDropDownProps, FilterDropDown
 
         return (
             <>
-                <ListItem key={0} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateView(10)}>
+                <ListItem key={0} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateView(5)}>
+                    <ListItem.Title>5 miles radius</ListItem.Title>
+                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon={null} checked={this.state.radius == 5} />
+                </ListItem>
+                <ListItem key={1} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateView(10)}>
                     <ListItem.Title>10 miles radius</ListItem.Title>
                     <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon={null} checked={this.state.radius == 10} />
                 </ListItem>
-                <ListItem key={1} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateView(25)}>
+                <ListItem key={2} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateView(25)}>
                     <ListItem.Title>25 miles radius</ListItem.Title>
                     <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon={null} checked={this.state.radius == 25} />
                 </ListItem>
-                <ListItem key={2} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateView(50)}>
+                <ListItem key={3} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateView(50)}>
                     <ListItem.Title>50 miles radius</ListItem.Title>
                     <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon={null} checked={this.state.radius == 50} />
                 </ListItem>
@@ -528,7 +532,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                     <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Save{this.leadIsSaved() && (<>d</>)}</Text>
                                 </TouchableOpacity>
                             </View>
-                            <Text style={{color:'grey',fontSize:15,textAlign:'center',marginBottom:10}}>Build by <Text onPress={() => Linking.openURL('http://www.empowerbrokerage.com')} style={{color:'#2185d0',fontSize:15,padding:0,margin:0}}>Empower Brokerage</Text></Text>
+                            <Text style={{color:'grey',fontSize:15,textAlign:'center',marginBottom:10}}>Built by <Text onPress={() => Linking.openURL('http://www.empowerbrokerage.com')} style={{color:'#2185d0',fontSize:15,padding:0,margin:0}}>T65 Locator</Text></Text>
                         </View>
 
                     </ActionSheet>
@@ -642,7 +646,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                     <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Save{this.leadIsSaved() && (<>d</>)}</Text>
                                 </TouchableOpacity>
                             </View>
-                            <Text style={{color:'grey',fontSize:15,textAlign:'center',marginBottom:10}}>Build by <Text onPress={() => Linking.openURL('http://www.empowerbrokerage.com')} style={{color:'#2185d0',fontSize:15,padding:0,margin:0}}>Empower Brokerage</Text></Text>
+                            <Text style={{color:'grey',fontSize:15,textAlign:'center',marginBottom:10}}>Built by <Text onPress={() => Linking.openURL('http://www.empowerbrokerage.com')} style={{color:'#2185d0',fontSize:15,padding:0,margin:0}}>T65 Locator</Text></Text>
 
                         </View>
                     </ActionSheet>
