@@ -1,14 +1,15 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { validateAll } from 'indicative/validator';
-import { View, Text, KeyboardAvoidingView, ImageBackground, Alert } from 'react-native';
+import { View, Text, KeyboardAvoidingView, ImageBackground, Alert, TouchableOpacity } from 'react-native';
 import { Input, Button, Icon } from 'react-native-elements';
 import * as Location from 'expo-location';
 import { AuthContext } from '../components/utils/authContext';
 import ActionSheet from "react-native-actions-sheet";
+import ResetPassword from '../components/resetPassword/resetPassword'
 
 export default function SignInScreen() {
 
-    const locationSheetRef: any = React.useRef();
+    const sheetRef: any = React.useRef();
     const [emailAddress, setemailAddress] = useState('baatten@gmail.com');
     const [password, setPassword] = useState('mmm');
     const [isLoading, setisLoading] = useState(false);
@@ -17,8 +18,6 @@ export default function SignInScreen() {
 
     // Similar to componentDidMount and componentDidUpdate:
     useEffect(() => {
-        // Update the document title using the browser API
-
         //checkLocationPermissions();
     });
 
@@ -69,6 +68,10 @@ export default function SignInScreen() {
         setisLoading(false);
     }
 
+    const test = () => {
+        console.log('test')
+    }
+
     return (
 
         <ImageBackground source={require('../../assets/splash.png')} style={{ flex: 1, alignSelf: 'stretch' }}>
@@ -107,13 +110,27 @@ export default function SignInScreen() {
                         </View>
 
                     </View>
-                    <Text style={{ fontSize: 16, color: 'white', alignSelf: 'center', marginTop: 20,opacity:0 }}>
+                    <Text onPress={() => sheetRef.current.setModalVisible()} style={{ fontSize: 16, color: 'white', alignSelf: 'center', marginTop: 20 }}>
                         Did you forget your Password?
                 </Text>
 
                 </View>
 
             </KeyboardAvoidingView>
+            <ActionSheet defaultOverlayOpacity={0.90} ref={sheetRef}
+
+                closeOnPressBack={false}
+                closeOnTouchBackdrop={false}
+                bounceOnOpen={true}
+                containerStyle={{ backgroundColor: '#1D7DD7', height: '100%', minHeight: '100%' }}>
+                <TouchableOpacity onPress={() => sheetRef.current.setModalVisible()}>
+                    <Icon onPress={() => test()}
+                        color='rgba(255,255,255,0.15)'
+                        containerStyle={{ alignSelf: 'flex-end', margin: 20 }} style={{}} name="close"
+                        iconStyle={{ color: 'white', alignSelf: 'center' }} size={16} reverse />
+                </TouchableOpacity>
+                <ResetPassword />
+            </ActionSheet>
         </ImageBackground>
     );
 };
