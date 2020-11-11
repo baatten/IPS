@@ -111,9 +111,14 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
         this.setState(step)
     }
 
+    validEmail(email: string): boolean {
+        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(email);
+    };
+
     async checkIfEmailIsUsed(email: string): Promise<boolean> {
 
-        if (email != null && email != '') {
+        if (email != null && email != '' && this.validEmail(email)) {
             try {
                 const res = await fetch(GLOBALS.BASE_URL + '/api/checkEmailUnique', {
                     method: 'POST',
@@ -245,7 +250,7 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                             </View>
                             <View style={[{ flex: 3, flexDirection: 'column' }]}>
                                 <Text style={{ fontSize: 18, fontWeight: '600', marginBottom: 5, color: '#2185d0' }}>Annual Plan</Text>
-                                <Text style={{ color: 'rgba(0,0,0,0.7)', marginBottom: 5 }}>$99.9 / year</Text>
+                                <Text style={{ color: 'rgba(0,0,0,0.7)', marginBottom: 5 }}>$149.99 / year</Text>
                                 <Text style={{ color: 'rgba(0,0,0,0.7)' }}>Paid yearly</Text>
                             </View>
                         </View>
@@ -257,7 +262,7 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                             </View>
                             <View style={[{ flex: 3, flexDirection: 'column' }]}>
                                 <Text style={{ fontSize: 18, fontWeight: '600', marginBottom: 5, color: '#2185d0' }}>Monthly Plan</Text>
-                                <Text style={{ color: 'rgba(0,0,0,0.7)', marginBottom: 5 }}>$9.99 / month</Text>
+                                <Text style={{ color: 'rgba(0,0,0,0.7)', marginBottom: 5 }}>$14.99 / month</Text>
                                 <Text style={{ color: 'rgba(0,0,0,0.7)' }}>Paid monthly</Text>
                             </View>
                         </View>
