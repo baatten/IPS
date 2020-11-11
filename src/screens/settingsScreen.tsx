@@ -316,7 +316,7 @@ export class SettingsScreen extends React.Component<SettingsProps, settingsState
 export function SettingsStackScreen() {
     return (
         <SettingsStack.Navigator>
-            <SettingsStack.Screen name="Settings" component={SettingsScreen} />
+            <SettingsStack.Screen name="Account" component={SettingsScreen} />
         </SettingsStack.Navigator>
     );
 }

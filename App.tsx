@@ -325,8 +325,8 @@ function HomeTabs() {
           iconName = focused
             ? 'home'
             : 'home';
-        } else if (route.name === 'Settings') {
-          iconName = focused ? 'gear' : 'gear';
+        } else if (route.name === 'Account') {
+          iconName = focused ? 'user' : 'user';
         } else if (route.name === 'Saved Leads') {
           iconName = focused ? 'columns' : 'columns';
         } else { iconName = '' }
@@ -338,7 +338,7 @@ function HomeTabs() {
       tabBarOptions={{ activeTintColor: '#2185d0', inactiveTintColor: 'gray' }}>
       <Tab.Screen name="Home" component={HomeStackScreen} />
       <Tab.Screen name="Saved Leads" component={SavedLeadsStackScreen} />
-      <Tab.Screen name="Settings" component={SettingsStackScreen} />
+      <Tab.Screen name="Account" component={SettingsStackScreen} />
     </Tab.Navigator>
   );
 }

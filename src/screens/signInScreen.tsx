@@ -107,7 +107,7 @@ export default function SignInScreen() {
                         </View>
 
                     </View>
-                    <Text style={{ fontSize: 16, color: 'white', alignSelf: 'center', marginTop: 20 }}>
+                    <Text style={{ fontSize: 16, color: 'white', alignSelf: 'center', marginTop: 20,opacity:0 }}>
                         Did you forget your Password?
                 </Text>
 
