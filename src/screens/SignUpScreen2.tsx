@@ -33,6 +33,8 @@ type settingsState = {
     isCurrentViewValid: boolean,
     currentForm: any,
     subscrptionIndex?: number
+    emailIsfree: boolean,
+    checkingEmail: boolean
 }
 
 export class SignUpScreen extends React.Component<Props, settingsState> {
@@ -52,13 +54,15 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
         this.wizard = React.createRef();
 
         this.state = {
-            user: { name: '', surname: '', address: '', city: '', state: '', zipCode: '', phone: '',email:'',password:'' },
+            user: { name: '', surname: '', address: '', city: '', state: '', zipCode: '', phone: '', email: '', password: '' },
             isLoading: false,
             isFirstStep: true,
             isLastStep: false,
             currentStep: 2,
             isCurrentViewValid: false,
-            currentForm: this.formUser
+            currentForm: this.formUser,
+            emailIsfree: false,
+            checkingEmail: false
         }
     }
 
@@ -107,18 +111,66 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
         this.setState(step)
     }
 
+    async checkIfEmailIsUsed(email: string): Promise<boolean> {
+
+        if (email != null && email != '') {
+            try {
+                const res = await fetch(GLOBALS.BASE_URL + '/api/checkEmailUnique', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email })
+                })
+                if (res.status === 200) {
+
+                    const data = await res.json();
+
+                    if (data) {
+
+                        const emailCanBeUsed = data.emailIsreadyForUse;
+
+                        if (emailCanBeUsed)
+                            this.setState({ emailIsfree: true, checkingEmail: false }, () => {
+                                this.formUser.validateForm()
+                            })
+                        else
+                            this.setState({ emailIsfree: false, checkingEmail: true }, () => {
+                                this.formUser.validateForm()
+                            })
+                    }
+                    else {
+
+                    }
+
+                } else {
+
+                }
+            } catch (error) {
+                console.error('An unexpected error happened occurred:', error)
+            }
+        }
+        return true;
+    }
+
     render() {
 
         const stepList = [
             {
                 content: <Formik innerRef={p => (this.formUser = p)} enableReinitialize
                     initialValues={{ name: this.state.user.name, surname: this.state.user.surname, email: this.state.user.email, password: this.state.user.password }}
-                    validateOnChange
+                    validateOnBlur
 
                     validationSchema={Yup.object({
                         name: Yup.string()
                             .min(2, 'Minimum 2 characters')
-                            .required('Required')
+                            .required('Required'),
+                        email: Yup.string()
+                            .required()
+                            .min(5)
+                            .email()
+                            .test('Email is unique',
+                                'The email you entered already has an account',
+                                email => !(this.state.checkingEmail && !this.state.emailIsfree)
+                            )
                     })}
                     onSubmit={(values, { setSubmitting }) => {
 
@@ -143,7 +195,7 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                                     <Input errorMessage={errors.surname} onChangeText={handleChange('surname')} label='Surname' placeholder="Surname" value={values.surname} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }} inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
                                 </View>
                             </View>
-                            <Input errorMessage={errors.email} onChangeText={handleChange('email')} label='E-mail' placeholder="Enter your e-mail" value={values.email} errorStyle={{ color: 'red' }} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }} inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
+                            <Input errorMessage={errors.email} onEndEditing={() => this.checkIfEmailIsUsed(values.email)} onChangeText={handleChange('email')} label='E-mail' placeholder="Enter your e-mail" value={values.email} errorStyle={{ color: 'red' }} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }} inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
                             <Input errorMessage={errors.password} onChangeText={handleChange('password')} label='Password' placeholder="Enter your password" value={values.password} errorStyle={{ color: 'red' }} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }} inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
                         </View>
                     )}
