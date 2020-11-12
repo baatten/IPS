@@ -195,6 +195,8 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
     async startCall() {
 
+        this.setState({isLoading:true})
+
         this.saveLeadInteraction(this.state.activeLead!, this.state.activeIndex!, 'call');
 
         Linking.openURL(`tel:${this.state.activeLead?.phone}`)

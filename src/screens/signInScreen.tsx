@@ -1,27 +1,47 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { validateAll } from 'indicative/validator';
-import { View, Text, KeyboardAvoidingView, ImageBackground, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, KeyboardAvoidingView, ImageBackground, ScrollView, TouchableOpacity, Modal, Keyboard, Alert } from 'react-native';
 import { Input, Button, Icon } from 'react-native-elements';
 import * as Location from 'expo-location';
 import { AuthContext } from '../components/utils/authContext';
 import ActionSheet from "react-native-actions-sheet";
-import ResetPassword from '../components/resetPassword/resetPassword'
+import GLOBALS from '../globals';
 
-export default function SignInScreen() {
 
-    const sheetRef: any = React.useRef();
-    const [emailAddress, setemailAddress] = useState('baatten@gmail.com');
-    const [password, setPassword] = useState('mmm');
-    const [isLoading, setisLoading] = useState(false);
-    const [SignUpErrors, setSignUpErrors] = useState({});
-    const { signIn, signUp, checkPermissions, user }: any = useContext(AuthContext);
+type SignInScreenState = {
 
-    // Similar to componentDidMount and componentDidUpdate:
-    useEffect(() => {
-        //checkLocationPermissions();
-    });
+    emailAddress: string
+    password: string
+    isLoading: boolean
+    SignUpErrors?: any
+    isSendingEmail: boolean
+    didSendEmail: boolean
+    email: string
+    securityCode: string
+    modelIsOpen: boolean
+    passwordWasResat: boolean
+}
 
-    const handleSignIn = async () => {
+export default class SignInScreen extends React.Component<any, SignInScreenState> {
+
+    static contextType = AuthContext;
+    sheetRef: any;
+
+    constructor(props: any) {
+        super(props)
+
+        this.sheetRef = React.createRef<ActionSheet>();
+
+        this.state = {
+            emailAddress: 'baatten@gmail.com',
+            password: 'mmm', email: '',
+            securityCode: '',
+            isSendingEmail: false,
+            didSendEmail: false, isLoading: false, modelIsOpen: false, passwordWasResat: false
+        };
+    }
+
+    async handleSignIn() {
 
         let { status } = await Location.getPermissionsAsync();
 
@@ -33,8 +53,8 @@ export default function SignInScreen() {
             };
 
             const data = {
-                email: emailAddress,
-                password: password
+                email: this.state.emailAddress,
+                password: this.state.password
             };
 
             const messages = {
@@ -46,91 +66,240 @@ export default function SignInScreen() {
 
             validateAll(data, rules, messages)
                 .then(() => {
-                    console.log('success sign in');
+                    //.log('success sign in');
 
-                    setisLoading(true);
-                    signInf();
+                    this.setState({ isLoading: true })
+                    this.signInf();
 
                 })
                 .catch(err => {
                     const formatError = {};
 
-                    setSignUpErrors(formatError);
+                    //setSignUpErrors(formatError);
                 });
         }
         else
-            checkPermissions();
+            this.context.checkPermissions();
     };
 
-    const signInf = async () => {
+    async signInf() {
 
-        await signIn({ emailAddress, password });
-        setisLoading(false);
+        const emailAddress = this.state.emailAddress;
+        const password = this.state.password;
+
+        await this.context.signIn({ emailAddress, password });
+
+        this.setState({ isLoading: false })
     }
 
-    const test = () => {
-        console.log('test')
+    validEmail(email: string): boolean {
+        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(email);
+    };
+
+    async sendResetPasswordEmail() {
+
+        if (this.validEmail(this.state.email)) {
+
+            //Keyboard.dismiss();
+            this.setState({ isSendingEmail: true })
+
+            try {
+                const res = await fetch(GLOBALS.BASE_URL + '/api/client/sendResetPasswordCode', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(
+                        { email: this.state.email }
+                    ),
+                })
+
+                this.setState({ isSendingEmail: false, didSendEmail: true })
+
+                if (res.status === 200) {
+
+                    //console.log('test works')
+                }
+                else {
+                    console.log('error')
+                }
+            }
+            catch (error) {
+                console.error('An unexpected error happened occurred:', error)
+                //setErrorMsg(error.message)
+            }
+        }
+        else {
+            Alert.alert('You did not enter a valid e-mail.')
+        }
     }
 
-    return (
+    async sendNewPasswordToUser() {
 
-        <ImageBackground source={require('../../assets/splash.png')} style={{ flex: 1, alignSelf: 'stretch' }}>
-            <KeyboardAvoidingView style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', }} behavior="padding" enabled keyboardVerticalOffset={0}>
-                <View style={{ padding: 25 }}>
-                    <Text style={{ color: 'white', fontSize: 30, fontWeight: '700', textAlign: "center", paddingBottom: 10 }}>T65 Locator</Text>
-                    <Text style={{ color: 'white', fontSize: 16, fontWeight: '300', textAlign: "center", paddingBottom: 25, lineHeight: 24 }}>We pride ourselves on our thorough and friendly support. We work in the trenches with you, like no other FMO in the country! </Text>
-                    <Text style={{ color: 'white', fontSize: 20, fontWeight: '500', textAlign: "center", paddingBottom: 15 }}>Please sign in:</Text>
+        if (this.state.securityCode.length == 6) {
 
-                    <Input inputStyle={{ padding: 10 }}
-                        inputContainerStyle={{ borderBottomWidth: 0, }}
-                        containerStyle={{ backgroundColor: 'white', borderTopLeftRadius: 10, borderTopRightRadius: 10, height: 48, marginBottom: 1 }}
-                        placeholder="E-mail"
-                        leftIcon={<Icon name='user' type='font-awesome' />}
-                        leftIconContainerStyle={{ margin: 5 }}
-                        value={emailAddress}
-                        onChangeText={setemailAddress}
-                    />
-                    <Input inputStyle={{ padding: 10 }}
-                        inputContainerStyle={{ borderBottomWidth: 0, }}
-                        containerStyle={{ backgroundColor: 'white', borderBottomLeftRadius: 10, borderBottomRightRadius: 10, height: 48, marginBottom: 5 }}
-                        placeholder="Password"
-                        leftIcon={<Icon name='lock' type='font-awesome' />}
-                        leftIconContainerStyle={{ margin: 5 }}
-                        value={password}
-                        onChangeText={setPassword}
-                        secureTextEntry={true} autoCapitalize='none'
-                    />
+            this.setState({ isSendingEmail: true })
 
-                    <View style={[{ flexDirection: 'row', width: '100%' }]}>
-                        <View style={[{ flexDirection: 'column', width: '50%' }]}>
-                            <Button loading={isLoading} style={{ width: '100%' }} buttonStyle={{ margin: 0, marginTop: 5, padding: 15, borderRadius: 10 }} title="Sign in" onPress={() => handleSignIn()} />
+            try {
+                const res = await fetch(GLOBALS.BASE_URL + '/api/client/resetPasswordWithCode', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(
+                        { email: this.state.email, code: this.state.securityCode }
+                    ),
+                })
+
+                if (res.status === 200) {
+
+                    this.setState({ passwordWasResat: true })
+                }
+                else {
+                    console.log('error')
+                    this.setState({ isSendingEmail: false, didSendEmail: true })
+                }
+            }
+            catch (error) {
+                console.error('An unexpected error happened occurred:', error)
+                //setErrorMsg(error.message)
+            }
+        }
+        else {
+            Alert.alert('You did not enter a valid e-mail.')
+        }
+
+    }
+
+    emailIsValid = (): boolean => {
+
+        return !this.validEmail(this.state.email);
+    }
+
+    closeModal() {
+
+        this.setState({
+            email: '',
+            securityCode: '',
+            isSendingEmail: false,
+            didSendEmail: false,
+            modelIsOpen: false,
+            passwordWasResat: false
+        });
+    }
+
+    render() {
+
+        const context = this.context;
+
+        return (
+            <>
+                <ImageBackground source={require('../../assets/splash.png')} style={{ flex: 1, alignSelf: 'stretch' }}>
+                    <KeyboardAvoidingView style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', }} behavior="padding" enabled keyboardVerticalOffset={0}>
+                        <View style={{ padding: 25 }}>
+                            <Text style={{ color: 'white', fontSize: 30, fontWeight: '700', textAlign: "center", paddingBottom: 10 }}>T65 Locator</Text>
+                            <Text style={{ color: 'white', fontSize: 16, fontWeight: '300', textAlign: "center", paddingBottom: 25, lineHeight: 24 }}>We pride ourselves on our thorough and friendly support. We work in the trenches with you, like no other FMO in the country! </Text>
+                            <Text style={{ color: 'white', fontSize: 20, fontWeight: '500', textAlign: "center", paddingBottom: 15 }}>Please sign in:</Text>
+
+                            <Input inputStyle={{ padding: 10 }}
+                                inputContainerStyle={{ borderBottomWidth: 0, }}
+                                containerStyle={{ backgroundColor: 'white', borderTopLeftRadius: 10, borderTopRightRadius: 10, height: 48, marginBottom: 1 }}
+                                placeholder="E-mail"
+                                leftIcon={<Icon name='user' type='font-awesome' />}
+                                leftIconContainerStyle={{ margin: 5 }}
+                                value={this.state.emailAddress}
+                                onChangeText={(text) => this.setState({ emailAddress: text })}
+                            />
+                            <Input inputStyle={{ padding: 10 }}
+                                inputContainerStyle={{ borderBottomWidth: 0, }}
+                                containerStyle={{ backgroundColor: 'white', borderBottomLeftRadius: 10, borderBottomRightRadius: 10, height: 48, marginBottom: 5 }}
+                                placeholder="Password"
+                                leftIcon={<Icon name='lock' type='font-awesome' />}
+                                leftIconContainerStyle={{ margin: 5 }}
+                                value={this.state.password}
+                                onChangeText={(text => this.setState({ password: text }))}
+                                secureTextEntry={true} autoCapitalize='none'
+                            />
+
+                            <View style={[{ flexDirection: 'row', width: '100%' }]}>
+                                <View style={[{ flexDirection: 'column', width: '50%' }]}>
+                                    <Button loading={this.state.isLoading} style={{ width: '100%' }} buttonStyle={{ margin: 0, marginTop: 5, padding: 15, borderRadius: 10 }} title="Sign in" onPress={() => this.handleSignIn()} />
+                                </View>
+                                <View style={[{ flexDirection: 'column', width: '50%' }]}>
+                                    <Button buttonStyle={{ margin: 0, marginTop: 5, marginLeft: 10, padding: 15, borderRadius: 10, backgroundColor: 'gray' }} title="Register" onPress={() => this.context.signUp()} />
+                                </View>
+                            </View>
+                            <Button type='clear' title='Forgot your Password?' onPress={() => this.setState({ modelIsOpen: true })}
+                                style={{ alignSelf: 'center', marginTop: 5 }} titleStyle={{ color: 'white' }} />
                         </View>
-                        <View style={[{ flexDirection: 'column', width: '50%' }]}>
-                            <Button buttonStyle={{ margin: 0, marginTop: 5, marginLeft: 10, padding: 15, borderRadius: 10, backgroundColor: 'gray' }} title="Register" onPress={() => signUp()} />
-                        </View>
 
+                    </KeyboardAvoidingView>
+
+                </ImageBackground>
+
+                <Modal animationType="slide" presentationStyle='fullScreen' visible={this.state.modelIsOpen}>
+                    <View style={{ backgroundColor: '#1D7DD7', height: '100%', flex: 1, alignSelf: 'stretch' }}>
+
+                        <Icon color='rgba(255,255,255,0.15)' onPress={() => this.closeModal()} containerStyle={{ alignSelf: 'flex-end', marginTop: 50, marginRight: 25, zIndex: 99 }} style={{}} name="close" iconStyle={{ color: 'white', alignSelf: 'center', marginLeft: 2, marginTop: 1, zIndex: 999 }} size={18} reverse />
+
+                        <KeyboardAvoidingView behavior='position' keyboardVerticalOffset={-130} style={{ marginLeft: 25, marginRight: 25, flex: 1, flexDirection: 'column', justifyContent: 'center' }}>
+                            <Icon color='rgba(255,255,255,0.15)' containerStyle={{ alignSelf: 'center', margin: 20 }} style={{}} name="lock" iconStyle={{ color: 'white', alignSelf: 'center' }} size={70} reverse />
+                            <Text style={{ fontSize: 24, fontWeight: '700', textAlign: 'center', color: 'white', marginBottom: 10 }}>Recover password</Text>
+                            {this.state.passwordWasResat ? (
+                                <>
+                                    <Text style={{ fontSize: 16, fontWeight: '400', textAlign: 'center', color: 'white', marginBottom: 20 }}>Your pass was reset and the new pass is in your e-mail inbox. if you don't see it, check your spam folder.</Text>
+                                    <Button title='Sign in now' onPress={() => this.closeModal()}
+                                        buttonStyle={{ padding: 15, backgroundColor: 'rgba(0,0,0,0.20)', borderRadius: 10 }}
+                                        disabledStyle={{ backgroundColor: 'rgba(0,0,0,0.20)' }}
+                                        disabledTitleStyle={{ color: 'rgba(255,255,255,0.5)' }}
+                                        containerStyle={{ borderRadius: 0 }} />
+                                </>
+                            ) : (
+                                    !this.state.didSendEmail ? (
+                                        <>
+                                            <Text style={{ fontSize: 16, fontWeight: '400', textAlign: 'center', color: 'white', marginBottom: 20 }}>We can always help you recover your password by your username.</Text>
+                                            <Input autoFocus={true} inputStyle={{ padding: 10 }}
+                                                inputContainerStyle={{ borderBottomWidth: 0 }}
+                                                containerStyle={{ backgroundColor: 'white', borderRadius: 10, height: 48, marginBottom: 15 }}
+                                                placeholder="Enter e-mail address"
+                                                leftIcon={<Icon color='rgba(0,0,0,0.50)' name='user' type='font-awesome' />}
+                                                leftIconContainerStyle={{ margin: 5 }}
+                                                keyboardType='email-address'
+                                                value={this.state.email}
+                                                onChangeText={(text) => this.setState({ email: text })}
+                                            />
+
+                                            <Button title={!this.emailIsValid() ? 'Reset password' : 'Enter a valid e-mail'} onPress={() => this.sendResetPasswordEmail()} disabled={this.emailIsValid()}
+                                                buttonStyle={{ padding: 15, backgroundColor: 'rgba(0,0,0,0.20)', borderRadius: 10 }}
+                                                disabledStyle={{ backgroundColor: 'rgba(0,0,0,0.20)' }}
+                                                disabledTitleStyle={{ color: 'rgba(255,255,255,0.5)' }}
+                                                containerStyle={{ borderRadius: 0 }} loading={this.state.isSendingEmail} />
+                                        </>
+
+                                    ) : (
+                                            <>
+                                                <Text style={{ fontSize: 16, fontWeight: '400', textAlign: 'center', color: 'white', marginBottom: 20 }}>A security code has been sent to your email. Enter the code here.</Text>
+                                                <Input autoFocus={true} inputStyle={{ padding: 10 }}
+                                                    inputContainerStyle={{ borderBottomWidth: 0 }}
+                                                    containerStyle={{ backgroundColor: 'white', borderRadius: 10, height: 48, marginBottom: 15 }}
+                                                    placeholder="Enter the security code"
+                                                    leftIcon={<Icon color='rgba(0,0,0,0.50)' name='lock' type='font-awesome' />}
+                                                    leftIconContainerStyle={{ margin: 5 }}
+                                                    keyboardType='numeric'
+                                                    value={this.state.securityCode}
+                                                    onChangeText={(text) => this.setState({ securityCode: text })}
+                                                />
+
+                                                <Button title={'Reset password'} onPress={() => this.sendNewPasswordToUser()}
+                                                    buttonStyle={{ padding: 15, backgroundColor: 'rgba(0,0,0,0.20)', borderRadius: 10 }}
+                                                    disabledStyle={{ backgroundColor: 'rgba(0,0,0,0.20)' }}
+                                                    disabledTitleStyle={{ color: 'rgba(255,255,255,0.5)' }}
+                                                    containerStyle={{ borderRadius: 0 }} loading={this.state.isSendingEmail} />
+                                            </>
+                                        )
+                                )}
+
+                        </KeyboardAvoidingView>
                     </View>
-                    <Text onPress={() => sheetRef.current.setModalVisible()} style={{ fontSize: 16, color: 'white', alignSelf: 'center', marginTop: 20 }}>
-                        Did you forget your Password?
-                </Text>
-
-                </View>
-
-            </KeyboardAvoidingView>
-            <ActionSheet defaultOverlayOpacity={0.90} ref={sheetRef}
-
-                closeOnPressBack={false}
-                closeOnTouchBackdrop={false}
-                bounceOnOpen={true}
-                containerStyle={{ backgroundColor: '#1D7DD7', height: '100%', minHeight: '100%' }}>
-                <TouchableOpacity onPress={() => sheetRef.current.setModalVisible()}>
-                    <Icon onPress={() => test()}
-                        color='rgba(255,255,255,0.15)'
-                        containerStyle={{ alignSelf: 'flex-end', margin: 20 }} style={{}} name="close"
-                        iconStyle={{ color: 'white', alignSelf: 'center' }} size={16} reverse />
-                </TouchableOpacity>
-                <ResetPassword />
-            </ActionSheet>
-        </ImageBackground>
-    );
-};
+                </Modal>
+            </>
+        )
+    }
+}

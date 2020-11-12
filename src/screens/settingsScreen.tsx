@@ -4,7 +4,6 @@ import GLOBALS from '../globals';
 import { Button, Card, Input } from 'react-native-elements';
 import { StackNavigationProp, createStackNavigator } from '@react-navigation/stack';
 import { AuthContext } from '../components/utils/authContext';
-import { ScrollView } from 'react-native-gesture-handler';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
