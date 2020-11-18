@@ -23,7 +23,8 @@ type Lead = {
     longitude: number,
     marker?: KmlMarker,
     LeadInteraction?: LeadInteraction[],
-    distance: number
+    distance: number,
+    dobDate:Date
 }
 
 type LeadInteraction = {
@@ -246,14 +247,11 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
         this.cancelSaveDetails()
     }
 
-    monthsToAge65(dob: number) {
+    monthsToAge65(date: Date) {
 
         const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-        //let date:Date = new Date();
-        //date.setFullYear(2020, (dob - 1));
-
-        return 'Turns 65 ' + monthNames[dob - 1] + ' 2020';
+        return 'Turns 65 ' + monthNames[date.getMonth()] + ' ' + date.getFullYear();
     }
 
     removeSavedLead() {
@@ -327,7 +325,7 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
                                     }}>{lead.firstname} {lead.lastName}</ListItem.Title>
                                     <ListItem.Subtitle style={{ color: 'grey' }}>{lead.address}, {lead.city}</ListItem.Subtitle>
                                 </ListItem.Content>
-                                <ListItem.Subtitle >{this.monthsToAge65(lead.dobmon)}</ListItem.Subtitle>
+                                <ListItem.Subtitle >{this.monthsToAge65(new Date(lead.dobDate || ''))}</ListItem.Subtitle>
                             </ListItem>
                         ))}
                     <ActionSheet ref={this.sheetRef} bounceOnOpen={true} onClose={() => this.setState({ savingLead: false })}>
@@ -344,7 +342,7 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
                                     <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.zipCode} {this.state.activeLead?.county}</Text>
                                 </View>
                                 <View style={[{ flex: 1, flexDirection: 'column', borderWidth: 1, borderColor: '#2185d0', borderRadius: 10, padding: 10 }]}>
-                                    <Text style={{ textAlign: 'center', color: '#2185d0', fontSize: 13 }}>{this.monthsToAge65(this.state.activeLead?.dobmon)}</Text>
+                                    <Text style={{ textAlign: 'center', color: '#2185d0', fontSize: 13 }}>{this.monthsToAge65(new Date(this.state.activeLead?.dobDate || ''))}</Text>
                                 </View>
                             </View>
 

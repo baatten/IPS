@@ -26,7 +26,8 @@ type Lead = {
     longitude: number,
     marker?: KmlMarker,
     LeadInteraction?: LeadInteraction[],
-    distance: number
+    distance: number,
+    dobDate: Date
 }
 
 type LeadInteraction = {
@@ -195,7 +196,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
     async startCall() {
 
-        this.setState({isLoading:true})
+        this.setState({ isLoading: true })
 
         this.saveLeadInteraction(this.state.activeLead!, this.state.activeIndex!, 'call');
 
@@ -210,8 +211,8 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
             //LAT: 31.8160381           LAT: 32.7762719         30.267153
             //LON: -99.5120986          LON: -96.7968559        -97.7430608
 
-            const location: Location = { latitude: 30.267153, longitude: -97.7430608 }
-            //const location = this.state.currentLocation;
+            //const location: Location = { latitude: 30.267153, longitude: -97.7430608 }
+            const location = this.state.currentLocation;
 
             this.setState({ isLoading: true })
 
@@ -404,14 +405,11 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
     }
 
-    monthsToAge65(dob: number) {
+    monthsToAge65(date: Date) {
 
         const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-        //let date:Date = new Date();
-        //date.setFullYear(2020, (dob - 1));
-
-        return 'Turns 65 ' + monthNames[dob - 1] + ' 2020';
+        return 'Turns 65 ' + monthNames[date.getMonth()] + ' ' + date.getFullYear();
     }
 
     getPinColorForLead(lead: Lead) {
@@ -503,7 +501,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                     <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.zipCode} {this.state.activeLead?.county}</Text>
                                 </View>
                                 <View style={[{ flex: 1, flexDirection: 'column', borderWidth: 1, borderColor: '#2185d0', borderRadius: 10, padding: 10 }]}>
-                                    <Text style={{ textAlign: 'center', color: '#2185d0', fontSize: 13 }}>{this.monthsToAge65(this.state.activeLead?.dobmon)}</Text>
+                                    <Text style={{ textAlign: 'center', color: '#2185d0', fontSize: 13 }}>{this.monthsToAge65(new Date(this.state.activeLead?.dobDate || ''))}</Text>
                                 </View>
                             </View>
 
@@ -534,7 +532,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                     <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Save{this.leadIsSaved() && (<>d</>)}</Text>
                                 </TouchableOpacity>
                             </View>
-                            <Text style={{color:'grey',fontSize:15,textAlign:'center',marginBottom:10}}>Built by <Text onPress={() => Linking.openURL('http://www.empowerbrokerage.com')} style={{color:'#2185d0',fontSize:15,padding:0,margin:0}}>T65 Locator</Text></Text>
+                            <Text style={{ color: 'grey', fontSize: 15, textAlign: 'center', marginBottom: 10 }}>Built by <Text onPress={() => Linking.openURL('http://www.empowerbrokerage.com')} style={{ color: '#2185d0', fontSize: 15, padding: 0, margin: 0 }}>T65 Locator</Text></Text>
                         </View>
 
                     </ActionSheet>
@@ -595,7 +593,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                         }}>{lead.firstname} {lead.lastName}</ListItem.Title>
                                         <ListItem.Subtitle style={{ color: 'grey' }}>{lead.address}, {lead.city}</ListItem.Subtitle>
                                     </ListItem.Content>
-                                    <ListItem.Subtitle >{this.monthsToAge65(lead.dobmon)}</ListItem.Subtitle>
+                                    <ListItem.Subtitle >{this.monthsToAge65(new Date(lead.dobDate || ''))}</ListItem.Subtitle>
                                 </ListItem>
                             ))
                         )}
@@ -612,12 +610,12 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                     <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.zipCode} {this.state.activeLead?.county}</Text>
                                 </View>
                                 <View style={[{ flex: 1, flexDirection: 'column', borderWidth: 1, borderColor: '#2185d0', borderRadius: 10, padding: 10 }]}>
-                                    <Text style={{ textAlign: 'center', color: '#2185d0', fontSize: 13 }}>{this.monthsToAge65(this.state.activeLead?.dobmon)}</Text>
+                                    <Text style={{ textAlign: 'center', color: '#2185d0', fontSize: 13 }}>{this.monthsToAge65(new Date(this.state.activeLead?.dobDate || ''))}</Text>
                                 </View>
                             </View>
 
                             {(this.state.activeLead?.LeadInteraction != null && this.state.activeLead?.LeadInteraction.length > 0 && this.state.activeLead.LeadInteraction[0].notes != null) && (
-                            
+
                                 <View>
                                     <Text style={{ fontSize: 18, fontWeight: '600', marginTop: 10 }}>Notes</Text>
                                     <Text style={{ fontSize: 16, color: 'grey', marginTop: 5 }}>{this.state.activeLead?.LeadInteraction![0].notes}</Text>
@@ -648,7 +646,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                     <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Save{this.leadIsSaved() && (<>d</>)}</Text>
                                 </TouchableOpacity>
                             </View>
-                            <Text style={{color:'grey',fontSize:15,textAlign:'center',marginBottom:10}}>Built by <Text onPress={() => Linking.openURL('http://www.empowerbrokerage.com')} style={{color:'#2185d0',fontSize:15,padding:0,margin:0}}>T65 Locator</Text></Text>
+                            <Text style={{ color: 'grey', fontSize: 15, textAlign: 'center', marginBottom: 10 }}>Built by <Text onPress={() => Linking.openURL('http://www.empowerbrokerage.com')} style={{ color: '#2185d0', fontSize: 15, padding: 0, margin: 0 }}>T65 Locator</Text></Text>
 
                         </View>
                     </ActionSheet>
