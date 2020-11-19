@@ -1,10 +1,10 @@
 import React from 'react';
 import GLOBALS from '../globals';
-import { View, Text, KeyboardAvoidingView, ActivityIndicator, StyleSheet, TouchableOpacity,StatusBar } from 'react-native';
+import { View, Text, KeyboardAvoidingView, ActivityIndicator, StyleSheet, TouchableOpacity, StatusBar } from 'react-native';
 import { Input, Button, Icon, CheckBox } from 'react-native-elements';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthContext } from '../components/utils/authContext';
-import { Formik, } from 'formik';
+import { Formik } from 'formik';
 import Wizard from "react-native-wizard"
 import * as Yup from 'yup';
 
@@ -17,7 +17,9 @@ type Person = {
     city?: string,
     state?: string,
     zipCode?: string,
-    phone: string
+    phone: string,
+    mobile?: string,
+    dateOfBirth?: Date
 }
 
 type Props = {
@@ -43,7 +45,8 @@ type settingsState = {
     checkingEmail: boolean,
     agentTypes: agentType[],
     nonFormValidateError?: string,
-    keyboardIsActive: boolean
+    keyboardIsActive: boolean,
+    contactAccepted: boolean
 }
 
 export class SignUpScreen extends React.Component<Props, settingsState> {
@@ -51,6 +54,7 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
     static contextType = AuthContext;
     formUser: any;
     formPersonal: any;
+    formContacts: any;
     formSubscription: any
     wizard: any;
 
@@ -70,6 +74,7 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
 
         this.formUser = React.createRef();
         this.formPersonal = React.createRef();
+        this.formContacts = React.createRef();
         this.formSubscription = React.createRef();
         this.wizard = React.createRef();
 
@@ -78,21 +83,15 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
             isLoading: false,
             isFirstStep: true,
             isLastStep: false,
-            currentStep: 2,
+            currentStep: 0,
             isCurrentViewValid: false,
             currentForm: this.formUser,
             agentTypes: agentTypes,
             emailIsfree: false,
             checkingEmail: false,
-            keyboardIsActive: false
+            keyboardIsActive: false,
+            contactAccepted: true
         }
-    }
-
-    componentDidMount() {
-
-        this.props.navigation.setOptions({
-
-        })
     }
 
     async saveUserDetails() {
@@ -150,6 +149,8 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
             this.setState({ currentForm: this.formUser })
         else if (step.currentStep == 1)
             this.setState({ currentForm: this.formPersonal })
+        else if (step.currentStep == 2)
+            this.setState({ currentForm: this.formContacts })
 
         this.setState(step)
     }
@@ -212,7 +213,7 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
 
     validateNonForm() {
 
-        if (this.state.currentStep == 2) {
+        if (this.state.currentStep == 3) {
 
             //check if any types has been selected
             let agentTypeIsValid = false
@@ -253,7 +254,7 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                             ),
                         password: Yup.string()
                             .min(6, 'Min. 6 characters')
-                            .required('Required'),
+                            .required('Required')
                     })}
                     onSubmit={(values, { setSubmitting }) => {
 
@@ -287,7 +288,7 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                             <Input errorMessage={errors.email} onEndEditing={() => this.checkIfEmailIsUsed(values.email)}
                                 onChangeText={handleChange('email')} label='E-mail' placeholder="Enter your e-mail" value={values.email} errorStyle={{ color: 'red' }} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }}
                                 inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }}
-                                inputContainerStyle={{ borderBottomWidth: 0, }} keyboardType='email-address'/>
+                                inputContainerStyle={{ borderBottomWidth: 0, }} keyboardType='email-address' />
                             <Input errorMessage={errors.password} onChangeText={handleChange('password')} label='Password'
                                 placeholder="Enter your password" value={values.password} errorStyle={{ color: 'red' }} secureTextEntry labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }}
                                 inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }}
@@ -299,6 +300,7 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
             {
                 content: <Formik innerRef={p => (this.formPersonal = p)}
                     initialValues={this.state.user}
+                    
                     validationSchema={Yup.object({
                         address: Yup.string()
                             .min(4, 'Min. 4 characters')
@@ -311,11 +313,9 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                             .required('Required'),
                         state: Yup.string()
                             .min(2, 'Min. 2 characters')
-                            .required('Required'),
-                        phone: Yup.string()
-                            .min(6, 'Min. 2 characters')
-                            .required('Required'),
+                            .required('Required')
                     })}
+                    
                     onSubmit={(values, { setSubmitting }) => {
 
                         const user = this.state.user;
@@ -324,7 +324,6 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                         user.city = values.city;
                         user.zipCode = values.zipCode;
                         user.state = values.state;
-                        user.phone = values.phone;
 
                         this.setState({ user: user });
 
@@ -343,7 +342,43 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                                     <Input errorMessage={errors.state} onChangeText={handleChange('state')} label='State' placeholder="State" value={values.state} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }} inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
                                 </View>
                             </View>
+                        </>
+                    )}
+                </Formik>
+            },
+            {
+                content: <Formik innerRef={p => (this.formContacts = p)}
+                    initialValues={this.state.user}
+                    
+                    validationSchema={Yup.object({
+                        phone: Yup.string()
+                            .min(8, 'Min. 8 characters')
+                            .required('Required'),
+                        mobile: Yup.string()
+                            .min(8, 'Min. 8 characters')
+                            .required('Required'),
+                        dateOfBirth: Yup.date()
+                            .required('Required')
+                    })}
+                    
+                    onSubmit={(values, { setSubmitting }) => {
+
+                        const user = this.state.user;
+
+                        user.phone = values.phone;
+                        user.mobile = values.mobile;
+                        user.dateOfBirth = values.dateOfBirth;
+                        //user.contactAccepted = values.contactAccepted
+
+                        this.setState({ user: user });
+
+                        this.wizard.current.next()
+                    }} >
+                    {({ values, errors, handleChange, setFieldValue }) => (
+                        <>
                             <Input errorMessage={errors.phone} onChangeText={handleChange('phone')} keyboardType='phone-pad' label='Phone' placeholder="Phone" value={values.phone} errorStyle={{ color: 'red' }} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }} inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
+                            <Input errorMessage={errors.mobile} onChangeText={handleChange('mobile')} keyboardType='phone-pad' label='Mobile phone' placeholder="Mobile Phone" value={values.mobile} errorStyle={{ color: 'red' }} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }} inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
+                            <Input errorMessage={errors.dateOfBirth} onChangeText={handleChange('dateOfBirth')} keyboardType='numbers-and-punctuation' label='Date of birthday' placeholder="MM/DD/YYYY" value={values.dateOfBirth} errorStyle={{ color: 'red' }} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }} inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
                         </>
                     )}
                 </Formik>
@@ -382,11 +417,21 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                             </View>
                         </View>
                     </TouchableOpacity>
+                    <View style={{flexDirection: 'row', backgroundColor: 'transparent', borderColor: '#2185d0', borderRadius: 5 }}>
+                        <View style={[{  flexDirection: 'column' }]}>
+                            <CheckBox wrapperStyle={{ margin: 0, padding: 0 }} onPress={() => this.setState({contactAccepted: !this.state.contactAccepted})} checked={this.state.contactAccepted} containerStyle={{ backgroundColor: 'transparent', borderRadius: 5, borderWidth: 0 }} />
+                        </View>
+                        <View style={[{  flexDirection: 'column',justifyContent:'center' }]}>
+                            <Text style={{lineHeight:20}}>By Signing up you agree to the T65</Text>
+                            <Text style={{ color: '#2185d0' }}>Privacy Policy</Text>
+                        </View>
+                    </View>
+
+
                 </View>
             },
             {
                 content:
-
                     this.state.isLoading ? (
                         <View style={{ padding: 15, alignItems: 'center' }} >
                             <ActivityIndicator size="large" style={{ marginBottom: 25 }} />
@@ -404,20 +449,17 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
         ]
 
         return (
-            <KeyboardAvoidingView style={{ paddingLeft: 15,paddingRight:15, backgroundColor: '#f7fafb', flex: 1, flexDirection: 'column', justifyContent: 'center', }} behavior="padding" enabled keyboardVerticalOffset={0}>
+            <KeyboardAvoidingView style={{ paddingLeft: 15, paddingRight: 15, backgroundColor: '#f7fafb', flex: 1, flexDirection: 'column', justifyContent: 'center', }} behavior="padding" enabled keyboardVerticalOffset={0}>
                 <StatusBar barStyle='dark-content' />
-                <View style={(this.state.currentStep == 1) && ({marginTop:-80})}>
+                <View style={(this.state.currentStep == 1) && ({ marginTop: -80 })}>
                     <Text style={{ color: 'rgba(0,0,0,0.7)', fontSize: 30, fontWeight: '700', textAlign: "center", paddingTop: 50 }}>T65 Locator</Text>
-
                     {!this.state.isLastStep && (
-                            this.state.currentStep == 3 ? (
-                                <Text style={{ color: 'rgba(0,0,0,0.6)', fontSize: 18, fontWeight: '500', textAlign: "center", paddingBottom: 20 }}>Please choose a plan</Text>
-                            ) : (
-                                    <Text style={{ color: 'rgba(0,0,0,0.6)', fontSize: 18, fontWeight: '500', textAlign: "center", paddingBottom: 20 }}>Please sign up</Text>
-                                )
-                    
+                        this.state.currentStep == 3 ? (
+                            <Text style={{ color: 'rgba(0,0,0,0.6)', fontSize: 18, fontWeight: '500', textAlign: "center", paddingBottom: 20 }}>Please choose a plan</Text>
+                        ) : (
+                                <Text style={{ color: 'rgba(0,0,0,0.6)', fontSize: 18, fontWeight: '500', textAlign: "center", paddingBottom: 20 }}>Please sign up</Text>
+                            )
                     )}
-
                     <Wizard ref={this.wizard} steps={stepList}
                         currentStep={({ currentStep, isLastStep, isFirstStep }) => { this.updateStep({ currentStep, isLastStep, isFirstStep }) }}
                     />
@@ -435,19 +477,17 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                                     )}
                             </View>
                             <View style={[{ flex: 1, flexDirection: 'column', marginLeft: 7 }]}>
-                                {this.state.currentStep == 3 ? (
-                                    <Button onPress={() => this.saveUserDetails()}
+                                {this.state.currentStep == 4 ? (
+                                    <Button onPress={() => this.saveUserDetails()} disabled={!this.state.contactAccepted}
                                         buttonStyle={{ backgroundColor: '#2185d0', padding: 10, borderColor: '#2185d0', borderWidth: 1, borderRadius: 10 }}
                                         titleStyle={{ color: 'white', fontSize: 16 }} title='Sign up' />
                                 ) : (
                                         <View>
-
-                                            {this.state.currentStep == 2 || this.state.currentStep == 3 ? (
+                                            {this.state.currentStep == 3 || this.state.currentStep == 4 ? (
                                                 <>
                                                     <Button onPress={() => this.validateNonForm()}
                                                         buttonStyle={{ backgroundColor: '#2185d0', padding: 10, borderColor: '#2185d0', borderWidth: 1, borderRadius: 10 }}
                                                         titleStyle={{ color: 'white', fontSize: 16 }} title='Next' />
-
                                                 </>
                                             ) : (
                                                     <Button onPress={() => this.state.currentForm.handleSubmit()}
@@ -456,7 +496,6 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                                                 )}
                                         </View>
                                     )}
-
                             </View>
 
                         </View>
