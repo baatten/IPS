@@ -99,7 +99,7 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
 
         await this.saveLeadInteraction(lead, index, 'navigation');
 
-        openMap({ travelType: 'drive', start: 'Houston, USA', end: address, provider: 'apple' });
+        openMap({ travelType: 'drive', end: address, provider: 'apple' });
     }
 
     updateFilterDistance(filter: number) {
@@ -341,7 +341,7 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
                                     <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.city}</Text>
                                     <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.zipCode} {this.state.activeLead?.county}</Text>
                                 </View>
-                                <View style={[{ flex: 1, flexDirection: 'column', borderWidth: 1, borderColor: '#2185d0', borderRadius: 10, padding: 10 }]}>
+                                <View style={[{ flex: 1, flexDirection: 'column', borderWidth: 1, borderColor: '#2185d0', borderRadius: 10, padding: 10,marginRight:5 }]}>
                                     <Text style={{ textAlign: 'center', color: '#2185d0', fontSize: 13 }}>{this.monthsToAge65(new Date(this.state.activeLead?.dobDate || ''))}</Text>
                                 </View>
                             </View>
