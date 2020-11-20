@@ -20,6 +20,7 @@ type Person = {
     phone: string,
     mobile?: string,
     dateOfBirth?: Date
+    dateOfBirthString?: string
 }
 
 type Props = {
@@ -104,6 +105,11 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
 
             const account = this.state.user;
 
+            const date = this.getDateFromString(account.dateOfBirthString!);
+
+            if (date != null)
+                account.dateOfBirth = date;
+
             let subscription = 'annually'
 
             if (this.state.subscriptionIndex == 1)
@@ -153,6 +159,62 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
             this.setState({ currentForm: this.formContacts })
 
         this.setState(step)
+    }
+
+    getDateFromString(dateToConvert: string): Date | null {
+
+        let date: Date;
+        const dateStrings = dateToConvert.split('/');
+
+        if (dateStrings.length != 3)
+            return null
+        else {
+            const day = parseInt(dateStrings[1]);
+            const month = parseInt(dateStrings[0]);
+            const year = parseInt(dateStrings[2]);
+
+            date = new Date();
+            date.setUTCFullYear(year);
+            date.setUTCMonth(month - 1,day);
+            date.setUTCHours(0);
+            date.setUTCMinutes(0);
+            date.setUTCSeconds(0);
+            date.setUTCMilliseconds(0);
+
+            return date;
+        }
+    }
+
+    isDateValid(dateToTest: string): boolean {
+
+        if (dateToTest != null) {
+
+            let valid = true;
+            const dateStrings = dateToTest.split('/');
+
+            if (dateStrings.length != 3)
+                return false
+            else {
+
+                const day = parseInt(dateStrings[1]);
+                const month = parseInt(dateStrings[0]);
+                const year = parseInt(dateStrings[2]);
+
+                console.log(year)
+
+                if (day < 1 || day > 31)
+                    valid = false;
+
+                if (month < 1 || month > 12)
+                    valid = false;
+
+                if (isNaN(year) || year < 1900 || year > new Date().getFullYear())
+                    valid = false;
+
+                return valid;
+            }
+        } else
+            return false;
     }
 
     validEmail(email: string): boolean {
@@ -301,20 +363,20 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                 content: <Formik innerRef={p => (this.formPersonal = p)}
                     initialValues={this.state.user}
                     
-                    validationSchema={Yup.object({
-                        address: Yup.string()
-                            .min(4, 'Min. 4 characters')
-                            .required('Required'),
-                        city: Yup.string()
-                            .min(2, 'Min. 2 characters')
-                            .required('Required'),
-                        zipCode: Yup.string()
-                            .min(2, 'Min. 2 characters')
-                            .required('Required'),
-                        state: Yup.string()
-                            .min(2, 'Min. 2 characters')
-                            .required('Required')
-                    })}
+                                        validationSchema={Yup.object({
+                                            address: Yup.string()
+                                                .min(4, 'Min. 4 characters')
+                                                .required('Required'),
+                                            city: Yup.string()
+                                                .min(2, 'Min. 2 characters')
+                                                .required('Required'),
+                                            zipCode: Yup.string()
+                                                .min(2, 'Min. 2 characters')
+                                                .required('Required'),
+                                            state: Yup.string()
+                                                .min(2, 'Min. 2 characters')
+                                                .required('Required')
+                                        })}
                     
                     onSubmit={(values, { setSubmitting }) => {
 
@@ -349,7 +411,7 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
             {
                 content: <Formik innerRef={p => (this.formContacts = p)}
                     initialValues={this.state.user}
-                    
+
                     validationSchema={Yup.object({
                         phone: Yup.string()
                             .min(8, 'Min. 8 characters')
@@ -357,28 +419,27 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                         mobile: Yup.string()
                             .min(8, 'Min. 8 characters')
                             .required('Required'),
-                        dateOfBirth: Yup.date()
+                        dateOfBirthString: Yup.string()
                             .required('Required')
+                            .test('test date', 'Date must be in the format of: MM/DD/YYYY', value => this.isDateValid(value!))
                     })}
-                    
+
                     onSubmit={(values, { setSubmitting }) => {
 
                         const user = this.state.user;
 
                         user.phone = values.phone;
                         user.mobile = values.mobile;
-                        user.dateOfBirth = values.dateOfBirth;
-                        //user.contactAccepted = values.contactAccepted
+                        user.dateOfBirthString = values.dateOfBirthString;
 
                         this.setState({ user: user });
-
                         this.wizard.current.next()
                     }} >
                     {({ values, errors, handleChange, setFieldValue }) => (
                         <>
                             <Input errorMessage={errors.phone} onChangeText={handleChange('phone')} keyboardType='phone-pad' label='Phone' placeholder="Phone" value={values.phone} errorStyle={{ color: 'red' }} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }} inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
                             <Input errorMessage={errors.mobile} onChangeText={handleChange('mobile')} keyboardType='phone-pad' label='Mobile phone' placeholder="Mobile Phone" value={values.mobile} errorStyle={{ color: 'red' }} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }} inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
-                            <Input errorMessage={errors.dateOfBirth} onChangeText={handleChange('dateOfBirth')} keyboardType='numbers-and-punctuation' label='Date of birthday' placeholder="MM/DD/YYYY" value={values.dateOfBirth} errorStyle={{ color: 'red' }} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }} inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
+                            <Input errorMessage={errors.dateOfBirthString} onChangeText={handleChange('dateOfBirthString')} keyboardType='numbers-and-punctuation' label='Date of birthday' placeholder="MM/DD/YYYY" value={values.dateOfBirthString} errorStyle={{ color: 'red' }} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }} inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
                         </>
                     )}
                 </Formik>
@@ -417,17 +478,15 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                             </View>
                         </View>
                     </TouchableOpacity>
-                    <View style={{flexDirection: 'row', backgroundColor: 'transparent', borderColor: '#2185d0', borderRadius: 5 }}>
-                        <View style={[{  flexDirection: 'column' }]}>
-                            <CheckBox wrapperStyle={{ margin: 0, padding: 0 }} onPress={() => this.setState({contactAccepted: !this.state.contactAccepted})} checked={this.state.contactAccepted} containerStyle={{ backgroundColor: 'transparent', borderRadius: 5, borderWidth: 0 }} />
+                    <View style={{ flexDirection: 'row', backgroundColor: 'transparent', borderColor: '#2185d0', borderRadius: 5 }}>
+                        <View style={[{ flexDirection: 'column' }]}>
+                            <CheckBox wrapperStyle={{ margin: 0, padding: 0 }} onPress={() => this.setState({ contactAccepted: !this.state.contactAccepted })} checked={this.state.contactAccepted} containerStyle={{ backgroundColor: 'transparent', borderRadius: 5, borderWidth: 0 }} />
                         </View>
-                        <View style={[{  flexDirection: 'column',justifyContent:'center' }]}>
-                            <Text style={{lineHeight:20}}>By Signing up you agree to the T65</Text>
+                        <View style={[{ flexDirection: 'column', justifyContent: 'center' }]}>
+                            <Text style={{ lineHeight: 20 }}>By signing up you agree to the T65</Text>
                             <Text style={{ color: '#2185d0' }}>Privacy Policy</Text>
                         </View>
                     </View>
-
-
                 </View>
             },
             {
