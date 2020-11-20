@@ -24,7 +24,8 @@ type User = {
     state: string,
     zipCode: string
     email: string,
-    phone:string
+    phone: string,
+    mobile: string
 }
 
 type SettingsProps = {
@@ -43,10 +44,10 @@ export class SettingsScreen extends React.Component<SettingsProps, settingsState
         this.form = React.createRef();
         this.PasswordForm = React.createRef();
 
-        this.state = { user: { name: '', surname: '', address: '', city: '', state: '', zipCode: '', email: '',phone:'' }, isLoading: true, accountDetailsIsValid: true, modalVisible: false }
+        this.state = { user: { name: '', surname: '', address: '', city: '', state: '', zipCode: '', email: '', phone: '', mobile: '' }, isLoading: true, accountDetailsIsValid: true, modalVisible: false }
     }
 
-    componentDidMount(){
+    componentDidMount() {
 
         this.props.navigation.setOptions({
             headerShown: true,
@@ -78,7 +79,7 @@ export class SettingsScreen extends React.Component<SettingsProps, settingsState
 
     async getUser() {
 
-        this.setState({isLoading:true})
+        this.setState({ isLoading: true })
 
         try {
             const res = await fetch(GLOBALS.BASE_URL + '/api/client', {
@@ -87,7 +88,7 @@ export class SettingsScreen extends React.Component<SettingsProps, settingsState
                 body: JSON.stringify({})
             })
 
-            this.setState({isLoading:false})
+            this.setState({ isLoading: false })
 
             if (res.status === 200) {
 
@@ -104,7 +105,8 @@ export class SettingsScreen extends React.Component<SettingsProps, settingsState
                             state: data.user.state,
                             zipCode: data.user.zipCode,
                             email: data.user.email,
-                            phone:data.user.phone
+                            phone: data.user.phone,
+                            mobile:data.user.mobile
                         }
                     })
                 }
@@ -122,7 +124,7 @@ export class SettingsScreen extends React.Component<SettingsProps, settingsState
 
     async saveUserDetails(user: User) {
 
-        this.setState({isLoading:true})
+        this.setState({ isLoading: true })
 
         try {
             const res = await fetch(GLOBALS.BASE_URL + '/api/client/updateDetails', {
@@ -133,7 +135,7 @@ export class SettingsScreen extends React.Component<SettingsProps, settingsState
                 ),
             })
 
-            this.setState({isLoading:false})
+            this.setState({ isLoading: false })
 
             if (res.status === 200) {
 
@@ -200,7 +202,7 @@ export class SettingsScreen extends React.Component<SettingsProps, settingsState
                         .min(2, 'Minimum 2 characters')
                         .required('Required'),
                     state: Yup.string()
-                        .min(3, 'Minimum 3 characters')
+                        .min(2, 'Minimum 2 characters')
                         .required('Required'),
                     zipCode: Yup.number()
                         .min(2, 'Minimum 4 characters')
@@ -209,58 +211,58 @@ export class SettingsScreen extends React.Component<SettingsProps, settingsState
                 })}
                 onSubmit={values => this.saveUserDetails(values)}>
                 {({ handleChange, handleBlur, handleSubmit, values, touched, errors }) => (
-                    
-                    <View style={{backgroundColor:'white', borderWidth:0,shadowRadius:0}}>
+
+                    <View style={{ backgroundColor: 'white', borderWidth: 0, shadowRadius: 0 }}>
                         {this.state.isLoading && (
-                    <View style={{ top: 25,alignSelf:'center', position: 'absolute', zIndex: 99999, backgroundColor: 'white', paddingLeft:25,paddingRight:25,paddingBottom:10,paddingTop:10, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 5 }}>
-                        <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
-                            <View style={[{ flexDirection: 'column' }]}>
-                                <ActivityIndicator color="black" style={{ marginRight: 10 }} />
-                            </View>
-                            <View style={[{ flexDirection: 'column' }]}>
-                                <Text>Loading...</Text>
-                            </View>
+                            <View style={{ top: 25, alignSelf: 'center', position: 'absolute', zIndex: 99999, backgroundColor: 'white', paddingLeft: 25, paddingRight: 25, paddingBottom: 10, paddingTop: 10, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 5 }}>
+                                <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
+                                    <View style={[{ flexDirection: 'column' }]}>
+                                        <ActivityIndicator color="black" style={{ marginRight: 10 }} />
+                                    </View>
+                                    <View style={[{ flexDirection: 'column' }]}>
+                                        <Text>Loading...</Text>
+                                    </View>
 
-                        </View>
-                    </View>
-                    )}
-                        <Card wrapperStyle={{borderWidth:0,shadowRadius:0}} containerStyle={{ borderWidth:0, margin: 0, paddingTop: 15, paddingLeft: 5, paddingRight: 5, paddingBottom: 0, shadowRadius:0 }}>
-                            <View style={[{ borderColor:'orange',flexDirection: 'row', alignItems: 'center' }]}>
-                                <View style={[{borderColor:'orange', flex: 1, flexDirection: 'column', justifyContent: 'flex-start' }]}>
+                                </View>
+                            </View>
+                        )}
+                        <Card wrapperStyle={{ borderWidth: 0, shadowRadius: 0 }} containerStyle={{ borderWidth: 0, margin: 0, paddingTop: 15, paddingLeft: 5, paddingRight: 5, paddingBottom: 0, shadowRadius: 0 }}>
+                            <View style={[{ borderColor: 'orange', flexDirection: 'row', alignItems: 'center' }]}>
+                                <View style={[{ borderColor: 'orange', flex: 1, flexDirection: 'column', justifyContent: 'flex-start' }]}>
 
-                                    <Input errorMessage={errors.name} onChangeText={handleChange('name')} label='Name' placeholder="Name" value={values.name} labelStyle={{ fontSize: 12 }} inputStyle={{borderWidth:1,borderRadius:5,padding:5,marginTop:2,paddingLeft:12,borderColor:'lightgray',color:'#4b4b4b'}}inputContainerStyle={{ borderBottomWidth: 0 }}/>
+                                    <Input errorMessage={errors.name} onChangeText={handleChange('name')} label='Name' placeholder="Name" value={values.name} labelStyle={{ fontSize: 12 }} inputStyle={{ borderWidth: 1, borderRadius: 5, padding: 5, marginTop: 2, paddingLeft: 12, borderColor: 'lightgray', color: '#4b4b4b' }} inputContainerStyle={{ borderBottomWidth: 0 }} />
 
                                 </View>
                                 <View style={[{ flex: 1, flexDirection: 'column' }]}>
 
-                                    <Input errorMessage={errors.surname} onChangeText={handleChange('surname')} label='Surname' placeholder="Surname" value={values.surname} labelStyle={{ fontSize: 12 }}  inputStyle={{borderWidth:1,borderRadius:5,padding:5,marginTop:2,paddingLeft:12,borderColor:'lightgray',color:'#4b4b4b'}}inputContainerStyle={{ borderBottomWidth: 0, }}/>
+                                    <Input errorMessage={errors.surname} onChangeText={handleChange('surname')} label='Surname' placeholder="Surname" value={values.surname} labelStyle={{ fontSize: 12 }} inputStyle={{ borderWidth: 1, borderRadius: 5, padding: 5, marginTop: 2, paddingLeft: 12, borderColor: 'lightgray', color: '#4b4b4b' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
 
                                 </View>
                             </View>
-                            <Input errorMessage={errors.address} onChangeText={handleChange('address')} label='Address' placeholder="Address" value={values.address} errorStyle={{ color: 'red' }} labelStyle={{ fontSize: 12 }} inputStyle={{borderWidth:1,borderRadius:5,padding:5,marginTop:2,paddingLeft:12,borderColor:'lightgray',color:'#4b4b4b'}}inputContainerStyle={{ borderBottomWidth: 0, }} />
-                            <Input errorMessage={errors.city} onChangeText={handleChange('city')} label='City' placeholder="City" value={values.city} errorStyle={{ color: 'red' }} labelStyle={{ fontSize: 12 }}  inputStyle={{borderWidth:1,borderRadius:5,padding:5,marginTop:2,paddingLeft:12,borderColor:'lightgray',color:'#4b4b4b'}}inputContainerStyle={{ borderBottomWidth: 0, }}/>
-                            <View style={[{borderColor:'orange', flexDirection: 'row', alignItems: 'center' }]}>
+                            <Input errorMessage={errors.address} onChangeText={handleChange('address')} label='Address' placeholder="Address" value={values.address} errorStyle={{ color: 'red' }} labelStyle={{ fontSize: 12 }} inputStyle={{ borderWidth: 1, borderRadius: 5, padding: 5, marginTop: 2, paddingLeft: 12, borderColor: 'lightgray', color: '#4b4b4b' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
+                            <Input errorMessage={errors.city} onChangeText={handleChange('city')} label='City' placeholder="City" value={values.city} errorStyle={{ color: 'red' }} labelStyle={{ fontSize: 12 }} inputStyle={{ borderWidth: 1, borderRadius: 5, padding: 5, marginTop: 2, paddingLeft: 12, borderColor: 'lightgray', color: '#4b4b4b' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
+                            <View style={[{ borderColor: 'orange', flexDirection: 'row', alignItems: 'center' }]}>
                                 <View style={[{ flex: 2, flexDirection: 'column' }]}>
-                                    <Input errorMessage={errors.state} onChangeText={handleChange('state')} label='State' placeholder="State" value={values.state} errorStyle={{ color: 'red' }} labelStyle={{ fontSize: 12}}  inputStyle={{borderWidth:1,borderRadius:5,padding:5,marginTop:2,paddingLeft:12,borderColor:'lightgray',color:'#4b4b4b'}}inputContainerStyle={{ borderBottomWidth: 0, }} />
+                                    <Input errorMessage={errors.state} onChangeText={handleChange('state')} label='State' placeholder="State" value={values.state} errorStyle={{ color: 'red' }} labelStyle={{ fontSize: 12 }} inputStyle={{ borderWidth: 1, borderRadius: 5, padding: 5, marginTop: 2, paddingLeft: 12, borderColor: 'lightgray', color: '#4b4b4b' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
                                 </View>
                                 <View style={[{ flex: 1, flexDirection: 'column' }]}>
-                                    <Input errorMessage={errors.zipCode} onChangeText={handleChange('zipCode')} label='Zip' placeholder="Zip" value={values.zipCode} errorStyle={{ color: 'red' }} labelStyle={{ fontSize: 12 }}  inputStyle={{borderWidth:1,borderRadius:5,padding:5,marginTop:2,paddingLeft:12,borderColor:'lightgray',color:'#4b4b4b'}}inputContainerStyle={{ borderBottomWidth: 0, }}/>
+                                    <Input errorMessage={errors.zipCode} onChangeText={handleChange('zipCode')} label='Zip' placeholder="Zip" value={values.zipCode} errorStyle={{ color: 'red' }} labelStyle={{ fontSize: 12 }} inputStyle={{ borderWidth: 1, borderRadius: 5, padding: 5, marginTop: 2, paddingLeft: 12, borderColor: 'lightgray', color: '#4b4b4b' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
                                 </View>
                             </View>
-                            <Input errorMessage={errors.email} onChangeText={handleChange('email')} label='E-mail' placeholder="E-mail" value={values.email} errorStyle={{ color: 'red' }} labelStyle={{ fontSize: 12 }}  inputStyle={{borderWidth:1,borderRadius:5,padding:5,marginTop:2,paddingLeft:12,borderColor:'lightgray',color:'#4b4b4b'}}inputContainerStyle={{ borderBottomWidth: 0, }}/>
-                            <Input errorMessage={errors.phone} onChangeText={handleChange('phone')} label='Phone' placeholder="Phone number" value={values.phone} errorStyle={{ color: 'red' }} labelStyle={{ fontSize: 12 }}  inputStyle={{borderWidth:1,borderRadius:5,padding:5,marginTop:2,paddingLeft:12,borderColor:'lightgray',color:'#4b4b4b'}}inputContainerStyle={{ borderBottomWidth: 0, }}/>
-                        
-                            <View style={[{margin:0,marginTop:-15,borderColor:'orange', flexDirection: 'row', alignItems: 'center',padding:10,paddingBottom:20 }]}>
-                                <View style={[{ flex: 1, flexDirection: 'column', marginRight:7 }]}>
+                            <Input errorMessage={errors.email} onChangeText={handleChange('email')} label='E-mail' placeholder="E-mail" value={values.email} errorStyle={{ color: 'red' }} labelStyle={{ fontSize: 12 }} inputStyle={{ borderWidth: 1, borderRadius: 5, padding: 5, marginTop: 2, paddingLeft: 12, borderColor: 'lightgray', color: '#4b4b4b' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
+                            <Input errorMessage={errors.phone} onChangeText={handleChange('phone')} label='Phone' placeholder="Phone number" value={values.phone} errorStyle={{ color: 'red' }} labelStyle={{ fontSize: 12 }} inputStyle={{ borderWidth: 1, borderRadius: 5, padding: 5, marginTop: 2, paddingLeft: 12, borderColor: 'lightgray', color: '#4b4b4b' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
+                            <Input errorMessage={errors.mobile} onChangeText={handleChange('mobile')} label='Mobile' placeholder="Mobile number" value={values.mobile} errorStyle={{ color: 'red' }} labelStyle={{ fontSize: 12 }} inputStyle={{ borderWidth: 1, borderRadius: 5, padding: 5, marginTop: 2, paddingLeft: 12, borderColor: 'lightgray', color: '#4b4b4b' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
+                            <View style={[{ margin: 0, marginTop: -15, borderColor: 'orange', flexDirection: 'row', alignItems: 'center', padding: 10, paddingBottom: 20 }]}>
+                                <View style={[{ flex: 1, flexDirection: 'column', marginRight: 7 }]}>
 
-                                <Button onPress={() => this.setModalVisible(true)} buttonStyle={{ backgroundColor: 'gray',padding:15,borderRadius:10 }} titleStyle={{  color: 'white',fontSize:16 }} title='Change Password' />
+                                    <Button onPress={() => this.setModalVisible(true)} buttonStyle={{ backgroundColor: 'gray', padding: 15, borderRadius: 10 }} titleStyle={{ color: 'white', fontSize: 16 }} title='Change Password' />
                                 </View>
-                                <View style={[{ flex: 1, flexDirection: 'column',marginLeft:7 }]}>
+                                <View style={[{ flex: 1, flexDirection: 'column', marginLeft: 7 }]}>
 
-                                <Button loading={this.state.isLoading} onPress={() => this.form.handleSubmit()} buttonStyle={{ backgroundColor: '#2185d0',padding:15,borderRadius:10 }} titleStyle={{ color: 'white',fontSize:16 }} title='Save Profile' />
+                                    <Button loading={this.state.isLoading} onPress={() => this.form.handleSubmit()} buttonStyle={{ backgroundColor: '#2185d0', padding: 15, borderRadius: 10 }} titleStyle={{ color: 'white', fontSize: 16 }} title='Save Profile' />
                                 </View>
                             </View>
-                        
+
                         </Card>
 
                         <Modal animationType="slide" presentationStyle='formSheet' visible={this.state.modalVisible} >
@@ -273,7 +275,7 @@ export class SettingsScreen extends React.Component<SettingsProps, settingsState
                                         <Text style={{ alignSelf: 'center', fontWeight: '500', fontSize: 18, color: 'white' }}>Change password</Text>
                                     </View>
                                     <View style={{ flex: 1, flexDirection: 'column', alignContent: 'flex-end' }}>
-                                        <Button loading={this.state.isLoading} type='clear' titleStyle={{ color: 'white' }} buttonStyle={{ borderRadius: 10, padding: 15 }}  title='Save' onPress={() => { this.PasswordForm.handleSubmit(); }} />
+                                        <Button loading={this.state.isLoading} type='clear' titleStyle={{ color: 'white' }} buttonStyle={{ borderRadius: 10, padding: 15 }} title='Save' onPress={() => { this.PasswordForm.handleSubmit(); }} />
                                     </View>
                                 </View>
 

@@ -48,7 +48,7 @@ type Location = {
     longitude: number
     speed?: number,
     timestamp?: string,
-}
+} | null
 
 type HomeTitleProps = { activeView: number, updateView: any }
 type HomeTitleState = { activeView: number }
@@ -243,14 +243,27 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
     async getLeads() {
 
-        if (this.state.currentLocation != null) {
+        let location: Location = null;
+
+        if (this.state.currentLocation == null) {
+            const GPSData = await Location.getCurrentPositionAsync()
+
+            if (GPSData != null) {
+                location = { latitude: GPSData.coords.latitude, longitude: GPSData.coords.latitude }
+            }
+        }
+        else {
+            location = this.state.currentLocation
+        }
+
+        if (location != null) {
             //GPS test inputs:
             //texas:                    Dallas:                 Austin
             //LAT: 31.8160381           LAT: 32.7762719         30.267153
             //LON: -99.5120986          LON: -96.7968559        -97.7430608
 
             //const location: Location = { latitude: 30.267153, longitude: -97.7430608 }
-            const location = this.state.currentLocation;
+            //const location = this.state.currentLocation;
 
             this.setState({ isLoading: true })
 
@@ -485,7 +498,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
     userLocationChanged(e: any) {
 
-        if (this.state.currentLocation == null) {
+        //if (this.state.currentLocation == null) {
 
             const location: Location = e.nativeEvent.coordinate;
 
@@ -494,7 +507,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                 if (this.state.leads.length < 1)
                     this.getLeads();
             })
-        }
+        //}
     }
 
     render() {

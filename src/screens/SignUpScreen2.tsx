@@ -200,8 +200,6 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                 const month = parseInt(dateStrings[0]);
                 const year = parseInt(dateStrings[2]);
 
-                console.log(year)
-
                 if (day < 1 || day > 31)
                     valid = false;
 
