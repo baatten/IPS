@@ -106,7 +106,7 @@ export class SettingsScreen extends React.Component<SettingsProps, settingsState
                             zipCode: data.user.zipCode,
                             email: data.user.email,
                             phone: data.user.phone,
-                            mobile:data.user.mobile
+                            mobile: data.user.mobile
                         }
                     })
                 }
@@ -207,7 +207,14 @@ export class SettingsScreen extends React.Component<SettingsProps, settingsState
                     zipCode: Yup.number()
                         .min(2, 'Minimum 4 characters')
                         .required('Required')
-                        .integer('must be a number')
+                        .integer('must be a number'),
+
+                    phone: Yup.string()
+                        .min(8, 'Min. 8 characters')
+                        .required('Required'),
+                    mobile: Yup.string()
+                        .min(8, 'Min. 8 characters')
+                        .required('Required'),
                 })}
                 onSubmit={values => this.saveUserDetails(values)}>
                 {({ handleChange, handleBlur, handleSubmit, values, touched, errors }) => (
@@ -249,7 +256,7 @@ export class SettingsScreen extends React.Component<SettingsProps, settingsState
                                     <Input errorMessage={errors.zipCode} onChangeText={handleChange('zipCode')} label='Zip' placeholder="Zip" value={values.zipCode} errorStyle={{ color: 'red' }} labelStyle={{ fontSize: 12 }} inputStyle={{ borderWidth: 1, borderRadius: 5, padding: 5, marginTop: 2, paddingLeft: 12, borderColor: 'lightgray', color: '#4b4b4b' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
                                 </View>
                             </View>
-                            <Input errorMessage={errors.email} onChangeText={handleChange('email')} label='E-mail' placeholder="E-mail" value={values.email} errorStyle={{ color: 'red' }} labelStyle={{ fontSize: 12 }} inputStyle={{ borderWidth: 1, borderRadius: 5, padding: 5, marginTop: 2, paddingLeft: 12, borderColor: 'lightgray', color: '#4b4b4b' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
+                            <Input disabled errorMessage={errors.email} onChangeText={handleChange('email')} label='E-mail' placeholder="E-mail" value={values.email} errorStyle={{ color: 'red' }} labelStyle={{ fontSize: 12 }} inputStyle={{ borderWidth: 1, borderRadius: 5, padding: 5, marginTop: 2, paddingLeft: 12, borderColor: 'lightgray', color: '#4b4b4b' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
                             <Input errorMessage={errors.phone} onChangeText={handleChange('phone')} label='Phone' placeholder="Phone number" value={values.phone} errorStyle={{ color: 'red' }} labelStyle={{ fontSize: 12 }} inputStyle={{ borderWidth: 1, borderRadius: 5, padding: 5, marginTop: 2, paddingLeft: 12, borderColor: 'lightgray', color: '#4b4b4b' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
                             <Input errorMessage={errors.mobile} onChangeText={handleChange('mobile')} label='Mobile' placeholder="Mobile number" value={values.mobile} errorStyle={{ color: 'red' }} labelStyle={{ fontSize: 12 }} inputStyle={{ borderWidth: 1, borderRadius: 5, padding: 5, marginTop: 2, paddingLeft: 12, borderColor: 'lightgray', color: '#4b4b4b' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
                             <View style={[{ margin: 0, marginTop: -15, borderColor: 'orange', flexDirection: 'row', alignItems: 'center', padding: 10, paddingBottom: 20 }]}>

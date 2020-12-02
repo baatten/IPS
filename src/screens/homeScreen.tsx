@@ -191,11 +191,18 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
             radius = parseInt(radiusStore);
         }
 
-        const location = await Location.getCurrentPositionAsync();
+        let location = await Location.getLastKnownPositionAsync()
+        if (location != null)
+            this.setState({ currentLocation: { latitude: location.coords.latitude, longitude: location.coords.longitude } });
+        console.log('last known')
+
+        location = await Location.getCurrentPositionAsync();
+        console.log('current')
 
         this.setState({ filterDistance: radius }, () => {
-
-            this.setState({ currentLocation: { latitude: location.coords.latitude, longitude: location.coords.longitude } });
+            if (location != null)
+                this.setState({ currentLocation: { latitude: location.coords.latitude, longitude: location.coords.longitude } },
+                    () => this.getLeads());
         })
     }
 
@@ -243,18 +250,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
     async getLeads() {
 
-        let location: Location = null;
-
-        if (this.state.currentLocation == null) {
-            const GPSData = await Location.getCurrentPositionAsync()
-
-            if (GPSData != null) {
-                location = { latitude: GPSData.coords.latitude, longitude: GPSData.coords.latitude }
-            }
-        }
-        else {
-            location = this.state.currentLocation
-        }
+        let location = this.state.currentLocation;
 
         if (location != null) {
             //GPS test inputs:
@@ -498,7 +494,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
     userLocationChanged(e: any) {
 
-        //if (this.state.currentLocation == null) {
+        /*if (this.state.currentLocation == null) {
 
             const location: Location = e.nativeEvent.coordinate;
 
@@ -507,7 +503,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                 if (this.state.leads.length < 1)
                     this.getLeads();
             })
-        //}
+        }*/
     }
 
     render() {

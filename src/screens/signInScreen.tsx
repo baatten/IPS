@@ -33,8 +33,8 @@ export default class SignInScreen extends React.Component<any, SignInScreenState
         this.sheetRef = React.createRef<ActionSheet>();
 
         this.state = {
-            emailAddress: 'baatten@gmail.com',
-            password: 'mmm', email: '',
+            emailAddress: '',
+            password: '', email: '',
             securityCode: '',
             isSendingEmail: false,
             didSendEmail: false, isLoading: false, modelIsOpen: false, passwordWasResat: false
