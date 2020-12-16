@@ -1,6 +1,6 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React from 'react';
 import { validateAll } from 'indicative/validator';
-import { View, Text, KeyboardAvoidingView, ImageBackground, ScrollView, TouchableOpacity, Modal, Keyboard, Alert } from 'react-native';
+import { View, Text, KeyboardAvoidingView, ImageBackground, Modal, Alert } from 'react-native';
 import { Input, Button, Icon } from 'react-native-elements';
 import * as Location from 'expo-location';
 import { AuthContext } from '../components/utils/authContext';

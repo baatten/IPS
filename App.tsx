@@ -13,13 +13,14 @@ import { AuthContext } from './src/components/utils/authContext';
 import { LoginReducer, initialState } from './src/components/utils/reducers';
 import { stateConditionString } from './src/components/utils/stateCondition';
 import { createStackNavigator } from '@react-navigation/stack';
-import SplashScreen from './src/screens/splashScreen'
-import SignInScreen from './src/screens/signInScreen'
 import { SignUpScreen } from './src/screens/SignUpScreen2'
 import { SavedLeadsStackScreen } from './src/screens/savedLeads'
-import * as Location from 'expo-location';
+import SplashScreen from './src/screens/splashScreen'
+import SignInScreen from './src/screens/signInScreen'
 import DisabledLocation from './src/screens/DisabledLocation';
 import ActionSheet from "react-native-actions-sheet";
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions'
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -51,6 +52,8 @@ export default function App() {
   const checkPermissions = async () => {
 
     let { status } = await Location.getPermissionsAsync();
+
+
 
     if (status == 'granted') {
 
@@ -276,7 +279,7 @@ export default function App() {
     <>
       <AuthContext.Provider value={authContextValue}>
         <NavigationContainer >
-          <StatusBar barStyle="light-content" hidden={false} backgroundColor="#00BCD4" translucent={false} />
+          <StatusBar barStyle="light-content" hidden={false} backgroundColor="#2185d0" translucent={false} />
           {chooseScreen(state)}
         </NavigationContainer>
       </AuthContext.Provider>
@@ -316,6 +319,9 @@ export default function App() {
 }
 
 function HomeTabs() {
+
+  //StatusBar.setBackgroundColor('#2185d0');
+
   return (
     <Tab.Navigator initialRouteName="Home" screenOptions={({ route }) => ({
       tabBarIcon: ({ focused, color, size }) => {

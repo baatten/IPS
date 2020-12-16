@@ -8,7 +8,8 @@ import ActionSheet from "react-native-actions-sheet";
 import openMap from 'react-native-open-maps';
 import type { KmlMarker, Camera } from 'react-native-maps';
 import Popover, { PopoverPlacement } from 'react-native-popover-view';
-import * as Location from 'expo-location';
+import * as Location from 'expo-location'
+import * as Permissions from 'expo-permissions'
 import AsyncStorage from '@react-native-community/async-storage';
 
 type Lead = {
@@ -191,13 +192,22 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
             radius = parseInt(radiusStore);
         }
 
+        //let { status } = await Location.requestPermissionsAsync();
+        //console.log(status)
+
+        console.log('last known')
         let location = await Location.getLastKnownPositionAsync()
+
+        console.log('test',location)
+
         if (location != null)
             this.setState({ currentLocation: { latitude: location.coords.latitude, longitude: location.coords.longitude } });
-        console.log('last known')
 
-        location = await Location.getCurrentPositionAsync();
         console.log('current')
+        //console.log(await Permissions.getAsync(Permissions.LOCATION));
+        //console.log(await Location.getProviderStatusAsync());
+
+        location = await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.High });
 
         this.setState({ filterDistance: radius }, () => {
             if (location != null)

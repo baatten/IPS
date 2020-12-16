@@ -18,8 +18,8 @@
     "expo-location": "~9.0.0",
     "expo-secure-store": "~9.2.0",
     "expo-splash-screen": "~0.6.2",
-    "expo-status-bar": "~1.0.2",
-    "formik": "^2.2.5",
+    "expo-status-bar": "^1.0.3",
+    "formik": "^2.2.6",
     "indicative": "^7.4.4",
     "react": "16.13.1",
     "react-dom": "16.13.1",
@@ -38,10 +38,10 @@
     "yup": "^0.29.3"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.9",
+    "@babel/core": "^7.12.10",
     "@types/react": "~16.9.35",
-    "@types/react-native": "^0.63.37",
-    "@types/yup": "^0.29.9",
+    "@types/react-native": "^0.63.41",
+    "@types/yup": "^0.29.10",
     "typescript": "~3.9.2"
   },
   "private": true

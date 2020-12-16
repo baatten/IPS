@@ -12,7 +12,7 @@
     },
     "updates": {
       "fallbackToCacheTimeout": 0,
-      "enabled":false
+      "enabled": false
     },
     "assetBundlePatterns": [
       "**/*"
@@ -23,6 +23,9 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "android": {
+      "package": "com.empowerbrokerage.t65"
     }
   }
 }
