@@ -6,6 +6,7 @@ import { StackNavigationProp, createStackNavigator } from '@react-navigation/sta
 import { AuthContext } from '../components/utils/authContext';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const SettingsStack = createStackNavigator();
 
@@ -187,6 +188,7 @@ export class SettingsScreen extends React.Component<SettingsProps, settingsState
         const context = this.context;
 
         return (
+            <ScrollView>
             <Formik innerRef={p => (this.form = p)} enableReinitialize initialValues={this.state.user}
                 validationSchema={Yup.object({
                     name: Yup.string()
@@ -262,7 +264,7 @@ export class SettingsScreen extends React.Component<SettingsProps, settingsState
                             <View style={[{ margin: 0, marginTop: -15, borderColor: 'orange', flexDirection: 'row', alignItems: 'center', padding: 10, paddingBottom: 20 }]}>
                                 <View style={[{ flex: 1, flexDirection: 'column', marginRight: 7 }]}>
 
-                                    <Button onPress={() => this.setModalVisible(true)} buttonStyle={{ backgroundColor: 'gray', padding: 15, borderRadius: 10 }} titleStyle={{ color: 'white', fontSize: 16 }} title='Change Password' />
+                                    <Button onPress={() => this.setModalVisible(true)} buttonStyle={{ backgroundColor: 'gray', padding: 15, borderRadius: 10 }} titleStyle={{ color: 'white', fontSize: 16 }} title='Update Password' />
                                 </View>
                                 <View style={[{ flex: 1, flexDirection: 'column', marginLeft: 7 }]}>
 
@@ -317,6 +319,7 @@ export class SettingsScreen extends React.Component<SettingsProps, settingsState
                     </View>
                 )}
             </Formik>
+            </ScrollView>
         );
     }
 }

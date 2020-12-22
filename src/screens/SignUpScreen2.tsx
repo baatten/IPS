@@ -175,7 +175,7 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
 
             date = new Date();
             date.setUTCFullYear(year);
-            date.setUTCMonth(month - 1,day);
+            date.setUTCMonth(month - 1, day);
             date.setUTCHours(0);
             date.setUTCMinutes(0);
             date.setUTCSeconds(0);
@@ -293,6 +293,26 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
 
     render() {
 
+        /*
+        {!this.state.isLastStep && (
+                        this.state.currentStep == 3 ? (
+                            <Text style={{ color: 'rgba(0,0,0,0.6)', fontSize: 18, fontWeight: '500', textAlign: "center", paddingBottom: 20 }}>Please choose a plan</Text>
+                        ) : (
+                                <Text style={{ color: 'rgba(0,0,0,0.6)', fontSize: 18, fontWeight: '500', textAlign: "center", paddingBottom: 20 }}>Please sign up</Text>
+                            )
+                    )}*/
+
+        let description = 'Please sign up';
+
+        if (!this.state.isLastStep)
+        {
+            if(this.state.currentStep == 3)
+                description = 'Insurance Products You Specialize In'
+
+                if(this.state.currentStep == 4)
+                description = 'Please choose a plan'
+        }  
+
         const stepList = [
             {
                 content: <Formik innerRef={p => (this.formUser = p)} enableReinitialize
@@ -360,22 +380,22 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
             {
                 content: <Formik innerRef={p => (this.formPersonal = p)}
                     initialValues={this.state.user}
-                    
-                                        validationSchema={Yup.object({
-                                            address: Yup.string()
-                                                .min(4, 'Min. 4 characters')
-                                                .required('Required'),
-                                            city: Yup.string()
-                                                .min(2, 'Min. 2 characters')
-                                                .required('Required'),
-                                            zipCode: Yup.string()
-                                                .min(2, 'Min. 2 characters')
-                                                .required('Required'),
-                                            state: Yup.string()
-                                                .min(2, 'Min. 2 characters')
-                                                .required('Required')
-                                        })}
-                    
+
+                    validationSchema={Yup.object({
+                        address: Yup.string()
+                            .min(4, 'Min. 4 characters')
+                            .required('Required'),
+                        city: Yup.string()
+                            .min(2, 'Min. 2 characters')
+                            .required('Required'),
+                        zipCode: Yup.string()
+                            .min(2, 'Min. 2 characters')
+                            .required('Required'),
+                        state: Yup.string()
+                            .min(2, 'Min. 2 characters')
+                            .required('Required')
+                    })}
+
                     onSubmit={(values, { setSubmitting }) => {
 
                         const user = this.state.user;
@@ -510,13 +530,9 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                 <StatusBar barStyle='dark-content' />
                 <View style={(this.state.currentStep == 1) && ({ marginTop: -80 })}>
                     <Text style={{ color: 'rgba(0,0,0,0.7)', fontSize: 30, fontWeight: '700', textAlign: "center", paddingTop: 50 }}>T65 Locator</Text>
-                    {!this.state.isLastStep && (
-                        this.state.currentStep == 3 ? (
-                            <Text style={{ color: 'rgba(0,0,0,0.6)', fontSize: 18, fontWeight: '500', textAlign: "center", paddingBottom: 20 }}>Please choose a plan</Text>
-                        ) : (
-                                <Text style={{ color: 'rgba(0,0,0,0.6)', fontSize: 18, fontWeight: '500', textAlign: "center", paddingBottom: 20 }}>Please sign up</Text>
-                            )
-                    )}
+
+                    <Text style={{ color: 'rgba(0,0,0,0.6)', fontSize: 18, fontWeight: '500', textAlign: "center", paddingBottom: 20 }}>{description}</Text>
+
                     <Wizard ref={this.wizard} steps={stepList}
                         currentStep={({ currentStep, isLastStep, isFirstStep }) => { this.updateStep({ currentStep, isLastStep, isFirstStep }) }}
                     />
