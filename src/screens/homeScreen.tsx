@@ -322,6 +322,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                     return ''
             })
 
+            if(this.state.activeView == 0)
             this.mapRef.current.fitToSuppliedMarkers(markerIds);
         }
     }
@@ -644,7 +645,23 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         }
         else {
             return (
+                <>
+                <Popover arrowShift={0} onRequestClose={() => this.setState({ showRadiusFilter: false })} from={this.filterPopover} isVisible={this.state.showRadiusFilter} popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}>
+                                <FilterDropDown radius={this.state.filterDistance} updateView={(radius: number) => this.changeFilterDistance(radius)} />
+                            </Popover>
                 <ScrollView>
+                {this.state.isLoading && (
+                        <View style={{ top: 25,alignSelf:'center', position: 'absolute', zIndex: 99999, backgroundColor: 'white', paddingLeft: 25, paddingRight: 25, paddingBottom: 10, paddingTop: 10, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 5 }}>
+                            <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
+                                <View style={[{ flexDirection: 'column' }]}>
+                                    <ActivityIndicator color="black" style={{ marginRight: 10 }} />
+                                </View>
+                                <View style={[{ flexDirection: 'column' }]}>
+                                    <Text>Loading data...</Text>
+                                </View>
+                            </View>
+                        </View>
+                    )}
                     {
                         this.state.leads.length > 0 && (
                             this.state.leads.map((lead: Lead, i) => (
@@ -755,6 +772,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
                     </ActionSheet>
                 </ScrollView>
+                </>
             )
         }
     }
