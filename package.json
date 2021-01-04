@@ -33,6 +33,7 @@
     "react-native-reanimated": "^1.13.2",
     "react-native-screens": "~2.10.1",
     "react-native-sensitive-info": "^5.5.8",
+    "react-native-vector-icons": "^7.1.0",
     "react-native-web": "~0.13.7",
     "react-native-wizard": "^2.1.0",
     "yup": "^0.29.3"
@@ -40,7 +41,7 @@
   "devDependencies": {
     "@babel/core": "^7.12.10",
     "@types/react": "~16.9.35",
-    "@types/react-native": "^0.63.42",
+    "@types/react-native": "^0.63.43",
     "@types/yup": "^0.29.11",
     "typescript": "~3.9.2"
   },
