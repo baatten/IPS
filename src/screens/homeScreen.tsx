@@ -198,7 +198,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         console.log('last known')
         let location = await Location.getLastKnownPositionAsync()
 
-        console.log('test',location)
+        console.log('test', location)
 
         if (location != null)
             this.setState({ currentLocation: { latitude: location.coords.latitude, longitude: location.coords.longitude } });
@@ -207,7 +207,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         //console.log(await Permissions.getAsync(Permissions.LOCATION));
         //console.log(await Location.getProviderStatusAsync());
 
-        location = await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.High });
+        location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
 
         this.setState({ filterDistance: radius }, () => {
             if (location != null)
@@ -322,8 +322,8 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                     return ''
             })
 
-            if(this.state.activeView == 0)
-            this.mapRef.current.fitToSuppliedMarkers(markerIds);
+            if (this.state.activeView == 0)
+                this.mapRef.current.fitToSuppliedMarkers(markerIds);
         }
     }
 
@@ -646,132 +646,132 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         else {
             return (
                 <>
-                <Popover arrowShift={0} onRequestClose={() => this.setState({ showRadiusFilter: false })} from={this.filterPopover} isVisible={this.state.showRadiusFilter} popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}>
-                                <FilterDropDown radius={this.state.filterDistance} updateView={(radius: number) => this.changeFilterDistance(radius)} />
-                            </Popover>
-                <ScrollView>
-                {this.state.isLoading && (
-                        <View style={{ top: 25,alignSelf:'center', position: 'absolute', zIndex: 99999, backgroundColor: 'white', paddingLeft: 25, paddingRight: 25, paddingBottom: 10, paddingTop: 10, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 5 }}>
-                            <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
-                                <View style={[{ flexDirection: 'column' }]}>
-                                    <ActivityIndicator color="black" style={{ marginRight: 10 }} />
-                                </View>
-                                <View style={[{ flexDirection: 'column' }]}>
-                                    <Text>Loading data...</Text>
+                    <Popover arrowShift={0} onRequestClose={() => this.setState({ showRadiusFilter: false })} from={this.filterPopover} isVisible={this.state.showRadiusFilter} popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}>
+                        <FilterDropDown radius={this.state.filterDistance} updateView={(radius: number) => this.changeFilterDistance(radius)} />
+                    </Popover>
+                    <ScrollView>
+                        {this.state.isLoading && (
+                            <View style={{ top: 25, alignSelf: 'center', position: 'absolute', zIndex: 99999, backgroundColor: 'white', paddingLeft: 25, paddingRight: 25, paddingBottom: 10, paddingTop: 10, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 5 }}>
+                                <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
+                                    <View style={[{ flexDirection: 'column' }]}>
+                                        <ActivityIndicator color="black" style={{ marginRight: 10 }} />
+                                    </View>
+                                    <View style={[{ flexDirection: 'column' }]}>
+                                        <Text>Loading data...</Text>
+                                    </View>
                                 </View>
                             </View>
-                        </View>
-                    )}
-                    {
-                        this.state.leads.length > 0 && (
-                            this.state.leads.map((lead: Lead, i) => (
-                                <ListItem key={i} bottomDivider onPress={() => this.showLeadData(lead, i)} >
-                                    <ListItem.Content>
-                                        <ListItem.Title style={{
-                                            fontWeight: '600', color: this.getPinColorForLead(lead)
-                                        }}>{lead.firstname} {lead.lastName}</ListItem.Title>
-                                        <ListItem.Subtitle style={{ color: 'grey' }}>{lead.address}, {lead.city}</ListItem.Subtitle>
-                                    </ListItem.Content>
-                                    <ListItem.Subtitle >{this.monthsToAge65(new Date(lead.dobDate || ''))}</ListItem.Subtitle>
-                                </ListItem>
-                            ))
                         )}
-                    <ActionSheet ref={this.sheetRef} bounceOnOpen={true} onClose={() => this.setState({ savingLead: false })}>
-                        <View style={{
-                            borderTopStartRadius: 0, borderTopRightRadius: 0, padding: 20, backgroundColor: 'white',
-                            shadowColor: 'black', shadowOpacity: 0.15, shadowRadius: 5, shadowOffset: { width: 5, height: 50 }
-                        }}>
-                            <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
-                                <View style={[{ flex: 4, flexDirection: 'column' }]}>
-                                    <Text style={styles.titleText}>{this.state.activeLead?.firstname} {this.state.activeLead?.lastName}</Text>
-                                    <Text style={{ fontSize: 16, color: 'gray', marginTop: 5 }}>{this.state.activeLead?.address}</Text>
-                                    <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.city}</Text>
-                                    <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.zipCode} {this.state.activeLead?.county}</Text>
-                                </View>
-                                <View style={[{ flex: 1, flexDirection: 'column', borderWidth: 1, borderColor: '#2185d0', borderRadius: 10, padding: 10 }]}>
-                                    <Text style={{ textAlign: 'center', color: '#2185d0', fontSize: 13 }}>{this.monthsToAge65(new Date(this.state.activeLead?.dobDate || ''))}</Text>
-                                </View>
-                            </View>
-
-                            {(this.state.activeLead?.LeadInteraction != null && this.state.activeLead?.LeadInteraction.length > 0 && this.state.activeLead.LeadInteraction[0].notes != null) && (
-
-                                <View>
-                                    <Text style={{ fontSize: 18, fontWeight: '600', marginTop: 10 }}>Notes</Text>
-                                    <Text style={{ fontSize: 16, color: 'grey', marginTop: 5 }}>{this.state.activeLead?.LeadInteraction![0].notes}</Text>
-                                </View>
+                        {
+                            this.state.leads.length > 0 && (
+                                this.state.leads.map((lead: Lead, i) => (
+                                    <ListItem key={i} bottomDivider onPress={() => this.showLeadData(lead, i)} >
+                                        <ListItem.Content>
+                                            <ListItem.Title style={{
+                                                fontWeight: '600', color: this.getPinColorForLead(lead)
+                                            }}>{lead.firstname} {lead.lastName}</ListItem.Title>
+                                            <ListItem.Subtitle style={{ color: 'grey' }}>{lead.address}, {lead.city}</ListItem.Subtitle>
+                                        </ListItem.Content>
+                                        <ListItem.Subtitle >{this.monthsToAge65(new Date(lead.dobDate || ''))}</ListItem.Subtitle>
+                                    </ListItem>
+                                ))
                             )}
-
-                            <View style={[{ flexDirection: 'row', alignItems: 'center', marginTop: 20, marginBottom: 20 }]}>
-                                <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: '#2185d0', borderRadius: 10, padding: 15, marginRight: 5 }]} onPress={() => this.startNavigation(this.state.activeLead!.address + ' ' +
-                                    this.state.activeLead!.city + ' ' +
-                                    this.state.activeLead!.county + ' ' +
-                                    this.state.activeLead!.state, this.state.activeLead!, this.state.activeIndex!
-                                )}>
-                                    <Icon name="car" type='font-awesome' color='white' />
-                                    <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Navigation</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: '#2185d0', borderRadius: 10, padding: 15, marginLeft: 5, marginRight: 5 }]} onPress={() => Linking.openURL(`tel:${this.state.activeLead?.phone}`)}>
-                                    <Icon name="phone" type='font-awesome' color='white' />
-                                    <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Call</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: this.leadIsSaved() ? ('grey') : ('#2185d0'), borderRadius: 10, padding: 15, marginLeft: 5, marginRight: 5 }]}
-                                    onPress={
-                                        this.leadIsSaved() ?
-                                            () => this.removeSavedLead()
-                                            :
-                                            () => this.openDetails()
-                                    }>
-                                    <Icon name={this.leadIsSaved() ? ('check') : ('plus')} type='font-awesome' color='white' />
-                                    <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Save{this.leadIsSaved() && (<>d</>)}</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <Text style={{ color: 'grey', fontSize: 15, textAlign: 'center', marginBottom: 10 }}>Built by <Text onPress={() => Linking.openURL('http://www.empowerbrokerage.com')} style={{ color: '#2185d0', fontSize: 15, padding: 0, margin: 0 }}>T65 Locator</Text></Text>
-
-                        </View>
-                    </ActionSheet>
-                    <ActionSheet keyboardShouldPersistTaps='always' ref={this.saveLeadSheetRef} bounceOnOpen={true} onClose={() => this.setState({ savingLead: false })}>
-                        <View style={{ borderTopStartRadius: 0, borderTopRightRadius: 0, backgroundColor: 'white', shadowColor: 'black', shadowOpacity: 0.15, shadowRadius: 5, shadowOffset: { width: 5, height: 50 } }}>
-
-                            <View style={[{ flexDirection: 'row', padding: 20, }]}>
-                                <View style={{ flexDirection: 'column' }}>
-                                    <Icon name="user" type='font-awesome' color='white' backgroundColor='#2185d0' style={{ padding: 10, borderRadius: 10 }} />
+                        <ActionSheet ref={this.sheetRef} bounceOnOpen={true} onClose={() => this.setState({ savingLead: false })}>
+                            <View style={{
+                                borderTopStartRadius: 0, borderTopRightRadius: 0, padding: 20, backgroundColor: 'white',
+                                shadowColor: 'black', shadowOpacity: 0.15, shadowRadius: 5, shadowOffset: { width: 5, height: 50 }
+                            }}>
+                                <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
+                                    <View style={[{ flex: 4, flexDirection: 'column' }]}>
+                                        <Text style={styles.titleText}>{this.state.activeLead?.firstname} {this.state.activeLead?.lastName}</Text>
+                                        <Text style={{ fontSize: 16, color: 'gray', marginTop: 5 }}>{this.state.activeLead?.address}</Text>
+                                        <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.city}</Text>
+                                        <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.zipCode} {this.state.activeLead?.county}</Text>
+                                    </View>
+                                    <View style={[{ flex: 1, flexDirection: 'column', borderWidth: 1, borderColor: '#2185d0', borderRadius: 10, padding: 10 }]}>
+                                        <Text style={{ textAlign: 'center', color: '#2185d0', fontSize: 13 }}>{this.monthsToAge65(new Date(this.state.activeLead?.dobDate || ''))}</Text>
+                                    </View>
                                 </View>
-                                <View style={{ flexDirection: 'column', marginLeft: 10 }}>
-                                    <Text style={styles.titleText}>{this.state.activeLead?.firstname} {this.state.activeLead?.lastName}</Text>
-                                    <Text style={{ fontSize: 16, color: 'gray', marginTop: 0 }}>{this.state.activeLead?.address}</Text>
 
-                                    <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.zipCode} {this.state.activeLead?.county}</Text>
+                                {(this.state.activeLead?.LeadInteraction != null && this.state.activeLead?.LeadInteraction.length > 0 && this.state.activeLead.LeadInteraction[0].notes != null) && (
+
+                                    <View>
+                                        <Text style={{ fontSize: 18, fontWeight: '600', marginTop: 10 }}>Notes</Text>
+                                        <Text style={{ fontSize: 16, color: 'grey', marginTop: 5 }}>{this.state.activeLead?.LeadInteraction![0].notes}</Text>
+                                    </View>
+                                )}
+
+                                <View style={[{ flexDirection: 'row', alignItems: 'center', marginTop: 20, marginBottom: 20 }]}>
+                                    <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: '#2185d0', borderRadius: 10, padding: 15, marginRight: 5 }]} onPress={() => this.startNavigation(this.state.activeLead!.address + ' ' +
+                                        this.state.activeLead!.city + ' ' +
+                                        this.state.activeLead!.county + ' ' +
+                                        this.state.activeLead!.state, this.state.activeLead!, this.state.activeIndex!
+                                    )}>
+                                        <Icon name="car" type='font-awesome' color='white' />
+                                        <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Navigation</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: '#2185d0', borderRadius: 10, padding: 15, marginLeft: 5, marginRight: 5 }]} onPress={() => Linking.openURL(`tel:${this.state.activeLead?.phone}`)}>
+                                        <Icon name="phone" type='font-awesome' color='white' />
+                                        <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Call</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: this.leadIsSaved() ? ('grey') : ('#2185d0'), borderRadius: 10, padding: 15, marginLeft: 5, marginRight: 5 }]}
+                                        onPress={
+                                            this.leadIsSaved() ?
+                                                () => this.removeSavedLead()
+                                                :
+                                                () => this.openDetails()
+                                        }>
+                                        <Icon name={this.leadIsSaved() ? ('check') : ('plus')} type='font-awesome' color='white' />
+                                        <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Save{this.leadIsSaved() && (<>d</>)}</Text>
+                                    </TouchableOpacity>
                                 </View>
+                                <Text style={{ color: 'grey', fontSize: 15, textAlign: 'center', marginBottom: 10 }}>Built by <Text onPress={() => Linking.openURL('http://www.empowerbrokerage.com')} style={{ color: '#2185d0', fontSize: 15, padding: 0, margin: 0 }}>T65 Locator</Text></Text>
+
                             </View>
+                        </ActionSheet>
+                        <ActionSheet keyboardShouldPersistTaps='always' ref={this.saveLeadSheetRef} bounceOnOpen={true} onClose={() => this.setState({ savingLead: false })}>
+                            <View style={{ borderTopStartRadius: 0, borderTopRightRadius: 0, backgroundColor: 'white', shadowColor: 'black', shadowOpacity: 0.15, shadowRadius: 5, shadowOffset: { width: 5, height: 50 } }}>
 
-                            <Divider />
+                                <View style={[{ flexDirection: 'row', padding: 20, }]}>
+                                    <View style={{ flexDirection: 'column' }}>
+                                        <Icon name="user" type='font-awesome' color='white' backgroundColor='#2185d0' style={{ padding: 10, borderRadius: 10 }} />
+                                    </View>
+                                    <View style={{ flexDirection: 'column', marginLeft: 10 }}>
+                                        <Text style={styles.titleText}>{this.state.activeLead?.firstname} {this.state.activeLead?.lastName}</Text>
+                                        <Text style={{ fontSize: 16, color: 'gray', marginTop: 0 }}>{this.state.activeLead?.address}</Text>
 
-                            <View style={{ padding: 10 }}>
-                                <Text style={{ fontSize: 18, fontWeight: '600', margin: 10 }}>Add notes to remind yourself of this lead</Text>
-                                <Input value={this.state.activeLeadNotes} onChange={(e) => this.setState({ activeLeadNotes: e.nativeEvent.text })}
-                                    style={{ borderWidth: 0 }}
-                                    inputContainerStyle={{ borderBottomWidth: 0 }}
-                                    inputStyle={{ margin: 0, padding: 0, height: 200, borderWidth: 0 }}
-                                    numberOfLines={10} multiline={true} placeholder='Add your notes here'></Input>
-                            </View>
+                                        <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.zipCode} {this.state.activeLead?.county}</Text>
+                                    </View>
+                                </View>
 
-                            <KeyboardAvoidingView behavior='position' keyboardVerticalOffset={120} style={[{}]}>
                                 <Divider />
-                                <View style={{ flexDirection: 'row', paddingBottom: 30, paddingLeft: 20, paddingRight: 20, paddingTop: 10 }}>
-                                    <TouchableOpacity style={[{ flex: 1, flexDirection: 'column' }]} onPress={() => this.cancelSaveDetails()}>
-                                        <Text style={{ color: 'grey', marginTop: 5, fontSize: 16 }}>Cancel</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'flex-end' }]} onPress={() => this.saveLead()}>
-                                        <Text style={{ color: '#2185d0', marginTop: 5, fontSize: 16 }}>Save</Text>
-                                    </TouchableOpacity>
 
-
+                                <View style={{ padding: 10 }}>
+                                    <Text style={{ fontSize: 18, fontWeight: '600', margin: 10 }}>Add notes to remind yourself of this lead</Text>
+                                    <Input value={this.state.activeLeadNotes} onChange={(e) => this.setState({ activeLeadNotes: e.nativeEvent.text })}
+                                        style={{ borderWidth: 0 }}
+                                        inputContainerStyle={{ borderBottomWidth: 0 }}
+                                        inputStyle={{ margin: 0, padding: 0, height: 200, borderWidth: 0 }}
+                                        numberOfLines={10} multiline={true} placeholder='Add your notes here'></Input>
                                 </View>
-                            </KeyboardAvoidingView>
-                        </View>
 
-                    </ActionSheet>
-                </ScrollView>
+                                <KeyboardAvoidingView behavior='position' keyboardVerticalOffset={120} style={[{}]}>
+                                    <Divider />
+                                    <View style={{ flexDirection: 'row', paddingBottom: 30, paddingLeft: 20, paddingRight: 20, paddingTop: 10 }}>
+                                        <TouchableOpacity style={[{ flex: 1, flexDirection: 'column' }]} onPress={() => this.cancelSaveDetails()}>
+                                            <Text style={{ color: 'grey', marginTop: 5, fontSize: 16 }}>Cancel</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'flex-end' }]} onPress={() => this.saveLead()}>
+                                            <Text style={{ color: '#2185d0', marginTop: 5, fontSize: 16 }}>Save</Text>
+                                        </TouchableOpacity>
+
+
+                                    </View>
+                                </KeyboardAvoidingView>
+                            </View>
+
+                        </ActionSheet>
+                    </ScrollView>
                 </>
             )
         }
