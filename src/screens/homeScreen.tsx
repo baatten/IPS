@@ -86,52 +86,114 @@ class LogoTitle extends React.Component<HomeTitleProps, HomeTitleState> {
     }
 }
 
-type FilterDropDownProps = { radius: number, updateView: any }
-type FilterDropDownState = { radius: number }
+type FilterDropDownProps = { radius: number, months: number, sortingType: string, sortingDirection: number, updateView: any, updateSorting: (sortingType: string) => void }
+type FilterDropDownState = { radius: number, months: number }
 class FilterDropDown extends React.Component<FilterDropDownProps, FilterDropDownState> {
 
     constructor(props: FilterDropDownProps) {
         super(props)
 
-        this.state = { radius: this.props.radius };
+        this.state = { radius: this.props.radius, months: props.months, };
         this.updateView = this.updateView.bind(this)
+        //this.updateSorting = this.updateSorting.bind(this)
     }
 
     updateView(radius: number) {
 
 
-        this.setState({ radius: radius }, () => this.props.updateView(radius))
+        this.setState({ radius: radius }, () => this.props.updateView(radius, this.state.months))
+    }
+
+    updateMonth(months: number) {
+        this.setState({ months: months }, () => this.updateView(this.state.radius))
     }
 
     render() {
 
         return (
-            <>
+            <ScrollView>
                 <ListItem key={0} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateView(1)}>
-                    <ListItem.Title>1 miles radius</ListItem.Title>
-                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon={null} checked={this.state.radius == 1} />
+                    <ListItem.Title>1 mile radius</ListItem.Title>
+                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 1} />
                 </ListItem>
                 <ListItem key={1} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateView(3)}>
                     <ListItem.Title>3 miles radius</ListItem.Title>
-                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon={null} checked={this.state.radius == 3} />
+                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 3} />
                 </ListItem>
                 <ListItem key={2} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateView(5)}>
                     <ListItem.Title>5 miles radius</ListItem.Title>
-                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon={null} checked={this.state.radius == 5} />
+                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 5} />
                 </ListItem>
                 <ListItem key={3} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateView(10)}>
                     <ListItem.Title>10 miles radius</ListItem.Title>
-                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon={null} checked={this.state.radius == 10} />
+                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 10} />
                 </ListItem>
                 <ListItem key={4} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateView(25)}>
                     <ListItem.Title>25 miles radius</ListItem.Title>
-                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon={null} checked={this.state.radius == 25} />
+                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 25} />
                 </ListItem>
                 <ListItem key={5} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateView(50)}>
                     <ListItem.Title>50 miles radius</ListItem.Title>
-                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon={null} checked={this.state.radius == 50} />
+                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 50} />
                 </ListItem>
-            </>
+
+                <ListItem containerStyle={{ backgroundColor: '#eee' }} style={{ height: 5, backgroundColor: 'transparent' }}></ListItem>
+
+                <ListItem key={6} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.props.updateSorting('distance')}>
+                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.props.sortingType == 'distance'} />
+                    <ListItem.Title>Distance</ListItem.Title>
+                    {this.props.sortingType == 'distance' && (
+                        <ListItem.CheckBox size={18} checkedIcon='chevron-up' uncheckedIcon='chevron-down' checked={this.props.sortingDirection == 1} />
+                    )}
+                </ListItem>
+                <ListItem key={7} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.props.updateSorting('birthday')}>
+                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.props.sortingType == 'birthday'} />
+                    <ListItem.Title>Birthday</ListItem.Title>
+                    {this.props.sortingType == 'birthday' && (
+                        <ListItem.CheckBox size={18} checkedIcon='chevron-up' uncheckedIcon='chevron-down' checked={this.props.sortingDirection == 1} />
+                    )}
+                </ListItem>
+
+                <ListItem containerStyle={{ backgroundColor: '#eee' }} style={{ height: 5, backgroundColor: 'transparent' }}></ListItem>
+
+                <ListItem key={8} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(1)}>
+                    <ListItem.Title>1 month</ListItem.Title>
+                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.months == 1} />
+                </ListItem>
+                <ListItem key={9} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(2)}>
+                    <ListItem.Title>2 months</ListItem.Title>
+                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.months == 2} />
+                </ListItem>
+                <ListItem key={10} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(3)}>
+                    <ListItem.Title>3 months</ListItem.Title>
+                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.months == 3} />
+                </ListItem>
+                <ListItem key={11} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(4)}>
+                    <ListItem.Title>4 months</ListItem.Title>
+                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.months == 4} />
+                </ListItem>
+                <ListItem key={12} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(5)}>
+                    <ListItem.Title>5 months</ListItem.Title>
+                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.months == 5} />
+                </ListItem>
+                <ListItem key={13} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(6)}>
+                    <ListItem.Title>6 months</ListItem.Title>
+                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.months == 6 || this.state.months == 0} />
+                </ListItem>
+                <ListItem key={14} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(7)}>
+                    <ListItem.Title>7 months</ListItem.Title>
+                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.months == 7} />
+                </ListItem>
+                <ListItem key={15} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(8)}>
+                    <ListItem.Title>8 months</ListItem.Title>
+                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.months == 8} />
+                </ListItem>
+                <ListItem key={16} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(9)}>
+                    <ListItem.Title>9 months</ListItem.Title>
+                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.months == 9} />
+                </ListItem>
+
+            </ScrollView>
         );
     }
 }
@@ -151,7 +213,10 @@ type HomeState = {
     filterDistance: number
     activeView: number
     currentLocation?: Location,
-    showRadiusFilter: boolean
+    showRadiusFilter: boolean,
+    filterMonths: number,
+    leadSortingType: string,
+    leadSortingDirection: number
 }
 
 export class HomeScreen extends React.Component<HomeProps, HomeState> {
@@ -173,7 +238,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
         this.setStartLocation()
 
-        this.state = { leads: leads, isLoading: true, activeView: 0, filterDistance: 10, savingLead: false, showRadiusFilter: false };
+        this.state = { leads: leads, isLoading: true, activeView: 0, filterDistance: 5, filterMonths: 3, savingLead: false, showRadiusFilter: false, leadSortingType: 'distance', leadSortingDirection: 1 };
     }
 
     async setStartLocation() {
@@ -227,14 +292,57 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         })
     }
 
-    async changeFilterDistance(radius: number) {
+    async changeFilterDistance(radius: number, months: number) {
 
-        this.setState({ filterDistance: radius }, () => {
+        this.setState({ filterDistance: radius, filterMonths: months }, () => {
             this.setState({ showRadiusFilter: false })
             this.getLeads()
         })
 
         await AsyncStorage.setItem('radius', radius.toString());
+    }
+
+    updateLeadSorting(sortingType: string) {
+
+        this.setState({ showRadiusFilter: false, isLoading: true }, () => {
+
+            let direction = this.state.leadSortingDirection;
+
+            const leadsToSort = [...this.state.leads];
+
+            if (this.state.leadSortingType == sortingType) {
+                if (direction == 0)
+                    direction = 1
+                else
+                    direction = 0
+            }
+
+            const leads = this.sortLeads(leadsToSort, sortingType, direction)
+
+            this.setState({ leads: leads, leadSortingType: sortingType, leadSortingDirection: direction }, () => {
+                this.setState({ isLoading: false })
+            })
+        })
+
+    }
+
+    sortLeads(leads: Lead[], sortingType: string, direction: number): Lead[] {
+
+        if (sortingType == 'distance') {
+            if (direction == 0)
+                leads.sort((a, b) => b.distance - a.distance);
+            else
+                leads.sort((a, b) => a.distance - b.distance);
+        }
+
+        if (sortingType == 'birthday') {
+            if (direction == 0)
+                leads.sort((a, b) => b.dobmon - a.dobmon);
+            else
+                leads.sort((a, b) => a.dobmon - b.dobmon);
+        }
+
+        return leads;
     }
 
     changeView = (viewIndex: number) => {
@@ -277,7 +385,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                 const res = await fetch(GLOBALS.BASE_URL + '/api/client/getLeads', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ location: { lat: location.latitude, lon: location.longitude }, radius: this.state.filterDistance })
+                    body: JSON.stringify({ location: { lat: location.latitude, lon: location.longitude }, radius: this.state.filterDistance, filterMonths: this.state.filterMonths })
                 })
 
                 this.setState({ isLoading: false })
@@ -289,8 +397,9 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                     if (data) {
 
                         //console.log(data.leads[0])
+                        const leads = this.sortLeads(data.leads, this.state.leadSortingType, this.state.leadSortingDirection)
 
-                        this.setState({ leads: data.leads }, () => {
+                        this.setState({ leads: leads }, () => {
 
                             if (this.state.leads.length > 0)
                                 this.animateViewToMarkers();
@@ -537,7 +646,13 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                     {this.state.currentLocation != undefined && (
                         <>
                             <Popover arrowShift={0} onRequestClose={() => this.setState({ showRadiusFilter: false })} from={this.filterPopover} isVisible={this.state.showRadiusFilter} popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}>
-                                <FilterDropDown radius={this.state.filterDistance} updateView={(radius: number) => this.changeFilterDistance(radius)} />
+                                <FilterDropDown
+                                    updateSorting={(sortingType: string) => this.updateLeadSorting(sortingType)}
+                                    sortingType={this.state.leadSortingType}
+                                    sortingDirection={this.state.leadSortingDirection}
+                                    radius={this.state.filterDistance}
+                                    months={this.state.filterMonths}
+                                    updateView={(radius: number, months: number) => this.changeFilterDistance(radius, months)} />
                             </Popover>
 
                             <MapView ref={this.mapRef} showsMyLocationButton={true} onUserLocationChange={(e) => this.userLocationChanged(e)} initialRegion={{ latitude: this.state.currentLocation.latitude, longitude: this.state.currentLocation.longitude, latitudeDelta: 0.5, longitudeDelta: 0.5 }} style={{ flex: 1, height: 400, width: '100%' }} showsUserLocation={true}>
@@ -647,7 +762,11 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
             return (
                 <>
                     <Popover arrowShift={0} onRequestClose={() => this.setState({ showRadiusFilter: false })} from={this.filterPopover} isVisible={this.state.showRadiusFilter} popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}>
-                        <FilterDropDown radius={this.state.filterDistance} updateView={(radius: number) => this.changeFilterDistance(radius)} />
+                        <FilterDropDown
+                            updateSorting={(sortingType: string) => this.updateLeadSorting(sortingType)}
+                            sortingType={this.state.leadSortingType}
+                            sortingDirection={this.state.leadSortingDirection}
+                            radius={this.state.filterDistance} months={this.state.filterMonths} updateView={(radius: number, months: number) => this.changeFilterDistance(radius, months)} />
                     </Popover>
                     <ScrollView>
                         {this.state.isLoading && (
@@ -672,7 +791,16 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                             }}>{lead.firstname} {lead.lastName}</ListItem.Title>
                                             <ListItem.Subtitle style={{ color: 'grey' }}>{lead.address}, {lead.city}</ListItem.Subtitle>
                                         </ListItem.Content>
-                                        <ListItem.Subtitle >{this.monthsToAge65(new Date(lead.dobDate || ''))}</ListItem.Subtitle>
+                                        <ListItem.Subtitle style={{ textAlign: 'center' }}>
+                                            <Text>{this.monthsToAge65(new Date(lead.dobDate || '')) + "\n"}
+                                            </Text>
+
+                                            <Text style={{ color: 'grey' }}>
+
+                                                {Math.round(lead.distance) + ' mi. away'}
+                                            </Text>
+                                        </ListItem.Subtitle>
+
                                     </ListItem>
                                 ))
                             )}
