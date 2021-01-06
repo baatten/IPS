@@ -137,62 +137,6 @@ class FilterDropDown extends React.Component<FilterDropDownProps, FilterDropDown
                     <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 50} />
                 </ListItem>
 
-                <ListItem containerStyle={{ backgroundColor: '#eee' }} style={{ height: 5, backgroundColor: 'transparent' }}></ListItem>
-
-                <ListItem key={6} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.props.updateSorting('distance')}>
-                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.props.sortingType == 'distance'} />
-                    <ListItem.Title>Distance</ListItem.Title>
-                    {this.props.sortingType == 'distance' && (
-                        <ListItem.CheckBox size={18} checkedIcon='chevron-up' uncheckedIcon='chevron-down' checked={this.props.sortingDirection == 1} />
-                    )}
-                </ListItem>
-                <ListItem key={7} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.props.updateSorting('birthday')}>
-                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.props.sortingType == 'birthday'} />
-                    <ListItem.Title>Birthday</ListItem.Title>
-                    {this.props.sortingType == 'birthday' && (
-                        <ListItem.CheckBox size={18} checkedIcon='chevron-up' uncheckedIcon='chevron-down' checked={this.props.sortingDirection == 1} />
-                    )}
-                </ListItem>
-
-                <ListItem containerStyle={{ backgroundColor: '#eee' }} style={{ height: 5, backgroundColor: 'transparent' }}></ListItem>
-
-                <ListItem key={8} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(1)}>
-                    <ListItem.Title>1 month</ListItem.Title>
-                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.months == 1} />
-                </ListItem>
-                <ListItem key={9} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(2)}>
-                    <ListItem.Title>2 months</ListItem.Title>
-                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.months == 2} />
-                </ListItem>
-                <ListItem key={10} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(3)}>
-                    <ListItem.Title>3 months</ListItem.Title>
-                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.months == 3} />
-                </ListItem>
-                <ListItem key={11} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(4)}>
-                    <ListItem.Title>4 months</ListItem.Title>
-                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.months == 4} />
-                </ListItem>
-                <ListItem key={12} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(5)}>
-                    <ListItem.Title>5 months</ListItem.Title>
-                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.months == 5} />
-                </ListItem>
-                <ListItem key={13} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(6)}>
-                    <ListItem.Title>6 months</ListItem.Title>
-                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.months == 6 || this.state.months == 0} />
-                </ListItem>
-                <ListItem key={14} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(7)}>
-                    <ListItem.Title>7 months</ListItem.Title>
-                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.months == 7} />
-                </ListItem>
-                <ListItem key={15} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(8)}>
-                    <ListItem.Title>8 months</ListItem.Title>
-                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.months == 8} />
-                </ListItem>
-                <ListItem key={16} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(9)}>
-                    <ListItem.Title>9 months</ListItem.Title>
-                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.months == 9} />
-                </ListItem>
-
             </ScrollView>
         );
     }
@@ -238,7 +182,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
         this.setStartLocation()
 
-        this.state = { leads: leads, isLoading: true, activeView: 0, filterDistance: 5, filterMonths: 3, savingLead: false, showRadiusFilter: false, leadSortingType: 'distance', leadSortingDirection: 1 };
+        this.state = { leads: leads, isLoading: true, activeView: 0, filterDistance: 5, filterMonths: 6, savingLead: false, showRadiusFilter: false, leadSortingType: 'distance', leadSortingDirection: 1 };
     }
 
     async setStartLocation() {
