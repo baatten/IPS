@@ -718,7 +718,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                 </View>
                                 <View style={{ flexDirection: 'column', marginLeft: 10 }}>
                                     <Text style={styles.titleText}>{this.state.activeLead?.firstname} {this.state.activeLead?.lastName}</Text>
-                                    <Text style={{ fontSize: 16, color: 'gray', marginTop: 0 }}>{this.state.activeLead?.address}</Text>
+                                    <Text style={{ fontSize: 16, color: 'gray', marginTop: 5 }}>{this.state.activeLead?.address}</Text>
 
                                     <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.zipCode} {this.state.activeLead?.county}</Text>
                                 </View>
@@ -808,7 +808,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                     <View style={[{ flex: 4, flexDirection: 'column' }]}>
                                         <Text style={styles.titleText}>{this.state.activeLead?.firstname} {this.state.activeLead?.lastName}</Text>
                                         <Text style={{ fontSize: 16, color: 'gray', marginTop: 1 }}>{(Math.round((this.state.activeLead?.distance || 0) * 10)/10)} miles away</Text>
-
+                                        <Text style={{ fontSize: 18, fontWeight: '600', marginTop: 10 }}>Address</Text>
                                         <Text style={{ fontSize: 16, color: 'gray', marginTop: 5 }}>{this.state.activeLead?.address}</Text>
                                         <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.city}</Text>
                                         <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.zipCode} {this.state.activeLead?.county}</Text>
@@ -863,7 +863,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                     </View>
                                     <View style={{ flexDirection: 'column', marginLeft: 10 }}>
                                         <Text style={styles.titleText}>{this.state.activeLead?.firstname} {this.state.activeLead?.lastName}</Text>
-                                        <Text style={{ fontSize: 16, color: 'gray', marginTop: 0 }}>{this.state.activeLead?.address}</Text>
+                                        <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.address}</Text>
 
                                         <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.zipCode} {this.state.activeLead?.county}</Text>
                                     </View>
