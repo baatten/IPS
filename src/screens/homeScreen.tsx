@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView, Text, Linking, TouchableOpacity, KeyboardAvoidingView, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, ScrollView, Text, Linking, TouchableOpacity, KeyboardAvoidingView, ActivityIndicator, AppState } from 'react-native';
 import { Button, ButtonGroup, ListItem, Icon, Input, Divider } from 'react-native-elements';
 import GLOBALS from '../globals';
 import { StackNavigationProp, createStackNavigator } from '@react-navigation/stack';
@@ -200,6 +200,7 @@ type HomeProps = {
 };
 
 type HomeState = {
+    appState: any
     leads: Lead[],
     isLoading: boolean,
     activeLead?: Lead,
@@ -212,7 +213,8 @@ type HomeState = {
     showRadiusFilter: boolean,
     filterMonths: number,
     leadSortingType: string,
-    leadSortingDirection: number
+    leadSortingDirection: number,
+    showLocationUpdated: boolean
 }
 
 export class HomeScreen extends React.Component<HomeProps, HomeState> {
@@ -234,7 +236,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
         this.setStartLocation()
 
-        this.state = { leads: leads, isLoading: true, activeView: 0, filterDistance: 5, filterMonths: 3, savingLead: false, showRadiusFilter: false, leadSortingType: 'distance', leadSortingDirection: 1 };
+        this.state = { appState: AppState.currentState, leads: leads, isLoading: true, activeView: 0, filterDistance: 5, filterMonths: 3, savingLead: false, showRadiusFilter: false, leadSortingType: 'distance', leadSortingDirection: 1, showLocationUpdated: false };
     }
 
     async setStartLocation() {
@@ -253,20 +255,10 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
             radius = parseInt(radiusStore);
         }
 
-        //let { status } = await Location.requestPermissionsAsync();
-        //console.log(status)
-
-        console.log('last known')
         let location = await Location.getLastKnownPositionAsync()
-
-        console.log('test', location)
 
         if (location != null)
             this.setState({ currentLocation: { latitude: location.coords.latitude, longitude: location.coords.longitude } });
-
-        console.log('current')
-        //console.log(await Permissions.getAsync(Permissions.LOCATION));
-        //console.log(await Location.getProviderStatusAsync());
 
         location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
 
@@ -278,6 +270,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
     }
 
     componentDidMount() {
+        AppState.addEventListener('change', this._handleAppStateChange);
 
         this.props.navigation.setOptions({
             headerShown: true,
@@ -287,6 +280,18 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
             headerRight: () => <Button ref={this.filterPopover} onPress={() => this.setState({ showRadiusFilter: true })} icon={<Icon name='map-marked-alt' color='white' size={18} type='font-awesome-5' style={{ color: 'white' }} />} buttonStyle={{ marginRight: 5, backgroundColor: 'transparent' }} />
         })
     }
+
+    componentWillUnmount() {
+        AppState.removeEventListener('change', this._handleAppStateChange);
+    }
+
+    _handleAppStateChange = (nextAppState: any) => {
+        if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+            console.log('App has come to the foreground!');
+        }
+
+        this.setState({ appState: nextAppState });
+    };
 
     async changeFilterDistance(radius: number, months: number) {
 
@@ -374,7 +379,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
             //const location: Location = { latitude: 30.267153, longitude: -97.7430608 }
             //const location = this.state.currentLocation;
 
-            this.setState({ isLoading: true })
+            this.setState({ isLoading: true, showLocationUpdated: false })
 
             try {
                 const res = await fetch(GLOBALS.BASE_URL + '/api/client/getLeads', {
@@ -609,16 +614,18 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
     userLocationChanged(e: any) {
 
-        /*if (this.state.currentLocation == null) {
+        if (this.state.currentLocation == null ||
+            this.state.currentLocation.latitude != e.nativeEvent.coordinate.latitude &&
+            this.state.currentLocation?.longitude != e.nativeEvent.coordinate.longitudeDelta
+        ) {
 
             const location: Location = e.nativeEvent.coordinate;
 
             this.setState({ currentLocation: location }, () => {
 
-                if (this.state.leads.length < 1)
-                    this.getLeads();
+                this.setState({ showLocationUpdated: true })
             })
-        }*/
+        }
     }
 
     render() {
@@ -635,6 +642,17 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                 <View style={[{ flexDirection: 'column' }]}>
                                     <Text>Loading data...</Text>
                                 </View>
+                            </View>
+                        </View>
+                    )}
+                    {this.state.showLocationUpdated && (
+                        <View style={{ top: 25, position: 'absolute', zIndex: 99999, backgroundColor: 'white', paddingLeft: 20, paddingRight: 20, paddingBottom: 10, paddingTop: 10, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 5 }}>
+                            <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
+                                <TouchableOpacity onPress={() => this.getLeads()}>
+                                    <View style={[{ flexDirection: 'column' }]}>
+                                        <Text style={{ color: '#2185d0', fontWeight: '600' }}>Update Data Now</Text>
+                                    </View>
+                                </TouchableOpacity>
                             </View>
                         </View>
                     )}
@@ -667,7 +685,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                             <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
                                 <View style={[{ flex: 4, flexDirection: 'column' }]}>
                                     <Text style={styles.titleText}>{this.state.activeLead?.firstname} {this.state.activeLead?.lastName}</Text>
-                                    <Text style={{ fontSize: 16, color: 'gray', marginTop: 1 }}>{(Math.round((this.state.activeLead?.distance || 0) * 10)/10)} miles away</Text>
+                                    <Text style={{ fontSize: 16, color: 'gray', marginTop: 1 }}>{(Math.round((this.state.activeLead?.distance || 0) * 10) / 10)} miles away</Text>
                                     <Text style={{ fontSize: 18, fontWeight: '600', marginTop: 10 }}>Address</Text>
                                     <Text style={{ fontSize: 16, color: 'gray', marginTop: 5 }}>{this.state.activeLead?.address}</Text>
                                     <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.city}</Text>
@@ -692,7 +710,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                     this.state.activeLead!.state, this.state.activeLead!, this.state.activeIndex!
                                 )}>
                                     <Icon name="car" type='font-awesome' color='white' />
-                                    <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Navigation</Text>
+                                    <Text style={{ color: 'white', marginTop: 5, fontSize: 10 }}>Navigation</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: '#2185d0', borderRadius: 10, padding: 15, marginLeft: 5, marginRight: 5 }]} onPress={() => this.startCall()}>
                                     <Icon name="phone" type='font-awesome' color='white' />
@@ -807,7 +825,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                 <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
                                     <View style={[{ flex: 4, flexDirection: 'column' }]}>
                                         <Text style={styles.titleText}>{this.state.activeLead?.firstname} {this.state.activeLead?.lastName}</Text>
-                                        <Text style={{ fontSize: 16, color: 'gray', marginTop: 1 }}>{(Math.round((this.state.activeLead?.distance || 0) * 10)/10)} miles away</Text>
+                                        <Text style={{ fontSize: 16, color: 'gray', marginTop: 1 }}>{(Math.round((this.state.activeLead?.distance || 0) * 10) / 10)} miles away</Text>
                                         <Text style={{ fontSize: 18, fontWeight: '600', marginTop: 10 }}>Address</Text>
                                         <Text style={{ fontSize: 16, color: 'gray', marginTop: 5 }}>{this.state.activeLead?.address}</Text>
                                         <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.city}</Text>
@@ -833,7 +851,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                         this.state.activeLead!.state, this.state.activeLead!, this.state.activeIndex!
                                     )}>
                                         <Icon name="car" type='font-awesome' color='white' />
-                                        <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Navigation</Text>
+                                        <Text style={{ color: 'white', marginTop: 5, fontSize: 10 }}>Navigation</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: '#2185d0', borderRadius: 10, padding: 15, marginLeft: 5, marginRight: 5 }]} onPress={() => Linking.openURL(`tel:${this.state.activeLead?.phone}`)}>
                                         <Icon name="phone" type='font-awesome' color='white' />
