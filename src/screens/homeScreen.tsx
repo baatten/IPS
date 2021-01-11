@@ -287,7 +287,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
     _handleAppStateChange = (nextAppState: any) => {
         if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
-            console.log('App has come to the foreground!');
+            
         }
 
         this.setState({ appState: nextAppState });
