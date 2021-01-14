@@ -26,6 +26,7 @@
     },
     "android": {
       "package": "com.empowerbrokerage.t65",
+      "permissions":["ACCESS_COARSE_LOCATION","ACCESS_FINE_LOCATION"],
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyDKYJ9zzDG5Kl-5DnpZDClIQ_2Ar-__5t0"
