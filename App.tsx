@@ -30,7 +30,6 @@ export default function App() {
   const [state, dispatch] = useReducer(LoginReducer, initialState);
   const sheetRef: any = React.useRef();
   const [Undetermined, setUndetermined] = useState(false)
-  //const [LocationEnabled, setLocationEnabled] = useState(false)
 
   const allowPermissions = async () => {
 
@@ -39,7 +38,7 @@ export default function App() {
     let { status } = await Location.requestPermissionsAsync()
 
     if (status == 'granted') {
-      //setLocationEnabled(true);
+
       sheetRef.current.setModalVisible(false);
       return true;
     }
@@ -57,7 +56,6 @@ export default function App() {
 
     if (status == 'granted') {
 
-      //setLocationEnabled(true);
       sheetRef.current.setModalVisible(false);
       return true;
     }
@@ -89,7 +87,6 @@ export default function App() {
 
     AppState.addEventListener('change', handleAppStateChange);
 
-    // Fetch the token from storage then navigate to our appropriate place
     const bootstrapAsync = async () => {
 
       let username;
@@ -127,9 +124,7 @@ export default function App() {
               dispatch({ type: 'TO_SIGNIN_PAGE' });
             }
           } else {
-            //this.setState({loading:false,error:true})
-            //throw new Error(await res.text())
-            //console.log(await res.text());
+
             dispatch({ type: 'TO_SIGNIN_PAGE' });
           }
         } catch (error) {
