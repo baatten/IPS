@@ -2,7 +2,7 @@
   "expo": {
     "name": "T65 Locator",
     "slug": "IPS",
-    "version": "1.0.18",
+    "version": "1.0.21",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -25,11 +25,12 @@
       "favicon": "./assets/favicon.png"
     },
     "android": {
+      "versionCode": 4,
       "package": "com.empowerbrokerage.t65",
-      "permissions":["ACCESS_COARSE_LOCATION","ACCESS_FINE_LOCATION"],
+      "permissions":["ACCESS_COARSE_LOCATION","ACCESS_FINE_LOCATION, BILLING"],
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyDKYJ9zzDG5Kl-5DnpZDClIQ_2Ar-__5t0"
+          "apiKey": "AIzaSyAxK9px37HclSqPgFTP_Bf4Zrk41Xd_PSQ"
         }
       }
     }
