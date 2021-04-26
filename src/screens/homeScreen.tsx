@@ -229,7 +229,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         this.mapRef = React.createRef<MapView>();
         this.sheetRef = React.createRef<ActionSheet>();
         this.saveLeadSheetRef = React.createRef<ActionSheet>();
-        this.filterPopover = React.createRef<Popover>();
+        this.filterPopover = React.createRef<TouchableOpacity>();
 
         const leads: Lead[] = [];
 
@@ -276,7 +276,9 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
             headerTitle: () => <LogoTitle activeView={this.state.activeView} updateView={this.changeView} />,
             headerTintColor: '#fff',
             headerStyle: { backgroundColor: '#2185d0' },
-            headerRight: () => <Button ref={this.filterPopover} onPress={() => this.setState({ showRadiusFilter: true })} icon={<Icon name='map-marked-alt' color='white' size={18} type='font-awesome-5' style={{ color: 'white' }} />} buttonStyle={{ marginRight: 5, backgroundColor: 'transparent' }} />
+            headerRight: () => <TouchableOpacity ref={this.filterPopover} onPress={() => this.setState({ showRadiusFilter: true })} style={{ marginRight: 5, backgroundColor: 'transparent' }} >
+                <Icon name='map-marked-alt' color='white' size={18} type='font-awesome-5' style={{ color: 'white' }} />
+            </TouchableOpacity>
         })
     }
 
