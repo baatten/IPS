@@ -2,7 +2,7 @@ import React, { useReducer, useEffect, useMemo, useState } from 'react';
 import { AppState, View, Text,Linking } from 'react-native'
 import { Button } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import GLOBALS from './src/globals';
 import { Alert, StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';

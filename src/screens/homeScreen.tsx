@@ -10,7 +10,7 @@ import type { KmlMarker, Camera } from 'react-native-maps';
 import Popover, { PopoverPlacement } from 'react-native-popover-view';
 import * as Location from 'expo-location'
 import * as Permissions from 'expo-permissions'
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Lead = {
     id?: number

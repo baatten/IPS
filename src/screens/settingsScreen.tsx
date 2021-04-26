@@ -1,12 +1,11 @@
 import React from 'react';
-import { View, Text, Alert, Modal, ActivityIndicator } from 'react-native';
+import { View, Text, Alert, Modal, ActivityIndicator,ScrollView } from 'react-native';
 import GLOBALS from '../globals';
 import { Button, Card, Input } from 'react-native-elements';
 import { StackNavigationProp, createStackNavigator } from '@react-navigation/stack';
 import { AuthContext } from '../components/utils/authContext';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { ScrollView } from 'react-native-gesture-handler';
 
 const SettingsStack = createStackNavigator();
 

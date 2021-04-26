@@ -1,8 +1,8 @@
 import { EventArg } from '@react-navigation/native';
 import React, { ChangeEvent } from 'react';
-import { View, Text, ActivityIndicator, KeyboardAvoidingView, TextInputChangeEventData } from 'react-native';
+import { View, Text, ActivityIndicator, KeyboardAvoidingView, TextInputChangeEventData,ScrollView } from 'react-native';
 import { Input, Icon, Button } from 'react-native-elements';
-import { ScrollView } from 'react-native-gesture-handler';
+
 
 type ResetPasswordProps = {
 

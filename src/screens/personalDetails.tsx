@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, Text, Animated } from 'react-native';
+import { View, Text, Animated,ScrollView } from 'react-native';
 import { Button, Card, Input, Slider, ButtonGroup } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { createStackNavigator } from '@react-navigation/stack';
 import { AuthContext } from '../components/utils/authContext';
-import { ScrollView } from 'react-native-gesture-handler';
+
 
 const PersonalDetailsStack = createStackNavigator();
 //const url = 'https://a0b79f3c31a0.ngrok.io';
