@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView, Text, Linking, TouchableOpacity, KeyboardAvoidingView, ActivityIndicator, AppState } from 'react-native';
-import { Button, ButtonGroup, ListItem, Icon, Input, Divider } from 'react-native-elements';
+import { StyleSheet, View, ScrollView, Text, Linking, TouchableOpacity, KeyboardAvoidingView, ActivityIndicator, AppState, FlatList } from 'react-native';
+import { ButtonGroup, ListItem, Icon, Input, Divider } from 'react-native-elements';
 import GLOBALS from '../globals';
 import { StackNavigationProp, createStackNavigator } from '@react-navigation/stack';
 import MapView, { Marker } from 'react-native-maps';
@@ -288,7 +288,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
     _handleAppStateChange = (nextAppState: any) => {
         if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
-            
+
         }
 
         this.setState({ appState: nextAppState });
@@ -782,41 +782,45 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                             sortingDirection={this.state.leadSortingDirection}
                             radius={this.state.filterDistance} months={this.state.filterMonths} updateView={(radius: number, months: number) => this.changeFilterDistance(radius, months)} />
                     </Popover>
-                    <ScrollView>
-                        {this.state.isLoading && (
-                            <View style={{ top: 25, alignSelf: 'center', position: 'absolute', zIndex: 99999, backgroundColor: 'white', paddingLeft: 25, paddingRight: 25, paddingBottom: 10, paddingTop: 10, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 5 }}>
-                                <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
-                                    <View style={[{ flexDirection: 'column' }]}>
-                                        <ActivityIndicator color="black" style={{ marginRight: 10 }} />
-                                    </View>
-                                    <View style={[{ flexDirection: 'column' }]}>
-                                        <Text>Loading data...</Text>
-                                    </View>
+                    {this.state.isLoading && (
+                        <View style={{ top: 25, alignSelf: 'center', position: 'absolute', zIndex: 99999, backgroundColor: 'white', paddingLeft: 25, paddingRight: 25, paddingBottom: 10, paddingTop: 10, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 5 }}>
+                            <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
+                                <View style={[{ flexDirection: 'column' }]}>
+                                    <ActivityIndicator color="black" style={{ marginRight: 10 }} />
+                                </View>
+                                <View style={[{ flexDirection: 'column' }]}>
+                                    <Text>Loading data...</Text>
                                 </View>
                             </View>
-                        )}
+                        </View>
+                    )}
+                    <>
                         {
                             this.state.leads.length > 0 && (
-                                this.state.leads.map((lead: Lead, i) => (
-                                    <ListItem key={i} bottomDivider onPress={() => this.showLeadData(lead, i)} >
-                                        <ListItem.Content>
-                                            <ListItem.Title style={{
-                                                fontWeight: '600', color: this.getPinColorForLead(lead)
-                                            }}>{lead.firstname} {lead.lastName}</ListItem.Title>
-                                            <ListItem.Subtitle style={{ color: 'grey' }}>{lead.address}, {lead.city}</ListItem.Subtitle>
-                                        </ListItem.Content>
-                                        <ListItem.Subtitle style={{ textAlign: 'center' }}>
-                                            <Text>{this.monthsToAge65(new Date(lead.dobDate || '')) + "\n"}
-                                            </Text>
-
-                                            <Text style={{ color: 'grey' }}>
-
-                                                {Math.round(lead.distance * 10) / 10 + ' mi. away'}
-                                            </Text>
-                                        </ListItem.Subtitle>
-
-                                    </ListItem>
-                                ))
+                                <FlatList keyboardShouldPersistTaps='always'
+                                    data={this.state.leads.map(x => ({ lead: x }))}
+                                    keyExtractor={item => item.lead.id!.toString()}
+                                    renderItem={({ item, index }: { item: { lead: Lead }, index: number }) => {
+                                        return (
+                                            <ListItem key={index} bottomDivider onPress={() => this.showLeadData(item.lead, index)} >
+                                                <ListItem.Content>
+                                                    <ListItem.Title style={{ fontWeight: '600', color: this.getPinColorForLead(item.lead) }}>
+                                                        {item.lead.firstname} {item.lead.lastName}
+                                                    </ListItem.Title>
+                                                    <ListItem.Subtitle style={{ color: 'grey' }}>{item.lead.address}, {item.lead.city}</ListItem.Subtitle>
+                                                </ListItem.Content>
+                                                <ListItem.Subtitle style={{ textAlign: 'center' }}>
+                                                    <Text>
+                                                        {this.monthsToAge65(new Date(item.lead.dobDate || '')) + "\n"}
+                                                    </Text>
+                                                    <Text style={{ color: 'grey' }}>
+                                                        {Math.round(item.lead.distance * 10) / 10 + ' mi. away'}
+                                                    </Text>
+                                                </ListItem.Subtitle>
+                                            </ListItem>
+                                        );
+                                    }}
+                                />
                             )}
                         <ActionSheet ref={this.sheetRef} bounceOnOpen={true} onClose={() => this.setState({ savingLead: false })}>
                             <View style={{
@@ -915,7 +919,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                             </View>
 
                         </ActionSheet>
-                    </ScrollView>
+                    </>
                 </>
             )
         }
