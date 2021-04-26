@@ -69,7 +69,7 @@ export default class SignInScreen extends React.Component<any, SignInScreenState
                     //.log('success sign in');
 
                     this.setState({ isLoading: true })
-                    this.signInf();
+                    this.signIn();
 
                 })
                 .catch(err => {
@@ -82,7 +82,7 @@ export default class SignInScreen extends React.Component<any, SignInScreenState
             this.context.checkPermissions();
     };
 
-    async signInf() {
+    async signIn() {
 
         const emailAddress = this.state.emailAddress;
         const password = this.state.password;

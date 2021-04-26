@@ -247,7 +247,7 @@ export default function App() {
       case 'LOAD_SIGNIN':
         arr.push(
           <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="SignIn" component={SignInScreen} />
+            <Stack.Screen name="SignIn" component={SignInScreen} options={{headerShown:false}} />
           </Stack.Navigator>);
         break;
 
@@ -273,7 +273,7 @@ export default function App() {
     <>
       <AuthContext.Provider value={authContextValue}>
         <NavigationContainer >
-          <StatusBar barStyle="light-content" hidden={false} backgroundColor="#2185d0" translucent={false} />
+          <StatusBar barStyle="light-content" hidden={false} backgroundColor="transparent" translucent={true} />
           {chooseScreen(state)}
         </NavigationContainer>
       </AuthContext.Provider>
