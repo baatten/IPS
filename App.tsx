@@ -20,7 +20,6 @@ import SignInScreen from './src/screens/signInScreen'
 import DisabledLocation from './src/screens/DisabledLocation';
 import ActionSheet from "react-native-actions-sheet";
 import * as Location from 'expo-location';
-import * as Permissions from 'expo-permissions'
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
