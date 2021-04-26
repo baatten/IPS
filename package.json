@@ -1,9 +1,8 @@
 {
-  "main": "node_modules/expo/AppEntry.js",
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "start": "react-native start",
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
     "web": "expo start --web",
     "eject": "expo eject"
   },
@@ -15,19 +14,24 @@
     "@react-navigation/stack": "^5.14.4",
     "expo": "^41.0.0",
     "expo-location": "~12.0.4",
+    "expo-splash-screen": "~0.10.2",
     "expo-status-bar": "~1.0.4",
+    "expo-updates": "~0.5.4",
     "formik": "^2.2.6",
     "indicative": "^7.4.4",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-41.0.0.tar.gz",
+    "react-native": "~0.63.4",
     "react-native-actions-sheet": "^0.3.5",
     "react-native-elements": "^3.4.1",
+    "react-native-gesture-handler": "~1.10.2",
     "react-native-maps": "0.27.1",
     "react-native-open-maps": "^0.3.5",
     "react-native-popover-view": "^3.1.1",
     "react-native-reanimated": "~2.1.0",
+    "react-native-safe-area-context": "^3.2.0",
     "react-native-screens": "~3.0.0",
+    "react-native-unimodules": "~0.13.3",
     "react-native-vector-icons": "^7.1.0",
     "react-native-web": "~0.13.12",
     "react-native-wizard": "^2.1.0",
@@ -40,5 +44,7 @@
     "@types/yup": "^0.29.11",
     "typescript": "~4.0.0"
   },
-  "private": true
+  "private": true,
+  "name": "IPS",
+  "version": "1.0.0"
 }

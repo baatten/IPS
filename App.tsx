@@ -34,7 +34,7 @@ export default function App() {
 
     sheetRef.current.setModalVisible(false);
 
-    let { status } = await Location.requestPermissionsAsync()
+    let { status } = await Location.requestForegroundPermissionsAsync()
 
     if (status == 'granted') {
 
@@ -65,7 +65,7 @@ export default function App() {
     }
     else {
 
-      let { status } = await Location.requestPermissionsAsync()
+      let { status } = await Location.requestForegroundPermissionsAsync()
 
       if (status == 'granted')
         return true;
