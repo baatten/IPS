@@ -795,33 +795,32 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                         </View>
                     )}
                     <>
-                        {
-                            this.state.leads.length > 0 && (
-                                <FlatList keyboardShouldPersistTaps='always'
-                                    data={this.state.leads.map(x => ({ lead: x }))}
-                                    keyExtractor={item => item.lead.id!.toString()}
-                                    renderItem={({ item, index }: { item: { lead: Lead }, index: number }) => {
-                                        return (
-                                            <ListItem key={index} bottomDivider onPress={() => this.showLeadData(item.lead, index)} >
-                                                <ListItem.Content>
-                                                    <ListItem.Title style={{ fontWeight: '600', color: this.getPinColorForLead(item.lead) }}>
-                                                        {item.lead.firstname} {item.lead.lastName}
-                                                    </ListItem.Title>
-                                                    <ListItem.Subtitle style={{ color: 'grey' }}>{item.lead.address}, {item.lead.city}</ListItem.Subtitle>
-                                                </ListItem.Content>
-                                                <ListItem.Subtitle style={{ textAlign: 'center' }}>
-                                                    <Text>
-                                                        {this.monthsToAge65(new Date(item.lead.dobDate || '')) + "\n"}
-                                                    </Text>
-                                                    <Text style={{ color: 'grey' }}>
-                                                        {Math.round(item.lead.distance * 10) / 10 + ' mi. away'}
-                                                    </Text>
-                                                </ListItem.Subtitle>
-                                            </ListItem>
-                                        );
-                                    }}
-                                />
-                            )}
+
+                        <FlatList keyboardShouldPersistTaps='always'
+                            data={this.state.leads.map(x => ({ lead: x }))}
+                            keyExtractor={item => item.lead.id!.toString()}
+                            renderItem={({ item, index }: { item: { lead: Lead }, index: number }) => {
+                                return (
+                                    <ListItem key={index} bottomDivider onPress={() => this.showLeadData(item.lead, index)} >
+                                        <ListItem.Content>
+                                            <ListItem.Title style={{ fontWeight: '600', color: this.getPinColorForLead(item.lead) }}>
+                                                {item.lead.firstname} {item.lead.lastName}
+                                            </ListItem.Title>
+                                            <ListItem.Subtitle style={{ color: 'grey' }}>{item.lead.address}, {item.lead.city}</ListItem.Subtitle>
+                                        </ListItem.Content>
+                                        <ListItem.Subtitle style={{ textAlign: 'center' }}>
+                                            <Text>
+                                                {this.monthsToAge65(new Date(item.lead.dobDate || '')) + "\n"}
+                                            </Text>
+                                            <Text style={{ color: 'grey' }}>
+                                                {Math.round(item.lead.distance * 10) / 10 + ' mi. away'}
+                                            </Text>
+                                        </ListItem.Subtitle>
+                                    </ListItem>
+                                );
+                            }}
+                        />
+
                         <ActionSheet ref={this.sheetRef} bounceOnOpen={true} onClose={() => this.setState({ savingLead: false })}>
                             <View style={{
                                 borderTopStartRadius: 0, borderTopRightRadius: 0, padding: 20, backgroundColor: 'white',
