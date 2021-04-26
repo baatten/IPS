@@ -49,7 +49,7 @@ export default function App() {
 
   const checkPermissions = async () => {
 
-    let { status } = await Location.getPermissionsAsync();
+    let { status } = await Location.requestForegroundPermissionsAsync();
 
 
 

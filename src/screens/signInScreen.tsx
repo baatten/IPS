@@ -43,7 +43,7 @@ export default class SignInScreen extends React.Component<any, SignInScreenState
 
     async handleSignIn() {
 
-        let { status } = await Location.getPermissionsAsync();
+        let { status } = await Location.requestForegroundPermissionsAsync();
 
         if (status == 'granted') {
 
