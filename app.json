@@ -30,7 +30,7 @@
       "permissions":["ACCESS_COARSE_LOCATION","ACCESS_FINE_LOCATION, BILLING"],
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyAxK9px37HclSqPgFTP_Bf4Zrk41Xd_PSQ"
+          "apiKey": "AIzaSyDKYJ9zzDG5Kl-5DnpZDClIQ_2Ar-__5t0"
         }
       }
     }
