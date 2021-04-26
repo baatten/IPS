@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView, Text, Linking, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, ScrollView, Text, Linking, TouchableOpacity, ActivityIndicator, FlatList } from 'react-native';
 import { ListItem, Icon } from 'react-native-elements';
 import GLOBALS from '../globals';
 import { StackNavigationProp, createStackNavigator } from '@react-navigation/stack';
@@ -24,7 +24,7 @@ type Lead = {
     marker?: KmlMarker,
     LeadInteraction?: LeadInteraction[],
     distance: number,
-    dobDate:Date
+    dobDate: Date
 }
 
 type LeadInteraction = {
@@ -79,14 +79,14 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
         })
 
         this.props.navigation.addListener('focus', (e) => {
-            
+
             this.getLeads();
         });
     }
 
-    componentWillUnmount(){
+    componentWillUnmount() {
         this.props.navigation.removeListener('focus', () => {
-            
+
         })
     }
 
@@ -110,7 +110,7 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
     async getLeads() {
 
         this.setState({ isLoading: true })
-        
+
         try {
             const res = await fetch(GLOBALS.BASE_URL + '/api/client/getSavedLeads', {
                 method: 'POST',
@@ -302,7 +302,7 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
 
         if (this.state.leads != undefined && this.state.leads.length > 0) {
             return (
-                <ScrollView>
+                <>
                     {this.state.isLoading && (
                         <View style={{ top: 25, alignSelf: 'center', position: 'absolute', zIndex: 99999, backgroundColor: 'white', paddingLeft: 25, paddingRight: 25, paddingBottom: 10, paddingTop: 10, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 5 }}>
                             <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
@@ -316,18 +316,23 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
                             </View>
                         </View>
                     )}
-                    {
-                        this.state.leads.map((lead: Lead, i) => (
-                            <ListItem key={i} bottomDivider onPress={() => this.showLeadData(lead, i)} >
-                                <ListItem.Content>
-                                    <ListItem.Title style={{
-                                        fontWeight: '600', color: this.getPinColorForLead(lead)
-                                    }}>{lead.firstname} {lead.lastName}</ListItem.Title>
-                                    <ListItem.Subtitle style={{ color: 'grey' }}>{lead.address}, {lead.city}</ListItem.Subtitle>
-                                </ListItem.Content>
-                                <ListItem.Subtitle >{this.monthsToAge65(new Date(lead.dobDate || ''))}</ListItem.Subtitle>
-                            </ListItem>
-                        ))}
+                    <FlatList keyboardShouldPersistTaps='always'
+                        data={this.state.leads.map(x => ({ lead: x }))}
+                        keyExtractor={item => item.lead.id!.toString()}
+                        renderItem={({ item, index }: { item: { lead: Lead }, index: number }) => {
+                            return (
+                                <ListItem key={index} bottomDivider onPress={() => this.showLeadData(item.lead, index)} >
+                                    <ListItem.Content>
+                                        <ListItem.Title style={{
+                                            fontWeight: '600', color: this.getPinColorForLead(item.lead)
+                                        }}>{item.lead.firstname} {item.lead.lastName}</ListItem.Title>
+                                        <ListItem.Subtitle style={{ color: 'grey' }}>{item.lead.address}, {item.lead.city}</ListItem.Subtitle>
+                                    </ListItem.Content>
+                                    <ListItem.Subtitle >{this.monthsToAge65(new Date(item.lead.dobDate || ''))}</ListItem.Subtitle>
+                                </ListItem>
+                            );
+                        }}
+                    />
                     <ActionSheet ref={this.sheetRef} bounceOnOpen={true} onClose={() => this.setState({ savingLead: false })}>
                         <View style={{
                             borderTopStartRadius: 0, borderTopRightRadius: 0, padding: 20, backgroundColor: 'white',
@@ -341,7 +346,7 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
                                     <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.city}</Text>
                                     <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.zipCode} {this.state.activeLead?.county}</Text>
                                 </View>
-                                <View style={[{ flex: 1, flexDirection: 'column', borderWidth: 1, borderColor: '#2185d0', borderRadius: 10, padding: 10,marginRight:5 }]}>
+                                <View style={[{ flex: 1, flexDirection: 'column', borderWidth: 1, borderColor: '#2185d0', borderRadius: 10, padding: 10, marginRight: 5 }]}>
                                     <Text style={{ textAlign: 'center', color: '#2185d0', fontSize: 13 }}>{this.monthsToAge65(new Date(this.state.activeLead?.dobDate || ''))}</Text>
                                 </View>
                             </View>
@@ -371,10 +376,10 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
                                     <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Remove</Text>
                                 </TouchableOpacity>
                             </View>
-                            <Text style={{color:'grey',fontSize:15,textAlign:'center',marginBottom:10}}>Built by <Text onPress={() => Linking.openURL('http://www.empowerbrokerage.com')} style={{color:'#2185d0',fontSize:15,padding:0,margin:0}}>T65 Locator</Text></Text>
+                            <Text style={{ color: 'grey', fontSize: 15, textAlign: 'center', marginBottom: 10 }}>Built by <Text onPress={() => Linking.openURL('http://www.empowerbrokerage.com')} style={{ color: '#2185d0', fontSize: 15, padding: 0, margin: 0 }}>T65 Locator</Text></Text>
                         </View>
                     </ActionSheet>
-                </ScrollView>
+                </>
             )
         }
         else if (this.state.isLoading && this.state.leads.length == 0)
