@@ -1,5 +1,5 @@
 import React, { useReducer, useEffect, useMemo, useState } from 'react';
-import { AppState, View, Text,Linking } from 'react-native'
+import { AppState, View, Text, Linking, Modal } from 'react-native'
 import { Button } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -28,49 +28,62 @@ export default function App() {
 
   const [state, dispatch] = useReducer(LoginReducer, initialState);
   const sheetRef: any = React.useRef();
-  const [Undetermined, setUndetermined] = useState(false)
+  const [showMissingPermissions, setShowMissingPermissions] = useState(false)
 
   const allowPermissions = async () => {
 
     sheetRef.current.setModalVisible(false);
-
     let { status } = await Location.requestForegroundPermissionsAsync()
 
     if (status == 'granted') {
 
       sheetRef.current.setModalVisible(false);
+      setShowMissingPermissions(false);
       return true;
     }
     else {
-      setUndetermined(false);
-      sheetRef.current.setModalVisible(true);
+      setShowMissingPermissions(true);
     }
+
+    return false;
   }
 
   const checkPermissions = async () => {
 
-    let { status } = await Location.requestForegroundPermissionsAsync();
-
-
+    let { status } = await Location.getForegroundPermissionsAsync();
 
     if (status == 'granted') {
 
+      setShowMissingPermissions(false);
       sheetRef.current.setModalVisible(false);
       return true;
     }
 
-    if (status == 'undetermined') {
-      setUndetermined(true);
-      sheetRef.current.setModalVisible(true);
+    else if (status == 'denied') {
+
+      console.log('denied works')
+
+      setShowMissingPermissions(true);
+      //sheetRef.current.setModalVisible(true);
     }
     else {
 
-      let { status } = await Location.requestForegroundPermissionsAsync()
+      /*
+      let { status } = await Location.getForegroundPermissionsAsync()
 
       if (status == 'granted')
         return true;
       else
         sheetRef.current.setModalVisible(true);
+        */
+
+      //setShowMissingPermissions(true);
+      //sheetRef.current.setModalVisible(true);
+
+      sheetRef.current.setModalVisible(true);
+      //if (status != 'granted')
+      //sheetRef.current.setModalVisible(true);
+
     }
 
     return false;
@@ -247,7 +260,7 @@ export default function App() {
       case 'LOAD_SIGNIN':
         arr.push(
           <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="SignIn" component={SignInScreen} options={{headerShown:false}} />
+            <Stack.Screen name="SignIn" component={SignInScreen} options={{ headerShown: false }} />
           </Stack.Navigator>);
         break;
 
@@ -279,35 +292,32 @@ export default function App() {
       </AuthContext.Provider>
 
       <ActionSheet ref={sheetRef} closeOnPressBack={false} closeOnTouchBackdrop={false} bounceOnOpen={true} containerStyle={{ backgroundColor: '#1D7DD7', padding: 50, height: '100%', minHeight: '100%' }}>
-        {Undetermined ? (
+        <View>
+          <Icon name='street-view' color='white' size={150} style={{ marginTop: 25, textAlign: 'center' }}></Icon>
+          <Text style={{ fontWeight: '700', fontSize: 24, alignSelf: 'center', marginTop: 20, color: 'white' }}>Location Services</Text>
+          <Text style={{ fontWeight: '300', fontSize: 16, marginTop: 10, color: 'white', alignSelf: 'center', textAlign: 'center' }}>We'll need your location to show you leads nearby completely automatically and save your time.</Text>
+          <Button onPress={() => allowPermissions()} title='Sure, thank you' titleStyle={{ color: '#1D7DD7' }} style={{ marginTop: 25 }} buttonStyle={{ backgroundColor: 'white', margin: 0, marginTop: 5, padding: 15, borderRadius: 10 }} />
+          <Button onPress={() => sheetRef.current.setModalVisible(false)} title='Not now' type='clear' titleStyle={{ color: 'white' }} style={{ marginTop: 10 }} />
+        </View>
+      </ActionSheet>
+      <Modal presentationStyle='pageSheet' visible={showMissingPermissions} animationType='slide'>
+        <View style={{ backgroundColor: '#1D7DD7', padding: 50, height: '100%', minHeight: '100%' }}>
+          <Icon name='street-view' color='white' size={150} style={{ marginTop: 25, textAlign: 'center' }}></Icon>
           <View>
-            <Icon name='street-view' color='white' size={150} style={{ marginTop: 25, textAlign: 'center' }}></Icon>
             <Text style={{ fontWeight: '700', fontSize: 24, alignSelf: 'center', marginTop: 20, color: 'white' }}>Location Services</Text>
             <Text style={{ fontWeight: '300', fontSize: 16, marginTop: 10, color: 'white', alignSelf: 'center', textAlign: 'center' }}>We'll need your location to show you leads nearby completely automatically and save your time.</Text>
-            <Button onPress={() => allowPermissions()} title='Sure, thank you' titleStyle={{ color: '#1D7DD7' }} style={{ marginTop: 25 }} buttonStyle={{ backgroundColor: 'white', margin: 0, marginTop: 5, padding: 15, borderRadius: 10 }} />
-            <Button onPress={() => sheetRef.current.setModalVisible(false)} title='Not now' type='clear' titleStyle={{ color: 'white' }} style={{ marginTop: 10 }} />
+            <Text style={{ fontWeight: '500', fontSize: 18, alignSelf: 'center', marginTop: 30, color: 'white' }}>How to enable location services?</Text>
           </View>
-        ) : (
-            <View>
-              <Icon name='street-view' color='white' size={150} style={{ marginTop: 25, textAlign: 'center' }}></Icon>
-              <View>
-                <Text style={{ fontWeight: '700', fontSize: 24, alignSelf: 'center', marginTop: 20, color: 'white' }}>Location Services</Text>
-                <Text style={{ fontWeight: '300', fontSize: 16, marginTop: 10, color: 'white', alignSelf: 'center', textAlign: 'center' }}>We'll need your location to show you leads nearby completely automatically and save your time.</Text>
-                <Text style={{ fontWeight: '500', fontSize: 18, alignSelf: 'center', marginTop: 30, color: 'white' }}>How to enable location services?</Text>
-              </View>
-
-              <View>
-                <Text style={{ fontWeight: '300', fontSize: 16, marginTop: 15, color: 'white' }}>1. Go to settings.</Text>
-                <Text style={{ fontWeight: '300', fontSize: 16, marginTop: 10, color: 'white' }}>2. Scroll to the T65 and click the app icon.</Text>
-                <Text style={{ fontWeight: '300', fontSize: 16, marginTop: 10, color: 'white' }}>3. Click the location setting.</Text>
-                <Text style={{ fontWeight: '300', fontSize: 16, marginTop: 10, color: 'white' }}>4. choose "while using the app".</Text>
-                <Text style={{ fontWeight: '300', fontSize: 16, marginTop: 10, color: 'white' }}>5. Open T65 app again.</Text>
-              </View>
-
-              <Button onPress={() => Linking.openSettings()} title='Open Settings' titleStyle={{ color: '#1D7DD7' }} style={{ marginTop: 25 }} buttonStyle={{ backgroundColor: 'white', borderRadius: 10, padding: 15 }} />
-            </View>
-          )}
-      </ActionSheet>
+          <View>
+            <Text style={{ fontWeight: '300', fontSize: 16, marginTop: 15, color: 'white' }}>1. Go to settings.</Text>
+            <Text style={{ fontWeight: '300', fontSize: 16, marginTop: 10, color: 'white' }}>2. Scroll to the T65 and click the app icon.</Text>
+            <Text style={{ fontWeight: '300', fontSize: 16, marginTop: 10, color: 'white' }}>3. Click the location setting.</Text>
+            <Text style={{ fontWeight: '300', fontSize: 16, marginTop: 10, color: 'white' }}>4. choose "while using the app".</Text>
+            <Text style={{ fontWeight: '300', fontSize: 16, marginTop: 10, color: 'white' }}>5. Open T65 app again.</Text>
+          </View>
+          <Button onPress={() => Linking.openSettings()} title='Open Settings' titleStyle={{ color: '#1D7DD7' }} style={{ marginTop: 25 }} buttonStyle={{ backgroundColor: 'white', borderRadius: 10, padding: 15 }} />
+        </View>
+      </Modal>
     </>
   )
 }

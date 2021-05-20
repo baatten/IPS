@@ -2,7 +2,6 @@ import React from 'react';
 import { validateAll } from 'indicative/validator';
 import { View, Text, KeyboardAvoidingView, ImageBackground, Modal, Alert } from 'react-native';
 import { Input, Button, Icon } from 'react-native-elements';
-import * as Location from 'expo-location';
 import { AuthContext } from '../components/utils/authContext';
 import ActionSheet from "react-native-actions-sheet";
 import GLOBALS from '../globals';
@@ -43,9 +42,9 @@ export default class SignInScreen extends React.Component<any, SignInScreenState
 
     async handleSignIn() {
 
-        let { status } = await Location.requestForegroundPermissionsAsync();
+        const allowedLocation = await this.context.checkPermissions();
 
-        if (status == 'granted') {
+        if (allowedLocation) {
 
             const rules = {
                 email: 'required|email',
@@ -78,8 +77,6 @@ export default class SignInScreen extends React.Component<any, SignInScreenState
                     //setSignUpErrors(formatError);
                 });
         }
-        else
-            this.context.checkPermissions();
     };
 
     async signIn() {
@@ -252,49 +249,49 @@ export default class SignInScreen extends React.Component<any, SignInScreenState
                                         containerStyle={{ borderRadius: 0 }} />
                                 </>
                             ) : (
-                                    !this.state.didSendEmail ? (
-                                        <>
-                                            <Text style={{ fontSize: 16, fontWeight: '400', textAlign: 'center', color: 'white', marginBottom: 20 }}>We can always help you recover your password by your username.</Text>
-                                            <Input autoFocus={true} inputStyle={{ padding: 10 }}
-                                                inputContainerStyle={{ borderBottomWidth: 0 }}
-                                                containerStyle={{ backgroundColor: 'white', borderRadius: 10, height: 48, marginBottom: 15 }}
-                                                placeholder="Enter e-mail address"
-                                                leftIcon={<Icon color='rgba(0,0,0,0.50)' name='user' type='font-awesome' />}
-                                                leftIconContainerStyle={{ margin: 5 }}
-                                                keyboardType='email-address'
-                                                value={this.state.email}
-                                                onChangeText={(text) => this.setState({ email: text })}
-                                            />
+                                !this.state.didSendEmail ? (
+                                    <>
+                                        <Text style={{ fontSize: 16, fontWeight: '400', textAlign: 'center', color: 'white', marginBottom: 20 }}>We can always help you recover your password by your username.</Text>
+                                        <Input autoFocus={true} inputStyle={{ padding: 10 }}
+                                            inputContainerStyle={{ borderBottomWidth: 0 }}
+                                            containerStyle={{ backgroundColor: 'white', borderRadius: 10, height: 48, marginBottom: 15 }}
+                                            placeholder="Enter e-mail address"
+                                            leftIcon={<Icon color='rgba(0,0,0,0.50)' name='user' type='font-awesome' />}
+                                            leftIconContainerStyle={{ margin: 5 }}
+                                            keyboardType='email-address'
+                                            value={this.state.email}
+                                            onChangeText={(text) => this.setState({ email: text })}
+                                        />
 
-                                            <Button title={!this.emailIsValid() ? 'Reset password' : 'Enter a valid e-mail'} onPress={() => this.sendResetPasswordEmail()} disabled={this.emailIsValid()}
-                                                buttonStyle={{ padding: 15, backgroundColor: 'rgba(0,0,0,0.20)', borderRadius: 10 }}
-                                                disabledStyle={{ backgroundColor: 'rgba(0,0,0,0.20)' }}
-                                                disabledTitleStyle={{ color: 'rgba(255,255,255,0.5)' }}
-                                                containerStyle={{ borderRadius: 0 }} loading={this.state.isSendingEmail} />
-                                        </>
+                                        <Button title={!this.emailIsValid() ? 'Reset password' : 'Enter a valid e-mail'} onPress={() => this.sendResetPasswordEmail()} disabled={this.emailIsValid()}
+                                            buttonStyle={{ padding: 15, backgroundColor: 'rgba(0,0,0,0.20)', borderRadius: 10 }}
+                                            disabledStyle={{ backgroundColor: 'rgba(0,0,0,0.20)' }}
+                                            disabledTitleStyle={{ color: 'rgba(255,255,255,0.5)' }}
+                                            containerStyle={{ borderRadius: 0 }} loading={this.state.isSendingEmail} />
+                                    </>
 
-                                    ) : (
-                                            <>
-                                                <Text style={{ fontSize: 16, fontWeight: '400', textAlign: 'center', color: 'white', marginBottom: 20 }}>A security code has been sent to your email. Enter the code here.</Text>
-                                                <Input autoFocus={true} inputStyle={{ padding: 10 }}
-                                                    inputContainerStyle={{ borderBottomWidth: 0 }}
-                                                    containerStyle={{ backgroundColor: 'white', borderRadius: 10, height: 48, marginBottom: 15 }}
-                                                    placeholder="Enter the security code"
-                                                    leftIcon={<Icon color='rgba(0,0,0,0.50)' name='lock' type='font-awesome' />}
-                                                    leftIconContainerStyle={{ margin: 5 }}
-                                                    keyboardType='numeric'
-                                                    value={this.state.securityCode}
-                                                    onChangeText={(text) => this.setState({ securityCode: text })}
-                                                />
+                                ) : (
+                                    <>
+                                        <Text style={{ fontSize: 16, fontWeight: '400', textAlign: 'center', color: 'white', marginBottom: 20 }}>A security code has been sent to your email. Enter the code here.</Text>
+                                        <Input autoFocus={true} inputStyle={{ padding: 10 }}
+                                            inputContainerStyle={{ borderBottomWidth: 0 }}
+                                            containerStyle={{ backgroundColor: 'white', borderRadius: 10, height: 48, marginBottom: 15 }}
+                                            placeholder="Enter the security code"
+                                            leftIcon={<Icon color='rgba(0,0,0,0.50)' name='lock' type='font-awesome' />}
+                                            leftIconContainerStyle={{ margin: 5 }}
+                                            keyboardType='numeric'
+                                            value={this.state.securityCode}
+                                            onChangeText={(text) => this.setState({ securityCode: text })}
+                                        />
 
-                                                <Button title={'Reset password'} onPress={() => this.sendNewPasswordToUser()}
-                                                    buttonStyle={{ padding: 15, backgroundColor: 'rgba(0,0,0,0.20)', borderRadius: 10 }}
-                                                    disabledStyle={{ backgroundColor: 'rgba(0,0,0,0.20)' }}
-                                                    disabledTitleStyle={{ color: 'rgba(255,255,255,0.5)' }}
-                                                    containerStyle={{ borderRadius: 0 }} loading={this.state.isSendingEmail} />
-                                            </>
-                                        )
-                                )}
+                                        <Button title={'Reset password'} onPress={() => this.sendNewPasswordToUser()}
+                                            buttonStyle={{ padding: 15, backgroundColor: 'rgba(0,0,0,0.20)', borderRadius: 10 }}
+                                            disabledStyle={{ backgroundColor: 'rgba(0,0,0,0.20)' }}
+                                            disabledTitleStyle={{ color: 'rgba(255,255,255,0.5)' }}
+                                            containerStyle={{ borderRadius: 0 }} loading={this.state.isSendingEmail} />
+                                    </>
+                                )
+                            )}
 
                         </KeyboardAvoidingView>
                     </View>
