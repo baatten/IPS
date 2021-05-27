@@ -20,6 +20,7 @@ import SignInScreen from './src/screens/signInScreen'
 import DisabledLocation from './src/screens/DisabledLocation';
 import ActionSheet from "react-native-actions-sheet";
 import * as Location from 'expo-location';
+import { activateAdapty } from 'react-native-adapty';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -98,6 +99,7 @@ export default function App() {
   useEffect(() => {
 
     AppState.addEventListener('change', handleAppStateChange);
+    activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i' });
 
     const bootstrapAsync = async () => {
 

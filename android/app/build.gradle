@@ -137,6 +137,7 @@ android {
         applicationId 'com.empowerbrokerage.t65'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
+        multiDexEnabled true
         versionCode 4
         versionName "1.0.21"
     }
