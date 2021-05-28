@@ -5,7 +5,7 @@ import { Input, Button, Icon } from 'react-native-elements';
 import { AuthContext } from '../components/utils/authContext';
 import ActionSheet from "react-native-actions-sheet";
 import GLOBALS from '../globals';
-
+import * as adapty from 'react-native-adapty'
 
 type SignInScreenState = {
 
@@ -38,6 +38,40 @@ export default class SignInScreen extends React.Component<any, SignInScreenState
             isSendingEmail: false,
             didSendEmail: false, isLoading: false, modelIsOpen: false, passwordWasResat: false
         };
+    }
+
+    async componentDidMount(){
+
+        
+        //await adapty.activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i' });
+        
+        
+        //console.log('products compo',test)
+
+        try {
+            const test = await adapty.activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i' ,logLevel:'verbose'});
+            // or 
+
+            //console.log('products',test)
+
+              //adapty.paywalls.getPaywalls({ forceUpdate: true })
+          } catch (error: any) {
+
+            console.log('activcate',error)
+          }
+
+
+        try {
+            const test = await adapty.adapty.paywalls.getPaywalls();
+            // or 
+
+            console.log('products',test)
+
+              //adapty.paywalls.getPaywalls({ forceUpdate: true })
+          } catch (error: any) {
+
+            console.log(error)
+          }
     }
 
     async handleSignIn() {

@@ -99,7 +99,7 @@ export default function App() {
   useEffect(() => {
 
     AppState.addEventListener('change', handleAppStateChange);
-    activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i' });
+    //activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i' ,logLevel:'verbose'});
 
     const bootstrapAsync = async () => {
 
