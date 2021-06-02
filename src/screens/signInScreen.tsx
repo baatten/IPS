@@ -61,17 +61,7 @@ export default class SignInScreen extends React.Component<any, SignInScreenState
           }
 
 
-        try {
-            const test = await adapty.adapty.paywalls.getPaywalls();
-            // or 
-
-            console.log('products',test)
-
-              //adapty.paywalls.getPaywalls({ forceUpdate: true })
-          } catch (error: any) {
-
-            console.log(error)
-          }
+        
     }
 
     async handleSignIn() {

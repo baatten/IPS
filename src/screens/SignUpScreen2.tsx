@@ -7,6 +7,7 @@ import { AuthContext } from '../components/utils/authContext';
 import { Formik } from 'formik';
 import Wizard from "react-native-wizard"
 import * as Yup from 'yup';
+import * as adapty from 'react-native-adapty'
 
 type Person = {
     email: string,
@@ -41,13 +42,14 @@ type settingsState = {
     currentStep: any,
     isCurrentViewValid: boolean,
     currentForm: any,
-    subscriptionIndex?: number
     emailIsfree: boolean,
     checkingEmail: boolean,
     agentTypes: agentType[],
     nonFormValidateError?: string,
     keyboardIsActive: boolean,
     contactAccepted: boolean
+    subscriptionProducts?: adapty.AdaptyProduct[]
+    selectedSubscription?: adapty.AdaptyProduct
 }
 
 export class SignUpScreen extends React.Component<Props, settingsState> {
@@ -95,10 +97,24 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
         }
     }
 
+    async componentDidMount() {
+
+        try {
+            const data = await adapty.adapty.paywalls.getPaywalls();
+            this.setState({ subscriptionProducts: data.products })
+console.log(data.products)
+            //adapty.paywalls.getPaywalls({ forceUpdate: true })
+        } catch (error: any) {
+
+            console.log(error)
+        }
+
+    }
+
     async saveUserDetails() {
 
         //check if a subscription has been selected.
-        if (this.state.subscriptionIndex != undefined) {
+        if (this.state.selectedSubscription != undefined) {
 
             this.setState({ isLoading: true })
             this.wizard.current.next();
@@ -109,11 +125,6 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
 
             if (date != null)
                 account.dateOfBirth = date;
-
-            let subscription = 'annually'
-
-            if (this.state.subscriptionIndex == 1)
-                subscription = 'monthly';
 
             const types: string[] = []
 
@@ -128,7 +139,7 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(
-                        { accountData: account, subscription: subscription, agentTypes: types.join(',') }
+                        { accountData: account, subscription: this.state.selectedSubscription, agentTypes: types.join(',') }
                     )
                 })
                 if (res.status === 200) {
@@ -304,16 +315,51 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
 
         let description = 'Please sign up';
 
-        if (!this.state.isLastStep)
-        {
-            if(this.state.currentStep == 3)
+        if (!this.state.isLastStep) {
+            if (this.state.currentStep == 3)
                 description = 'Insurance Products You Specialize In'
 
-                if(this.state.currentStep == 4)
+            if (this.state.currentStep == 4)
                 description = 'Please choose a plan'
-        }  
+        }
 
         const stepList = [
+
+
+            {
+                content: <View style={{ padding: 15 }} >
+
+                    {this.state.subscriptionProducts != null && this.state.subscriptionProducts.length > 1 ? (
+                        this.state.subscriptionProducts.filter(prod => prod.price > 0).map((product) => (
+                            <TouchableOpacity key={product.vendorProductId} activeOpacity={1} onPress={() => this.setState({ selectedSubscription: product, nonFormValidateError: '' })}>
+                                <View style={(this.state.selectedSubscription == product) ? (styles.subscriptionSelected) : (styles.subscription)}>
+                                    <View style={[{ flex: 1, flexDirection: 'column', marginRight: 25, borderRadius: 10, justifyContent: 'center', borderWidth: 1, borderColor: this.state.selectedSubscription == product ? 'white':'#2185d0' }]}>
+                                        <Icon name='calendar-week' type='font-awesome-5' color={this.state.selectedSubscription == product ? 'white':'#2185d0'} />
+                                    </View>
+                                    <View style={[{ flex: 3, flexDirection: 'column' }]}>
+                                        <Text style={{color:this.state.selectedSubscription == product ? 'white':'#2185d0' ,fontSize: 18, fontWeight: '600', marginBottom: 2}}>{product.localizedTitle}</Text>
+                                        <Text style={{ color:this.state.selectedSubscription == product ? 'white':'#2185d0', marginBottom: 2 }}>${product.price} / {product.localizedSubscriptionPeriod}</Text>
+                                        <Text style={{ color:this.state.selectedSubscription == product ? 'white':'#2185d0' }}>Paid yearly</Text>
+                                    </View>
+                                </View>
+                            </TouchableOpacity>
+                        ))) :
+                        (
+                            <ActivityIndicator />
+                        )}
+                    <View style={{ flexDirection: 'row', backgroundColor: 'transparent', borderColor: '#2185d0', borderRadius: 5 }}>
+                        <View style={[{ flexDirection: 'column' }]}>
+                            <CheckBox wrapperStyle={{ margin: 0, padding: 0 }} onPress={() => this.setState({ contactAccepted: !this.state.contactAccepted })} checked={this.state.contactAccepted} containerStyle={{ backgroundColor: 'transparent', borderRadius: 5, borderWidth: 0 }} />
+                        </View>
+                        <View style={[{ flexDirection: 'column', justifyContent: 'center' }]}>
+                            <Text style={{ lineHeight: 20 }}>By signing up you agree to the T65</Text>
+                            <Text style={{ color: '#2185d0' }}>Privacy Policy</Text>
+                        </View>
+                    </View>
+                </View>
+            },
+
+
             {
                 content: <Formik innerRef={p => (this.formUser = p)} enableReinitialize
                     initialValues={{ name: this.state.user.name, surname: this.state.user.surname, email: this.state.user.email, password: this.state.user.password }}
@@ -470,43 +516,7 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                     ))}
                 </View>
             },
-            {
-                content: <View style={{ padding: 15 }} >
-                    <TouchableOpacity activeOpacity={1} onPress={() => this.setState({ subscriptionIndex: 0, nonFormValidateError: '' })}>
-                        <View style={(this.state.subscriptionIndex == 0) ? (styles.subscriptionSelected) : (styles.subscription)}>
-                            <View style={[{ flex: 1, flexDirection: 'column', marginRight: 25, borderRadius: 10, justifyContent: 'center', borderWidth: 1, borderColor: '#2185d0' }]}>
-                                <Icon name='calendar-week' type='font-awesome-5' color='#2185d0' />
-                            </View>
-                            <View style={[{ flex: 3, flexDirection: 'column' }]}>
-                                <Text style={{ fontSize: 18, fontWeight: '600', marginBottom: 5, color: '#2185d0' }}>Annual Plan</Text>
-                                <Text style={{ color: 'rgba(0,0,0,0.7)', marginBottom: 5 }}>$149.99 / year</Text>
-                                <Text style={{ color: 'rgba(0,0,0,0.7)' }}>Paid yearly</Text>
-                            </View>
-                        </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity activeOpacity={1} onPress={() => this.setState({ subscriptionIndex: 1, nonFormValidateError: '' })}>
-                        <View style={(this.state.subscriptionIndex == 1) ? (styles.subscriptionSelected) : (styles.subscription)}>
-                            <View style={[{ flex: 1, flexDirection: 'column', marginRight: 25, borderRadius: 10, justifyContent: 'center', borderWidth: 1, borderColor: '#2185d0' }]}>
-                                <Icon name='calendar-day' type='font-awesome-5' color='#2185d0' />
-                            </View>
-                            <View style={[{ flex: 3, flexDirection: 'column' }]}>
-                                <Text style={{ fontSize: 18, fontWeight: '600', marginBottom: 5, color: '#2185d0' }}>Monthly Plan</Text>
-                                <Text style={{ color: 'rgba(0,0,0,0.7)', marginBottom: 5 }}>$14.99 / month</Text>
-                                <Text style={{ color: 'rgba(0,0,0,0.7)' }}>Paid monthly</Text>
-                            </View>
-                        </View>
-                    </TouchableOpacity>
-                    <View style={{ flexDirection: 'row', backgroundColor: 'transparent', borderColor: '#2185d0', borderRadius: 5 }}>
-                        <View style={[{ flexDirection: 'column' }]}>
-                            <CheckBox wrapperStyle={{ margin: 0, padding: 0 }} onPress={() => this.setState({ contactAccepted: !this.state.contactAccepted })} checked={this.state.contactAccepted} containerStyle={{ backgroundColor: 'transparent', borderRadius: 5, borderWidth: 0 }} />
-                        </View>
-                        <View style={[{ flexDirection: 'column', justifyContent: 'center' }]}>
-                            <Text style={{ lineHeight: 20 }}>By signing up you agree to the T65</Text>
-                            <Text style={{ color: '#2185d0' }}>Privacy Policy</Text>
-                        </View>
-                    </View>
-                </View>
-            },
+            
             {
                 content:
                     this.state.isLoading ? (
@@ -516,12 +526,12 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                             <Text style={{ color: 'rgba(0,0,0,0.7)', marginBottom: 5 }}>Please wait a minute...</Text>
                         </View>
                     ) : (
-                            <View style={{ padding: 15, alignItems: 'center' }} >
+                        <View style={{ padding: 15, alignItems: 'center' }} >
 
-                                <Text style={{ fontSize: 18, fontWeight: '600', marginBottom: 5, color: '#2185d0' }}>Registering your account.</Text>
-                                <Text style={{ color: 'rgba(0,0,0,0.7)', marginBottom: 5 }}>Done</Text>
-                            </View>
-                        )
+                            <Text style={{ fontSize: 18, fontWeight: '600', marginBottom: 5, color: '#2185d0' }}>Registering your account.</Text>
+                            <Text style={{ color: 'rgba(0,0,0,0.7)', marginBottom: 5 }}>Done</Text>
+                        </View>
+                    )
             }
         ]
 
@@ -544,10 +554,10 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                                         buttonStyle={{ backgroundColor: 'transparent', padding: 10, borderColor: 'rgba(0,0,0,0.33)', borderWidth: 1, borderRadius: 10 }}
                                         titleStyle={{ color: 'rgba(0,0,0,0.7)', fontSize: 16 }} title='Back to sign in' />
                                 ) : (
-                                        <Button onPress={() => this.wizard.current.prev()}
-                                            buttonStyle={{ backgroundColor: 'transparent', padding: 10, borderColor: 'rgba(0,0,0,0.33)', borderWidth: 1, borderRadius: 10 }}
-                                            titleStyle={{ color: 'rgba(0,0,0,0.7)', fontSize: 16 }} title='Previous' />
-                                    )}
+                                    <Button onPress={() => this.wizard.current.prev()}
+                                        buttonStyle={{ backgroundColor: 'transparent', padding: 10, borderColor: 'rgba(0,0,0,0.33)', borderWidth: 1, borderRadius: 10 }}
+                                        titleStyle={{ color: 'rgba(0,0,0,0.7)', fontSize: 16 }} title='Previous' />
+                                )}
                             </View>
                             <View style={[{ flex: 1, flexDirection: 'column', marginLeft: 7 }]}>
                                 {this.state.currentStep == 4 ? (
@@ -555,29 +565,29 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                                         buttonStyle={{ backgroundColor: '#2185d0', padding: 10, borderColor: '#2185d0', borderWidth: 1, borderRadius: 10 }}
                                         titleStyle={{ color: 'white', fontSize: 16 }} title='Sign up' />
                                 ) : (
-                                        <View>
-                                            {this.state.currentStep == 3 || this.state.currentStep == 4 ? (
-                                                <>
-                                                    <Button onPress={() => this.validateNonForm()}
-                                                        buttonStyle={{ backgroundColor: '#2185d0', padding: 10, borderColor: '#2185d0', borderWidth: 1, borderRadius: 10 }}
-                                                        titleStyle={{ color: 'white', fontSize: 16 }} title='Next' />
-                                                </>
-                                            ) : (
-                                                    <Button onPress={() => this.state.currentForm.handleSubmit()}
-                                                        buttonStyle={{ backgroundColor: '#2185d0', padding: 10, borderColor: '#2185d0', borderWidth: 1, borderRadius: 10 }}
-                                                        titleStyle={{ color: 'white', fontSize: 16 }} title='Next' />
-                                                )}
-                                        </View>
-                                    )}
+                                    <View>
+                                        {this.state.currentStep == 3 || this.state.currentStep == 4 ? (
+                                            <>
+                                                <Button onPress={() => this.validateNonForm()}
+                                                    buttonStyle={{ backgroundColor: '#2185d0', padding: 10, borderColor: '#2185d0', borderWidth: 1, borderRadius: 10 }}
+                                                    titleStyle={{ color: 'white', fontSize: 16 }} title='Next' />
+                                            </>
+                                        ) : (
+                                            <Button onPress={() => this.state.currentForm.handleSubmit()}
+                                                buttonStyle={{ backgroundColor: '#2185d0', padding: 10, borderColor: '#2185d0', borderWidth: 1, borderRadius: 10 }}
+                                                titleStyle={{ color: 'white', fontSize: 16 }} title='Next' />
+                                        )}
+                                    </View>
+                                )}
                             </View>
 
                         </View>
                     ) : (
-                            !this.state.isLoading && (
-                                <Button onPress={() => this.context.signIn()}
-                                    buttonStyle={{ backgroundColor: '#2185d0', marginLeft: 50, marginRight: 50, borderColor: '#2185d0', borderWidth: 1, borderRadius: 10 }}
-                                    titleStyle={{ color: 'white', fontSize: 16 }} title='Get Started' />
-                            ))}
+                        !this.state.isLoading && (
+                            <Button onPress={() => this.context.signIn()}
+                                buttonStyle={{ backgroundColor: '#2185d0', marginLeft: 50, marginRight: 50, borderColor: '#2185d0', borderWidth: 1, borderRadius: 10 }}
+                                titleStyle={{ color: 'white', fontSize: 16 }} title='Get Started' />
+                        ))}
                 </View>
                 <Text style={{ color: 'red', textAlign: 'center' }}>{this.state.nonFormValidateError}</Text>
             </KeyboardAvoidingView>
@@ -595,13 +605,14 @@ var styles = StyleSheet.create({
         alignContent: 'center',
         padding: 15,
         marginBottom: 20,
-        flexDirection: 'row',
-        opacity: 0.33
+        flexDirection: 'row'
     },
 
     subscriptionSelected: {
 
         borderColor: '#2185d0',
+        backgroundColor:'#2185d0',
+        color:'white',
         borderWidth: 1,
         borderRadius: 10,
         alignContent: 'center',
