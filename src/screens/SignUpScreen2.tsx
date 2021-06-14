@@ -325,41 +325,6 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
 
         const stepList = [
 
-
-            {
-                content: <View style={{ padding: 15 }} >
-
-                    {this.state.subscriptionProducts != null && this.state.subscriptionProducts.length > 1 ? (
-                        this.state.subscriptionProducts.filter(prod => prod.price > 0).map((product) => (
-                            <TouchableOpacity key={product.vendorProductId} activeOpacity={1} onPress={() => this.setState({ selectedSubscription: product, nonFormValidateError: '' })}>
-                                <View style={(this.state.selectedSubscription == product) ? (styles.subscriptionSelected) : (styles.subscription)}>
-                                    <View style={[{ flex: 1, flexDirection: 'column', marginRight: 25, borderRadius: 10, justifyContent: 'center', borderWidth: 1, borderColor: this.state.selectedSubscription == product ? 'white' : '#2185d0' }]}>
-                                        <Icon name='calendar-week' type='font-awesome-5' color={this.state.selectedSubscription == product ? 'white' : '#2185d0'} />
-                                    </View>
-                                    <View style={[{ flex: 3, flexDirection: 'column' }]}>
-                                        <Text style={{ color: this.state.selectedSubscription == product ? 'white' : '#2185d0', fontSize: 18, fontWeight: '600', marginBottom: 2 }}>{product.localizedTitle}</Text>
-                                        <Text style={{ color: this.state.selectedSubscription == product ? 'white' : '#2185d0', marginBottom: 2 }}>${product.price} / {product.localizedSubscriptionPeriod}</Text>
-                                        <Text style={{ color: this.state.selectedSubscription == product ? 'white' : '#2185d0' }}>Paid yearly</Text>
-                                    </View>
-                                </View>
-                            </TouchableOpacity>
-                        ))) :
-                        (
-                            <ActivityIndicator />
-                        )}
-                    <View style={{ flexDirection: 'row', backgroundColor: 'transparent', borderColor: '#2185d0', borderRadius: 5 }}>
-                        <View style={[{ flexDirection: 'column' }]}>
-                            <CheckBox wrapperStyle={{ margin: 0, padding: 0 }} onPress={() => this.setState({ contactAccepted: !this.state.contactAccepted })} checked={this.state.contactAccepted} containerStyle={{ backgroundColor: 'transparent', borderRadius: 5, borderWidth: 0 }} />
-                        </View>
-                        <View style={[{ flexDirection: 'column', justifyContent: 'center' }]}>
-                            <Text style={{ lineHeight: 20 }}>By signing up you agree to the T65</Text>
-                            <Text style={{ color: '#2185d0' }}>Privacy Policy</Text>
-                        </View>
-                    </View>
-                </View>
-            },
-
-
             {
                 content: <Formik innerRef={p => (this.formUser = p)} enableReinitialize
                     initialValues={{ name: this.state.user.name, surname: this.state.user.surname, email: this.state.user.email, password: this.state.user.password }}
@@ -414,7 +379,7 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                             <Input errorMessage={errors.email} onEndEditing={() => this.checkIfEmailIsUsed(values.email)}
                                 onChangeText={handleChange('email')} label='E-mail' placeholder="Enter your e-mail" value={values.email} errorStyle={{ color: 'red' }} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }}
                                 inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }}
-                                inputContainerStyle={{ borderBottomWidth: 0, }} keyboardType='email-address' />
+                                inputContainerStyle={{ borderBottomWidth: 0, }} keyboardType='email-address' autoCapitalize='none' />
                             <Input errorMessage={errors.password} onChangeText={handleChange('password')} label='Password'
                                 placeholder="Enter your password" value={values.password} errorStyle={{ color: 'red' }} secureTextEntry labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }}
                                 inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }}
@@ -516,7 +481,38 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                     ))}
                 </View>
             },
+            {
+                content: <View style={{ padding: 15 }} >
 
+                    {this.state.subscriptionProducts != null && this.state.subscriptionProducts.length > 1 ? (
+                        this.state.subscriptionProducts.filter(prod => prod.price > 0).map((product) => (
+                            <TouchableOpacity key={product.vendorProductId} activeOpacity={1} onPress={() => this.setState({ selectedSubscription: product, nonFormValidateError: '' })}>
+                                <View style={(this.state.selectedSubscription == product) ? (styles.subscriptionSelected) : (styles.subscription)}>
+                                    <View style={[{ flex: 1, flexDirection: 'column', marginRight: 25, borderRadius: 10, justifyContent: 'center', borderWidth: 1, borderColor: this.state.selectedSubscription == product ? 'white' : '#2185d0' }]}>
+                                        <Icon name='calendar-week' type='font-awesome-5' color={this.state.selectedSubscription == product ? 'white' : '#2185d0'} />
+                                    </View>
+                                    <View style={[{ flex: 3, flexDirection: 'column' }]}>
+                                        <Text style={{ color: this.state.selectedSubscription == product ? 'white' : '#2185d0', fontSize: 18, fontWeight: '600', marginBottom: 2 }}>{product.localizedTitle}</Text>
+                                        <Text style={{ color: this.state.selectedSubscription == product ? 'white' : '#2185d0', marginBottom: 2 }}>${product.price} / {product.localizedSubscriptionPeriod}</Text>
+                                        <Text style={{ color: this.state.selectedSubscription == product ? 'white' : '#2185d0' }}>Paid {product.localizedDescription}</Text>
+                                    </View>
+                                </View>
+                            </TouchableOpacity>
+                        ))) :
+                        (
+                            <ActivityIndicator />
+                        )}
+                    <View style={{ flexDirection: 'row', backgroundColor: 'transparent', borderColor: '#2185d0', borderRadius: 5 }}>
+                        <View style={[{ flexDirection: 'column' }]}>
+                            <CheckBox wrapperStyle={{ margin: 0, padding: 0 }} onPress={() => this.setState({ contactAccepted: !this.state.contactAccepted })} checked={this.state.contactAccepted} containerStyle={{ backgroundColor: 'transparent', borderRadius: 5, borderWidth: 0 }} />
+                        </View>
+                        <View style={[{ flexDirection: 'column', justifyContent: 'center' }]}>
+                            <Text style={{ lineHeight: 20 }}>By signing up you agree to the T65</Text>
+                            <Text style={{ color: '#2185d0' }}>Privacy Policy</Text>
+                        </View>
+                    </View>
+                </View>
+            },
             {
                 content:
                     this.state.isLoading ? (
