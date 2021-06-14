@@ -618,7 +618,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                             </View>
                         </View>
                     )}
-                    {this.state.showLocationUpdated && (
+                    {this.state.showLocationUpdated && 'tt' == 'te' && (
                         <View style={{ top: 25, position: 'absolute', zIndex: 99999, backgroundColor: 'white', paddingLeft: 20, paddingRight: 20, paddingBottom: 10, paddingTop: 10, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 5 }}>
                             <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
                                 <TouchableOpacity onPress={() => this.getLeads()}>

@@ -100,9 +100,9 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
     async componentDidMount() {
 
         try {
-            const data = await adapty.adapty.paywalls.getPaywalls();
+            const data = await adapty.adapty.paywalls.getPaywalls({ forceUpdate: true });
             this.setState({ subscriptionProducts: data.products })
-console.log(data.products)
+            console.log(data.products)
             //adapty.paywalls.getPaywalls({ forceUpdate: true })
         } catch (error: any) {
 
@@ -333,13 +333,13 @@ console.log(data.products)
                         this.state.subscriptionProducts.filter(prod => prod.price > 0).map((product) => (
                             <TouchableOpacity key={product.vendorProductId} activeOpacity={1} onPress={() => this.setState({ selectedSubscription: product, nonFormValidateError: '' })}>
                                 <View style={(this.state.selectedSubscription == product) ? (styles.subscriptionSelected) : (styles.subscription)}>
-                                    <View style={[{ flex: 1, flexDirection: 'column', marginRight: 25, borderRadius: 10, justifyContent: 'center', borderWidth: 1, borderColor: this.state.selectedSubscription == product ? 'white':'#2185d0' }]}>
-                                        <Icon name='calendar-week' type='font-awesome-5' color={this.state.selectedSubscription == product ? 'white':'#2185d0'} />
+                                    <View style={[{ flex: 1, flexDirection: 'column', marginRight: 25, borderRadius: 10, justifyContent: 'center', borderWidth: 1, borderColor: this.state.selectedSubscription == product ? 'white' : '#2185d0' }]}>
+                                        <Icon name='calendar-week' type='font-awesome-5' color={this.state.selectedSubscription == product ? 'white' : '#2185d0'} />
                                     </View>
                                     <View style={[{ flex: 3, flexDirection: 'column' }]}>
-                                        <Text style={{color:this.state.selectedSubscription == product ? 'white':'#2185d0' ,fontSize: 18, fontWeight: '600', marginBottom: 2}}>{product.localizedTitle}</Text>
-                                        <Text style={{ color:this.state.selectedSubscription == product ? 'white':'#2185d0', marginBottom: 2 }}>${product.price} / {product.localizedSubscriptionPeriod}</Text>
-                                        <Text style={{ color:this.state.selectedSubscription == product ? 'white':'#2185d0' }}>Paid yearly</Text>
+                                        <Text style={{ color: this.state.selectedSubscription == product ? 'white' : '#2185d0', fontSize: 18, fontWeight: '600', marginBottom: 2 }}>{product.localizedTitle}</Text>
+                                        <Text style={{ color: this.state.selectedSubscription == product ? 'white' : '#2185d0', marginBottom: 2 }}>${product.price} / {product.localizedSubscriptionPeriod}</Text>
+                                        <Text style={{ color: this.state.selectedSubscription == product ? 'white' : '#2185d0' }}>Paid yearly</Text>
                                     </View>
                                 </View>
                             </TouchableOpacity>
@@ -516,7 +516,7 @@ console.log(data.products)
                     ))}
                 </View>
             },
-            
+
             {
                 content:
                     this.state.isLoading ? (
@@ -611,8 +611,8 @@ var styles = StyleSheet.create({
     subscriptionSelected: {
 
         borderColor: '#2185d0',
-        backgroundColor:'#2185d0',
-        color:'white',
+        backgroundColor: '#2185d0',
+        color: 'white',
         borderWidth: 1,
         borderRadius: 10,
         alignContent: 'center',
