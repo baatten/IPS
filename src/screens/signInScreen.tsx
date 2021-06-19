@@ -285,6 +285,7 @@ export default class SignInScreen extends React.Component<any, SignInScreenState
                                             leftIcon={<Icon color='rgba(0,0,0,0.50)' name='user' type='font-awesome' />}
                                             leftIconContainerStyle={{ margin: 5 }}
                                             keyboardType='email-address'
+                                            autoCapitalize='none'
                                             value={this.state.email}
                                             onChangeText={(text) => this.setState({ email: text })}
                                         />
