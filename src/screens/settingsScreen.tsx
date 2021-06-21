@@ -243,7 +243,7 @@ export class SettingsScreen extends React.Component<SettingsProps, settingsState
                                 </View>
                                 <View style={[{ flex: 1, flexDirection: 'column' }]}>
 
-                                    <Input errorMessage={errors.surname} onChangeText={handleChange('surname')} label='Surname' placeholder="Surname" value={values.surname} labelStyle={{ fontSize: 12 }} inputStyle={{ borderWidth: 1, borderRadius: 5, padding: 5, marginTop: 2, paddingLeft: 12, borderColor: 'lightgray', color: '#4b4b4b' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
+                                    <Input errorMessage={errors.surname} onChangeText={handleChange('surname')} label='Last Name' placeholder="Last Name" value={values.surname} labelStyle={{ fontSize: 12 }} inputStyle={{ borderWidth: 1, borderRadius: 5, padding: 5, marginTop: 2, paddingLeft: 12, borderColor: 'lightgray', color: '#4b4b4b' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
 
                                 </View>
                             </View>

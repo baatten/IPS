@@ -370,7 +370,7 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                                         inputContainerStyle={{ borderBottomWidth: 0 }} />
                                 </View>
                                 <View style={[{ flex: 1, flexDirection: 'column' }]}>
-                                    <Input errorMessage={errors.surname} onChangeText={handleChange('surname')} label='Surname' placeholder="Surname"
+                                    <Input errorMessage={errors.surname} onChangeText={handleChange('surname')} label='Last Name' placeholder="Last Name"
                                         value={values.surname} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }}
                                         inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }}
                                         inputContainerStyle={{ borderBottomWidth: 0, }} />

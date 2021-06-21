@@ -241,6 +241,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
     }
 
     componentDidMount() {
+
         AppState.addEventListener('change', this._handleAppStateChange);
 
         this.props.navigation.setOptions({

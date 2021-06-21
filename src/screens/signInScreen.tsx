@@ -216,7 +216,7 @@ export default class SignInScreen extends React.Component<any, SignInScreenState
                     <KeyboardAvoidingView style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', }} behavior="padding" enabled keyboardVerticalOffset={0}>
                         <View style={{ padding: 25 }}>
                             <Text style={{ color: 'white', fontSize: 30, fontWeight: '700', textAlign: "center", paddingBottom: 10 }}>T65 Locator</Text>
-                            <Text style={{ color: 'white', fontSize: 16, fontWeight: '300', textAlign: "center", paddingBottom: 25, lineHeight: 24 }}>We pride ourselves on our thorough and friendly support. We work in the trenches with you, like no other FMO in the country! </Text>
+                            <Text style={{ color: 'white', fontSize: 16, fontWeight: '300', textAlign: "center", paddingBottom: 25, lineHeight: 24 }}>We pride ourselves on our thorough and friendly support. We work in the trenches with agents like you to help make your jobs easier and more financially rewarding.</Text>
                             <Text style={{ color: 'white', fontSize: 20, fontWeight: '500', textAlign: "center", paddingBottom: 15 }}>Please sign in:</Text>
 
                             <Input inputStyle={{ padding: 10 }}
