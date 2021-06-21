@@ -40,30 +40,6 @@ export default class SignInScreen extends React.Component<any, SignInScreenState
         };
     }
 
-    async componentDidMount(){
-
-        
-        //await adapty.activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i' });
-        
-        
-        //console.log('products compo',test)
-
-        try {
-            const test = await adapty.activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i' ,logLevel:'verbose'});
-            // or 
-
-            //console.log('products',test)
-
-              //adapty.paywalls.getPaywalls({ forceUpdate: true })
-          } catch (error: any) {
-
-            console.log('activcate',error)
-          }
-
-
-        
-    }
-
     async handleSignIn() {
 
         const allowedLocation = await this.context.checkPermissions();

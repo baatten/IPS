@@ -121,8 +121,8 @@ export default function App() {
         }
         else {
 
-          console.log('not granted')
-          setshowSubscriptionWall(true);
+          //console.log('not granted')
+          //setshowSubscriptionWall(true);
           //force user to buy subscription
           try {
             const data = await adapty.paywalls.getPaywalls({ forceUpdate: true });
@@ -148,7 +148,7 @@ export default function App() {
   useEffect(() => {
 
     AppState.addEventListener('change', handleAppStateChange);
-    activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i', logLevel: 'verbose' });
+    //activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i', logLevel: 'verbose' });
 
     const bootstrapAsync = async () => {
 
@@ -182,6 +182,10 @@ export default function App() {
               authContextValue.user = responseData.token;
 
               dispatch({ type: 'SIGNED_IN', token: responseData.token });
+
+              await activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i', customerUserId: responseData.emailAddress, logLevel: 'verbose' });
+
+              await checkSubscriptionStatus();
             }
             else {
               dispatch({ type: 'TO_SIGNIN_PAGE' });
@@ -212,6 +216,8 @@ export default function App() {
     user: { user: null },
     checkPermissions: async () => checkPermissions(),
     signIn: async (data: any) => {
+
+      console.log('sing in')
 
       if (data && data.emailAddress !== undefined && data.password !== undefined) {
 
