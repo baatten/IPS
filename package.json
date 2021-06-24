@@ -32,7 +32,7 @@
     "react-native-screens": "~3.0.0",
     "react-native-unimodules": "~0.13.3",
     "react-native-vector-icons": "^7.1.0",
-    "react-native-web": "^0.17.0",
+    "react-native-web": "^0.17.1",
     "react-native-wizard": "^2.1.0",
     "yup": "^0.29.3"
   },

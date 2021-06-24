@@ -107,6 +107,8 @@ export default function App() {
 
   const checkSubscriptionStatus = async () => {
 
+    console.log('checkSubscriptionStatus')
+
     if (authContextValue.user != null) {
 
       try {
@@ -117,12 +119,12 @@ export default function App() {
 
         if (info?.accessLevels!['premium']?.isActive) {
           // grant access to premium features
-          //console.log('granted')
+          console.log('granted')
         }
         else {
 
-          //console.log('not granted')
-          //setshowSubscriptionWall(true);
+          console.log('not granted')
+          setshowSubscriptionWall(true);
           //force user to buy subscription
           try {
             const data = await adapty.paywalls.getPaywalls({ forceUpdate: true });
@@ -183,7 +185,9 @@ export default function App() {
 
               dispatch({ type: 'SIGNED_IN', token: responseData.token });
 
-              await activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i', customerUserId: responseData.emailAddress, logLevel: 'verbose' });
+              console.log('test', responseData.userId)
+
+              await activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i', customerUserId: responseData.userId, logLevel: 'verbose' });
 
               await checkSubscriptionStatus();
             }
@@ -242,7 +246,9 @@ export default function App() {
 
               dispatch({ type: 'SIGNED_IN', token: responseData.token });
 
-              await activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i', customerUserId: data.emailAddress, logLevel: 'verbose' });
+              console.log('test', responseData)
+
+              await activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i', customerUserId: responseData.userId, logLevel: 'verbose' });
 
               await checkSubscriptionStatus();
               return { user: 'test' }
