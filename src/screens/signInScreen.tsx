@@ -81,10 +81,7 @@ export default class SignInScreen extends React.Component<any, SignInScreenState
 
     async signIn() {
 
-        const emailAddress = this.state.emailAddress;
-        const password = this.state.password;
-
-        await this.context.signIn({ emailAddress, password });
+        await this.context.signIn(this.state.emailAddress, this.state.password);
 
         this.setState({ isLoading: false })
     }
@@ -183,8 +180,6 @@ export default class SignInScreen extends React.Component<any, SignInScreenState
     }
 
     render() {
-
-        const context = this.context;
 
         return (
             <>

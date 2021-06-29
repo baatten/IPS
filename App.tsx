@@ -1,9 +1,9 @@
 import React, { useReducer, useEffect, useMemo, useState } from 'react';
-import { AppState, View, Text, Linking, Modal, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native'
-import { Button, CheckBox, Icon as SpecialIcon } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import GLOBALS from './src/globals';
+import { AppState, View, Text, Linking, Modal, TouchableOpacity, ActivityIndicator, StyleSheet,Platform } from 'react-native'
+import { Button, CheckBox, Icon as SpecialIcon } from 'react-native-elements'
 import { Alert, StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -21,6 +21,7 @@ import DisabledLocation from './src/screens/DisabledLocation';
 import ActionSheet from "react-native-actions-sheet";
 import * as Location from 'expo-location';
 import { activateAdapty, adapty, AdaptyProduct } from 'react-native-adapty';
+import { expo } from './app.json'
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -107,8 +108,6 @@ export default function App() {
 
   const checkSubscriptionStatus = async () => {
 
-    console.log('checkSubscriptionStatus')
-
     if (authContextValue.user != null) {
 
       try {
@@ -119,11 +118,10 @@ export default function App() {
 
         if (info?.accessLevels!['premium']?.isActive) {
           // grant access to premium features
-          console.log('granted')
+
         }
         else {
 
-          console.log('not granted')
           setshowSubscriptionWall(true);
           //force user to buy subscription
           try {
@@ -164,8 +162,10 @@ export default function App() {
         // Restoring token failed
       }
 
-      if (username !== undefined && password !== undefined && await checkPermissions()) {
+      if (username != null && password != null && await checkPermissions()) {
 
+        authContextValue.signIn(username,password);
+        /*
         try {
           const res = await fetch(GLOBALS.BASE_URL + '/api/client/login', {
             method: 'POST',
@@ -185,10 +185,7 @@ export default function App() {
 
               dispatch({ type: 'SIGNED_IN', token: responseData.token });
 
-              console.log('test', responseData.userId)
-
               await activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i', customerUserId: responseData.userId, logLevel: 'verbose' });
-
               await checkSubscriptionStatus();
             }
             else {
@@ -202,6 +199,8 @@ export default function App() {
           console.error('An unexpected error happened occurred:', error)
           //setErrorMsg(error.message)
         }
+*/
+
       } else {
         dispatch({ type: 'TO_SIGNIN_PAGE' });
       }
@@ -219,19 +218,23 @@ export default function App() {
 
     user: { user: null },
     checkPermissions: async () => checkPermissions(),
-    signIn: async (data: any) => {
+    signIn: async ( emailAddress: string, password: string ) => {
 
-      console.log('sing in')
+      if (emailAddress != null && password != null) {
 
-      if (data && data.emailAddress !== undefined && data.password !== undefined) {
+        console.log('sign in')
 
         try {
           const res = await fetch(GLOBALS.BASE_URL + '/api/client/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(
-              { username: data.emailAddress, password: data.password }
-            ),
+            body: JSON.stringify({
+              username: emailAddress,
+              password: password,
+              release: expo.version,
+              platform: Platform.OS,
+              platformVersion: Platform.Version
+            })
           })
           if (res.status === 200) {
 
@@ -241,12 +244,10 @@ export default function App() {
 
               authContextValue.user = responseData.token;
 
-              await AsyncStorage.setItem('username', data.emailAddress);
-              await AsyncStorage.setItem('password', data.password);
+              await AsyncStorage.setItem('username', emailAddress);
+              await AsyncStorage.setItem('password', password);
 
               dispatch({ type: 'SIGNED_IN', token: responseData.token });
-
-              console.log('test', responseData)
 
               await activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i', customerUserId: responseData.userId, logLevel: 'verbose' });
 
@@ -275,7 +276,7 @@ export default function App() {
     },
     signOut: async (data: any) => {
 
-      console.log('sing out')
+      //console.log('sing out')
 
       setshowSubscriptionWall(false);
       await AsyncStorage.removeItem('username');
