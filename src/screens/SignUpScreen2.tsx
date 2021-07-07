@@ -50,6 +50,7 @@ type settingsState = {
     contactAccepted: boolean
     subscriptionProducts?: adapty.AdaptyProduct[]
     selectedSubscription?: adapty.AdaptyProduct
+    issigningIn: boolean
 }
 
 export class SignUpScreen extends React.Component<Props, settingsState> {
@@ -93,7 +94,8 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
             emailIsfree: false,
             checkingEmail: false,
             keyboardIsActive: false,
-            contactAccepted: true
+            contactAccepted: true,
+            issigningIn: false
         }
     }
 
@@ -114,50 +116,52 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
     async saveUserDetails() {
 
         //check if a subscription has been selected.
-        if (this.state.selectedSubscription != undefined) {
+        //if (this.state.selectedSubscription != undefined) {
 
-            this.setState({ isLoading: true })
-            this.wizard.current.next();
+        this.setState({ isLoading: true })
+        this.wizard.current.next();
 
-            const account = this.state.user;
+        const account = this.state.user;
 
-            const date = this.getDateFromString(account.dateOfBirthString!);
+        const date = this.getDateFromString(account.dateOfBirthString!);
 
-            if (date != null)
-                account.dateOfBirth = date;
+        if (date != null)
+            account.dateOfBirth = date;
 
-            const types: string[] = []
+        const types: string[] = []
 
-            this.state.agentTypes.forEach(element => {
+        this.state.agentTypes.forEach(element => {
 
-                if (element.chosen)
-                    types.push(element.title);
-            });
+            if (element.chosen)
+                types.push(element.title);
+        });
 
-            try {
-                const res = await fetch(GLOBALS.BASE_URL + '/api/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(
-                        { accountData: account, subscription: this.state.selectedSubscription, agentTypes: types.join(',') }
-                    )
-                })
-                if (res.status === 200) {
+        try {
+            const res = await fetch(GLOBALS.BASE_URL + '/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(
+                    { accountData: account, subscription: this.state.selectedSubscription, agentTypes: types.join(',') }
+                )
+            })
+            if (res.status === 200) {
 
-                    const responseData = await res.json();
+                const responseData = await res.json();
 
-                    this.setState({ isLoading: false })
-                }
-                else {
-                    this.setState({ isLoading: false })
-                }
+
+
+                this.setState({ isLoading: false })
             }
-            catch (error) {
-                console.error('An unexpected error happened occurred:', error)
+            else {
+                this.setState({ isLoading: false })
             }
         }
-        else
-            this.setState({ nonFormValidateError: 'you must choose a subscription' })
+        catch (error) {
+            console.error('An unexpected error happened occurred:', error)
+        }
+        //}
+        //else
+        //    this.setState({ nonFormValidateError: 'you must choose a subscription' })
     }
 
     updateStep(step: any) {
@@ -480,7 +484,8 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                         <CheckBox key={index} checked={type.chosen} title={type.title} onPress={() => this.toggleType(index)} checkedIcon='dot-circle-o' uncheckedIcon='circle-o' containerStyle={styles.typeCheckbox} />
                     ))}
                 </View>
-            },
+            }
+            /*,
             {
                 content: <View style={{ padding: 15 }} >
 
@@ -512,7 +517,8 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                         </View>
                     </View>
                 </View>
-            },
+            }*/
+            ,
             {
                 content:
                     this.state.isLoading ? (
@@ -556,7 +562,7 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                                 )}
                             </View>
                             <View style={[{ flex: 1, flexDirection: 'column', marginLeft: 7 }]}>
-                                {this.state.currentStep == 4 ? (
+                                {this.state.currentStep == 3 ? (
                                     <Button onPress={() => this.saveUserDetails()} disabled={!this.state.contactAccepted}
                                         buttonStyle={{ backgroundColor: '#2185d0', padding: 10, borderColor: '#2185d0', borderWidth: 1, borderRadius: 10 }}
                                         titleStyle={{ color: 'white', fontSize: 16 }} title='Sign up' />
@@ -580,7 +586,7 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                         </View>
                     ) : (
                         !this.state.isLoading && (
-                            <Button onPress={() => this.context.signIn()}
+                            <Button onPress={() => this.setState({ issigningIn: true }, () => this.context.signIn(this.state.user.email, this.state.user.password))}
                                 buttonStyle={{ backgroundColor: '#2185d0', marginLeft: 50, marginRight: 50, borderColor: '#2185d0', borderWidth: 1, borderRadius: 10 }}
                                 titleStyle={{ color: 'white', fontSize: 16 }} title='Get Started' />
                         ))}
