@@ -7,7 +7,6 @@ import { AuthContext } from '../components/utils/authContext';
 import { Formik } from 'formik';
 import Wizard from "react-native-wizard"
 import * as Yup from 'yup';
-import * as adapty from 'react-native-adapty'
 
 type Person = {
     email: string,
@@ -48,8 +47,8 @@ type settingsState = {
     nonFormValidateError?: string,
     keyboardIsActive: boolean,
     contactAccepted: boolean
-    subscriptionProducts?: adapty.AdaptyProduct[]
-    selectedSubscription?: adapty.AdaptyProduct
+    //subscriptionProducts?: adapty.AdaptyProduct[]
+    //selectedSubscription?: adapty.AdaptyProduct
     issigningIn: boolean
 }
 
@@ -99,20 +98,6 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
         }
     }
 
-    async componentDidMount() {
-
-        try {
-            const data = await adapty.adapty.paywalls.getPaywalls({ forceUpdate: true });
-            this.setState({ subscriptionProducts: data.products })
-            console.log(data.products)
-            //adapty.paywalls.getPaywalls({ forceUpdate: true })
-        } catch (error: any) {
-
-            console.log(error)
-        }
-
-    }
-
     async saveUserDetails() {
 
         //check if a subscription has been selected.
@@ -141,14 +126,12 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(
-                    { accountData: account, subscription: this.state.selectedSubscription, agentTypes: types.join(',') }
+                    { accountData: account, subscription: '', agentTypes: types.join(',') }
                 )
             })
             if (res.status === 200) {
 
                 const responseData = await res.json();
-
-
 
                 this.setState({ isLoading: false })
             }
@@ -586,7 +569,7 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                         </View>
                     ) : (
                         !this.state.isLoading && (
-                            <Button onPress={() => this.setState({ issigningIn: true }, () => this.context.signIn(this.state.user.email, this.state.user.password))}
+                            <Button loading={this.state.issigningIn} onPress={() => this.setState({ issigningIn: true }, () => this.context.signIn(this.state.user.email, this.state.user.password))}
                                 buttonStyle={{ backgroundColor: '#2185d0', marginLeft: 50, marginRight: 50, borderColor: '#2185d0', borderWidth: 1, borderRadius: 10 }}
                                 titleStyle={{ color: 'white', fontSize: 16 }} title='Get Started' />
                         ))}

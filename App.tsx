@@ -252,7 +252,7 @@ export default function App() {
               await activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i', customerUserId: responseData.userId, logLevel: 'verbose' });
 
               await checkSubscriptionStatus();
-              return { user: 'test' }
+              //return { user: 'test' }
             }
             else {
               dispatch({ type: 'TO_SIGNIN_PAGE' });
@@ -274,15 +274,16 @@ export default function App() {
         dispatch({ type: 'TO_SIGNIN_PAGE' });
       }
     },
-    signOut: async (data: any) => {
+    signOut: async () => {
 
-      //console.log('sing out')
+      console.log('sing out')
 
       setshowSubscriptionWall(false);
       await AsyncStorage.removeItem('username');
       await AsyncStorage.removeItem('password');
 
-      dispatch({ type: 'SIGN_OUT' });
+      dispatch({ type: 'TO_SIGNIN_PAGE' });
+      //dispatch({ type: 'SIGN_OUT' });
     },
     signUp: async (data: any) => {
       if (
@@ -442,7 +443,7 @@ export default function App() {
             </View>
           </View>
           <Button loading={subscribeLoading} onPress={() => authContextValue.subScribe(activeSubscription!)} disabled={!conditionAccepted || activeSubscription == undefined} title='Buy subscription' containerStyle={{ marginTop: 25 }} buttonStyle={{ paddingVertical: 15, borderRadius: 15 }} titleStyle={{ fontWeight: '600' }} />
-          <Button onPress={authContextValue.signOut} title='Sign out' containerStyle={{ marginTop: 5 }} titleStyle={{ color: '#2185d0' }} buttonStyle={{ backgroundColor: 'transparent' }} />
+          <Button onPress={() => authContextValue.signOut()} title='Sign out' containerStyle={{ marginTop: 5 }} titleStyle={{ color: '#2185d0' }} buttonStyle={{ backgroundColor: 'transparent' }} />
         </View>
       </Modal>
 

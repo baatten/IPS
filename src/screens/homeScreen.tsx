@@ -3,7 +3,7 @@ import { StyleSheet, View, ScrollView, Text, Linking, TouchableOpacity, Keyboard
 import { ButtonGroup, ListItem, Icon, Input, Divider } from 'react-native-elements';
 import GLOBALS from '../globals';
 import { StackNavigationProp, createStackNavigator } from '@react-navigation/stack';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, EventUserLocation } from 'react-native-maps';
 import ActionSheet from "react-native-actions-sheet";
 import openMap from 'react-native-open-maps';
 import type { Camera } from 'react-native-maps';
@@ -260,6 +260,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
     }
 
     _handleAppStateChange = (nextAppState: any) => {
+        
         if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
 
         }
@@ -586,14 +587,17 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         return saved;
     }
 
-    userLocationChanged(e: any) {
+    userLocationChanged(locationEvent: EventUserLocation) {
 
         if (this.state.currentLocation == null ||
-            this.state.currentLocation.latitude != e.nativeEvent.coordinate.latitude &&
-            this.state.currentLocation?.longitude != e.nativeEvent.coordinate.longitudeDelta
+            this.state.currentLocation.latitude != locationEvent.nativeEvent.coordinate.latitude &&
+            this.state.currentLocation?.longitude != locationEvent.nativeEvent.coordinate.longitude
         ) {
 
-            const location: Location = e.nativeEvent.coordinate;
+            const location: Location = {
+                latitude: locationEvent.nativeEvent.coordinate.latitude,
+                longitude: locationEvent.nativeEvent.coordinate.longitude
+            };
 
             this.setState({ currentLocation: location }, () => {
 
