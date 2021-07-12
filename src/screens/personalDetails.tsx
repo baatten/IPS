@@ -57,7 +57,7 @@ export class PersonalDetailsScreen extends React.Component<settingsProps, settin
                         zipCode: data.user.zipCode,
                         email: data.user.email
                     })
-                    console.log(data)
+                    //console.log(data)
                 }
                 else {
 
