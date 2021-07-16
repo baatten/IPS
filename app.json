@@ -2,7 +2,7 @@
   "expo": {
     "name": "T65 Locator",
     "slug": "IPS",
-    "version": "1.0.22",
+    "version": "1.0.25",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {

@@ -68,7 +68,7 @@ export default function App() {
 
     else if (status == 'denied') {
 
-      console.log('denied works')
+      //console.log('denied works')
 
       setShowMissingPermissions(true);
       //sheetRef.current.setModalVisible(true);
@@ -135,7 +135,7 @@ export default function App() {
             //adapty.paywalls.getPaywalls({ forceUpdate: true })
           } catch (error: any) {
 
-            console.log(error)
+            //console.log(error)
           }
         }
       } catch (error: any) {
@@ -212,7 +212,10 @@ export default function App() {
 
               dispatch({ type: 'SIGNED_IN', token: responseData.token });
 
+              console.log(responseData.userId)
+
               await activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i', customerUserId: responseData.userId, logLevel: 'verbose' });
+              //adapty.updateAttribution('')
 
               try {
                 await adapty.user.updateProfile({
@@ -228,7 +231,7 @@ export default function App() {
             }
             else {
               dispatch({ type: 'TO_SIGNIN_PAGE' });
-              console.log('sign error')
+              //console.log('sign error')
             }
           } else {
             //this.setState({loading:false,error:true})
@@ -248,7 +251,7 @@ export default function App() {
     },
     signOut: async () => {
 
-      console.log('sing out')
+      //console.log('sign out')
 
       setshowSubscriptionWall(false);
       await AsyncStorage.removeItem('username');

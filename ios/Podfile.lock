@@ -31,7 +31,7 @@ PODS:
   - EXPermissions (12.0.1):
     - UMCore
     - UMPermissionsInterface
-  - EXSplashScreen (0.10.2):
+  - EXSplashScreen (0.10.3):
     - React-Core
     - UMCore
   - EXStructuredHeaders (1.0.1):
@@ -293,8 +293,8 @@ PODS:
   - react-native-adapty (0.6.7):
     - Adapty (= 1.12.7)
     - React
-  - react-native-maps (0.27.1):
-    - React
+  - react-native-maps (0.28.0):
+    - React-Core
   - react-native-safe-area-context (3.2.0):
     - React-Core
   - React-perflogger (0.64.2)
@@ -669,11 +669,11 @@ SPEC CHECKSUMS:
   EXKeepAwake: da3b8472c2739a1edcd63b121ae4ab751aa325d4
   EXLocation: 0af832ac27e304d158365f4c16e478207977cfc6
   EXPermissions: ea8d63dd052737765bd350b2ca7cee9bcfd5e18e
-  EXSplashScreen: b59a58feda693c17f1af73c715e4e058919fcb7c
+  EXSplashScreen: f7a3aa117248375f1f2e8558e756794f052ff9fa
   EXStructuredHeaders: 0c3b4c8030ec5ed2c3bc0b64f5af81005b9cb5c8
   EXUpdates: 3bcd7a0fda56c88951ff3eaa207e68dcaabe9f19
   FBLazyVector: e686045572151edef46010a6f819ade377dfeb4b
-  FBReactNativeSpec: 6603ea1b4266136962b2894f46f50a3bfd4749a4
+  FBReactNativeSpec: f075943037726caeb1dd8d20f8cc6629524dd4da
   Flipper: ed161911b24ac3f237ed57febeed5d71d432d9bf
   Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
   Flipper-Folly: 755929a4f851b2fb2c347d533a23f191b008554c
@@ -696,7 +696,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 80c46bd381fd06e418e0d4f53672dc1d1945c4c3
   React-jsinspector: cc614ec18a9ca96fd275100c16d74d62ee11f0ae
   react-native-adapty: df8d67419190a5162c1ac0497c20a9446664610a
-  react-native-maps: f4b89da81626ad7f151a8bfcb79733295d31ce5c
+  react-native-maps: 2d405b4e8cee0282e4c02bac434d81450dfea877
   react-native-safe-area-context: e471852c5ed67eea4b10c5d9d43c1cebae3b231d
   React-perflogger: 25373e382fed75ce768a443822f07098a15ab737
   React-RCTActionSheet: af7796ba49ffe4ca92e7277a5d992d37203f7da5
