@@ -219,7 +219,7 @@ export default function App() {
 
               try {
                 await adapty.user.updateProfile({
-
+                  customerUserId: responseData.userId,
                   firstName: responseData.name,
                   lastName: responseData.surname
 
