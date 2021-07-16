@@ -2,7 +2,7 @@ import React, { useReducer, useEffect, useMemo, useState } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import GLOBALS from './src/globals';
-import { AppState, View, Text, Linking, Modal, TouchableOpacity, ActivityIndicator, StyleSheet,Platform } from 'react-native'
+import { AppState, View, Text, Linking, Modal, TouchableOpacity, ActivityIndicator, StyleSheet, Platform } from 'react-native'
 import { Button, CheckBox, Icon as SpecialIcon } from 'react-native-elements'
 import { Alert, StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
@@ -148,7 +148,6 @@ export default function App() {
   useEffect(() => {
 
     AppState.addEventListener('change', handleAppStateChange);
-    //activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i', logLevel: 'verbose' });
 
     const bootstrapAsync = async () => {
 
@@ -164,50 +163,12 @@ export default function App() {
 
       if (username != null && password != null && await checkPermissions()) {
 
-        authContextValue.signIn(username,password);
-        /*
-        try {
-          const res = await fetch(GLOBALS.BASE_URL + '/api/client/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(
-              { username: username, password: password }
-            ),
-          })
-          if (res.status === 200) {
-
-            const responseData = await res.json();
-
-            if (responseData.done) {
-
-              state.userToken = responseData.token;
-              authContextValue.user = responseData.token;
-
-              dispatch({ type: 'SIGNED_IN', token: responseData.token });
-
-              await activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i', customerUserId: responseData.userId, logLevel: 'verbose' });
-              await checkSubscriptionStatus();
-            }
-            else {
-              dispatch({ type: 'TO_SIGNIN_PAGE' });
-            }
-          } else {
-
-            dispatch({ type: 'TO_SIGNIN_PAGE' });
-          }
-        } catch (error) {
-          console.error('An unexpected error happened occurred:', error)
-          //setErrorMsg(error.message)
-        }
-*/
+        authContextValue.signIn(username, password);
 
       } else {
         dispatch({ type: 'TO_SIGNIN_PAGE' });
       }
 
-      // After restoring token, we may need to validate it in production apps
-      // This will switch to the App screen or Auth screen and this loading
-      // screen will be unmounted and thrown away.
       dispatch({ type: 'RESTORED_TOKEN' });
     };
 
@@ -218,7 +179,7 @@ export default function App() {
 
     user: { user: null },
     checkPermissions: async () => checkPermissions(),
-    signIn: async ( emailAddress: string, password: string ) => {
+    signIn: async (emailAddress: string, password: string) => {
 
       if (emailAddress != null && password != null) {
 
@@ -240,6 +201,8 @@ export default function App() {
 
             const responseData = await res.json();
 
+            console.log(responseData)
+
             if (responseData.done) {
 
               authContextValue.user = responseData.token;
@@ -250,6 +213,15 @@ export default function App() {
               dispatch({ type: 'SIGNED_IN', token: responseData.token });
 
               await activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i', customerUserId: responseData.userId, logLevel: 'verbose' });
+
+              try {
+                await adapty.user.updateProfile({
+
+                  firstName: responseData.name,
+                  lastName: responseData.surname
+
+                });
+              } catch (error: any) { }
 
               await checkSubscriptionStatus();
               //return { user: 'test' }
