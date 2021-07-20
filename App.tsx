@@ -18,6 +18,7 @@ import { SavedLeadsStackScreen } from './src/screens/savedLeads'
 import SplashScreen from './src/screens/splashScreen'
 import SignInScreen from './src/screens/signInScreen'
 import DisabledLocation from './src/screens/DisabledLocation';
+import { InAppBrowser } from 'react-native-inappbrowser-reborn'
 import ActionSheet from "react-native-actions-sheet";
 import * as Location from 'expo-location';
 import { activateAdapty, adapty, AdaptyProduct } from 'react-native-adapty';
@@ -142,6 +143,50 @@ export default function App() {
 
 
       }
+    }
+  }
+
+  const openLink = async() => {
+    try {
+      const url = 'https://api.t-65locator.com/privacyPolicy/'
+      if (await InAppBrowser.isAvailable()) {
+        const result = await InAppBrowser.open(url, {
+          // iOS Properties
+          dismissButtonStyle: 'close',
+          preferredBarTintColor: '#2185d0',
+          preferredControlTintColor: 'white',
+          readerMode: false,
+          animated: true,
+          modalPresentationStyle: 'fullScreen',
+          modalTransitionStyle: 'coverVertical',
+          modalEnabled: true,
+          enableBarCollapsing: false,
+          // Android Properties
+          showTitle: true,
+          toolbarColor: 'grey',
+          secondaryToolbarColor: 'black',
+          navigationBarColor: 'black',
+          navigationBarDividerColor: 'white',
+          enableUrlBarHiding: true,
+          enableDefaultShare: true,
+          forceCloseOnRedirection: false,
+          // Specify full animation resource identifier(package:anim/name)
+          // or only resource name(in case of animation bundled with app).
+          animations: {
+            startEnter: 'slide_in_right',
+            startExit: 'slide_out_left',
+            endEnter: 'slide_in_left',
+            endExit: 'slide_out_right'
+          },
+          headers: {
+            'my-custom-header': 'my custom header value'
+          }
+        })
+        //Alert.alert(JSON.stringify(result))
+      }
+      else Linking.openURL(url)
+    } catch (error) {
+      Alert.alert(error.message)
     }
   }
 
@@ -414,7 +459,7 @@ export default function App() {
             </View>
             <View style={[{ flexDirection: 'column', justifyContent: 'center' }]}>
               <Text style={{ lineHeight: 20 }}>By signing up you agree to the T65</Text>
-              <Text style={{ color: '#2185d0' }}>Privacy Policy</Text>
+              <Text onPress={openLink} style={{ color: '#2185d0' }}>Privacy Policy</Text>
             </View>
           </View>
           <Button loading={subscribeLoading} onPress={() => authContextValue.subScribe(activeSubscription!)} disabled={!conditionAccepted || activeSubscription == undefined} title='Buy subscription' containerStyle={{ marginTop: 25 }} buttonStyle={{ paddingVertical: 15, borderRadius: 15 }} titleStyle={{ fontWeight: '600' }} />

@@ -24,6 +24,7 @@
     "react-native-adapty": "^0.6.7",
     "react-native-elements": "^3.4.2",
     "react-native-gesture-handler": "~1.10.2",
+    "react-native-inappbrowser-reborn": "^3.6.3",
     "react-native-maps": "^0.28.0",
     "react-native-open-maps": "^0.3.6",
     "react-native-popover-view": "^3.1.1",
