@@ -236,7 +236,7 @@ export default function App() {
 
       if (emailAddress != null && password != null) {
 
-        console.log('sign in')
+        //console.log('sign in')
 
         const res = await fetch(GLOBALS.BASE_URL + '/api/client/login', {
           method: 'POST',
@@ -272,16 +272,18 @@ export default function App() {
 
               try {
 
+                //await activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i',customerUserId:userIdString });
+                //await adapty.user.logout();
                 await adapty.user.identify(userIdString);
 
-                adapty.user.updateProfile({
+                await adapty.user.updateProfile({
                   firstName: responseData.name,
                   lastName: responseData.surname,
                   email: responseData.email
                 });
 
               } catch (error: any) {
-                //console.log('Morten testing', error)
+                console.log('Morten testing', error)
               }
 
               dispatch({ type: 'SIGNED_IN', token: responseData.token });
@@ -315,10 +317,9 @@ export default function App() {
       return;
     },
     signOut: async () => {
-
-      //console.log('sign out')
-      //await adapty.user.logout();
+      
       setshowSubscriptionWall(false);
+      await adapty.user.logout();
       await AsyncStorage.removeItem('username');
       await AsyncStorage.removeItem('password');
 
