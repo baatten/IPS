@@ -47,8 +47,6 @@ type settingsState = {
     nonFormValidateError?: string,
     keyboardIsActive: boolean,
     contactAccepted: boolean
-    //subscriptionProducts?: adapty.AdaptyProduct[]
-    //selectedSubscription?: adapty.AdaptyProduct
     issigningIn: boolean
 }
 

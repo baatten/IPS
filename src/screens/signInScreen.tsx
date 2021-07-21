@@ -5,7 +5,6 @@ import { Input, Button, Icon } from 'react-native-elements';
 import { AuthContext } from '../components/utils/authContext';
 import ActionSheet from "react-native-actions-sheet";
 import GLOBALS from '../globals';
-import * as adapty from 'react-native-adapty'
 
 type SignInScreenState = {
 
@@ -83,7 +82,7 @@ export default class SignInScreen extends React.Component<any, SignInScreenState
 
         await this.context.signIn(this.state.emailAddress, this.state.password);
 
-        //this.setState({ isLoading: false })
+        this.setState({ isLoading: false })
     }
 
     validEmail(email: string): boolean {

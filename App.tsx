@@ -48,6 +48,37 @@ export default function App() {
   const [activeSubscription, setActiveSubscription] = useState<AdaptyProduct>()
   const [conditionAccepted, setConditionAccepted] = useState<boolean>(false)
 
+  useEffect(() => {
+
+    AppState.addEventListener('change', handleAppStateChange);
+    activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i' });
+
+    const bootstrapAsync = async () => {
+
+      let username;
+      let password;
+
+      try {
+        username = await AsyncStorage.getItem('username');
+        password = await AsyncStorage.getItem('password');
+      } catch (e) {
+        // Restoring token failed
+      }
+
+      if (username != null && password != null && await checkPermissions()) {
+
+        authContextValue.signIn(username, password);
+
+      } else {
+        dispatch({ type: 'TO_SIGNIN_PAGE' });
+      }
+
+      dispatch({ type: 'RESTORED_TOKEN' });
+    };
+
+    bootstrapAsync();
+  }, []);
+
   const allowPermissions = async () => {
 
     sheetRef.current.setModalVisible(false);
@@ -125,12 +156,8 @@ export default function App() {
         const info = await adapty.purchases.getInfo({})
         // "premium" is an identifier of default access level
 
-        console.log('checking...')
-        console.log(info)
-
         if (info?.accessLevels!['premium']?.isActive) {
           // grant access to premium features
-          console.log(info)
 
         }
         else {
@@ -152,7 +179,6 @@ export default function App() {
           }
         }
       } catch (error: any) {
-
 
       }
     }
@@ -202,36 +228,6 @@ export default function App() {
     }
   }
 
-  useEffect(() => {
-
-    AppState.addEventListener('change', handleAppStateChange);
-
-    const bootstrapAsync = async () => {
-
-      let username;
-      let password;
-
-      try {
-        username = await AsyncStorage.getItem('username');
-        password = await AsyncStorage.getItem('password');
-      } catch (e) {
-        // Restoring token failed
-      }
-
-      if (username != null && password != null && await checkPermissions()) {
-
-        authContextValue.signIn(username, password);
-
-      } else {
-        dispatch({ type: 'TO_SIGNIN_PAGE' });
-      }
-
-      dispatch({ type: 'RESTORED_TOKEN' });
-    };
-
-    bootstrapAsync();
-  }, []);
-
   const authContextValue = useMemo(() => ({
 
     user: { user: null },
@@ -242,79 +238,86 @@ export default function App() {
 
         console.log('sign in')
 
-        try {
-          const res = await fetch(GLOBALS.BASE_URL + '/api/client/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              username: emailAddress,
-              password: password,
-              release: expo.version,
-              platform: Platform.OS,
-              platformVersion: Platform.Version
-            })
+        const res = await fetch(GLOBALS.BASE_URL + '/api/client/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: emailAddress,
+            password: password,
+            release: expo.version,
+            platform: Platform.OS,
+            platformVersion: Platform.Version
           })
+        })
 
-          if (res.status === 200) {
+        if (res.status === 200) {
 
-            const responseData: userModel = await res.json();
+          const responseData: userModel = await res.json();
 
-            //console.log('user id', responseData.userId)
-            //console.log('user object', responseData)
+          //console.log('user id', responseData.userId)
+          //console.log('user object', responseData)
 
-            if (responseData.done) {
+          if (responseData.done) {
 
-              authContextValue.user = responseData.token as any;
+            authContextValue.user = responseData.token as any;
 
-              await AsyncStorage.setItem('username', emailAddress);
-              await AsyncStorage.setItem('password', password);
+            await AsyncStorage.setItem('username', emailAddress);
+            await AsyncStorage.setItem('password', password);
 
-              const userIdString = responseData.userId.toString();
+            const userIdString = responseData.userId.toString();
 
-              if (userIdString != undefined && userIdString != null && userIdString != '') {
-                await activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i', customerUserId: responseData.userId.toString() });
+            //console.log('id:', userIdString)
 
-                try {
-                  await adapty.user.updateProfile({
-                    firstName: responseData.name,
-                    lastName: responseData.surname,
-                    email: responseData.email
-                  });
-                } catch (error: any) {
-                  //console.log('Morten testing', error)
-                }
+            if (userIdString !== undefined && userIdString !== null && userIdString !== '') {
 
-                dispatch({ type: 'SIGNED_IN', token: responseData.token });
-                await checkSubscriptionStatus();
+              try {
+
+                await adapty.user.identify(userIdString);
+
+                adapty.user.updateProfile({
+                  firstName: responseData.name,
+                  lastName: responseData.surname,
+                  email: responseData.email
+                });
+
+              } catch (error: any) {
+                //console.log('Morten testing', error)
               }
-              else {
-                dispatch({ type: 'TO_SIGNIN_PAGE' });
-              }
+
+              dispatch({ type: 'SIGNED_IN', token: responseData.token });
+              await checkSubscriptionStatus();
+
             }
             else {
               dispatch({ type: 'TO_SIGNIN_PAGE' });
-              //console.log('sign error')
-            }
-          } else {
-            //this.setState({loading:false,error:true})
-            //throw new Error(await res.text())
-            //console.log(await res.text());
-            Alert.alert('Error', 'Username or password is wrong.');
 
-            dispatch({ type: 'TO_SIGNIN_PAGE' });
+            }
           }
-        } catch (error) {
-          console.error('An unexpected error happened occurred:', error)
-          //setErrorMsg(error.message)
+          else {
+            dispatch({ type: 'TO_SIGNIN_PAGE' });
+            //console.log('sign error')
+
+          }
+        } else {
+          //this.setState({loading:false,error:true})
+          //throw new Error(await res.text())
+          //console.log(await res.text());
+          Alert.alert('Error', 'Username or password is wrong.');
+
+          dispatch({ type: 'TO_SIGNIN_PAGE' });
         }
+
       } else {
         dispatch({ type: 'TO_SIGNIN_PAGE' });
+
       }
+
+      return;
     },
     signOut: async () => {
 
       //console.log('sign out')
-      await adapty.user.logout();
+      //await adapty.user.logout();
       setshowSubscriptionWall(false);
       await AsyncStorage.removeItem('username');
       await AsyncStorage.removeItem('password');
@@ -489,8 +492,6 @@ export default function App() {
 }
 
 function HomeTabs() {
-
-  //StatusBar.setBackgroundColor('#2185d0');
 
   return (
     <Tab.Navigator initialRouteName="Home" screenOptions={({ route }) => ({
