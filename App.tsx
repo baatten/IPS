@@ -146,7 +146,7 @@ export default function App() {
     }
   }
 
-  const openLink = async() => {
+  const openLink = async () => {
     try {
       const url = 'https://api.t-65locator.com/privacyPolicy/'
       if (await InAppBrowser.isAvailable()) {
@@ -244,13 +244,20 @@ export default function App() {
           })
           if (res.status === 200) {
 
-            const responseData = await res.json();
+            const responseData: {
+              done: true,
+              name: string,
+              email: string,
+              surname: string,
+              userId: string,
+              token: string
+            } = await res.json();
 
             console.log(responseData)
 
             if (responseData.done) {
 
-              authContextValue.user = responseData.token;
+              authContextValue.user = responseData.token as any;
 
               await AsyncStorage.setItem('username', emailAddress);
               await AsyncStorage.setItem('password', password);
