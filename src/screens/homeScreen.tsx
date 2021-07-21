@@ -260,7 +260,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
     }
 
     _handleAppStateChange = (nextAppState: any) => {
-        
+
         if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
 
         }
@@ -411,22 +411,16 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         }
     }
 
-    async saveleadinteraction(lead: Lead, index: number, action?: string) {
+    async saveleadinteraction(lead: Lead, index: number, action: string) {
 
-        let actionString = 'seen';
-
-        if (action != null && action != '')
-            actionString = action;
-
-        if (lead.leadinteraction == null || lead.leadinteraction.length < 1)
-            lead.leadinteraction = [{ id: 0, action: actionString, leadId: lead.id! }]
+        if (lead.leadinteraction == null || lead.leadinteraction.length < 1 || lead.leadinteraction[0] == null)
+            lead.leadinteraction = [{ id: 0, action: action, leadId: lead.id! }]
         else {
-            if (lead.leadinteraction[0].action == 'seen')
-                lead.leadinteraction[0].action = actionString;
+            lead.leadinteraction[0].action = action;
         }
 
         try {
-            const res = await fetch(GLOBALS.BASE_URL + '/api/client/saveleadinteraction', {
+            const res = await fetch(GLOBALS.BASE_URL + '/api/client/saveLeadInteraction', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ lead: lead })
@@ -438,10 +432,8 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                 if (data) {
 
                     let leads: Lead[] = [...this.state.leads];
-                    let lead2: Lead = { ...leads[index] };
-
-                    lead2.leadinteraction![0] = data.leadinteraction
-                    leads[index] = lead2;
+                    let lead2 = leads.find(le => le.id == lead.id)
+                    lead2 = lead;
 
                     this.setState({ isLoading: false, leads: leads })
                 }
@@ -451,6 +443,8 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
             } else {
 
+
+                console.log('something happened', res)
             }
         } catch (error) {
             console.error('An unexpected error happened occurred:', error)
@@ -463,7 +457,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
         this.setState({ activeLead: lead, activeIndex: index }, () => {
 
-            this.saveleadinteraction(lead, index);
+            this.saveleadinteraction(lead, index, 'seen');
             this.sheetRef.current.setModalVisible()
 
         })
@@ -478,8 +472,6 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
             this.mapRef.current.animateCamera(camera);
         }
-
-
     }
 
     closeLeadData() {
@@ -530,7 +522,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         else
             lead!.leadinteraction = [{ id: 0, action: 'saved', leadId: lead!.id!, notes: this.state.activeLeadNotes }]
 
-        this.saveleadinteraction(lead!, this.state.activeIndex!);
+        this.saveleadinteraction(lead!, this.state.activeIndex!, 'saved');
 
         this.saveLeadSheetRef.current?.setModalVisible(false);
         this.setState({ savingLead: false, activeLeadNotes: '' });
@@ -543,8 +535,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         lead!.leadinteraction![0].notes = '';
         lead!.leadinteraction![0].action = '';
 
-        this.saveleadinteraction(lead!, this.state.activeIndex!);
-
+        this.saveleadinteraction(lead!, this.state.activeIndex!, 'seen');
     }
 
     monthsToAge65(date: Date) {
@@ -563,13 +554,13 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         }
         else if (lead.leadinteraction != undefined && lead.leadinteraction.length > 0) {
 
-            if (lead.leadinteraction![0].action == 'seen')
+            if (lead.leadinteraction[0].action == 'seen')
                 color = 'orange';
-            else if (lead.leadinteraction![0].action == 'saved')
+            else if (lead.leadinteraction[0].action == 'saved')
                 color = 'purple';
-            else if (lead.leadinteraction![0].action == 'call')
+            else if (lead.leadinteraction[0].action == 'call')
                 color = 'red'
-            else if (lead.leadinteraction![0].action == 'navigation')
+            else if (lead.leadinteraction[0].action == 'navigation')
                 color = 'black'
         }
 
@@ -581,7 +572,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
         const lead = this.state.activeLead
 
-        if (lead != null && lead.leadinteraction!.length > 0 && lead.leadinteraction![0].action == 'saved')
+        if (lead != null && lead.leadinteraction != null && lead.leadinteraction.length > 0 && lead.leadinteraction[0]?.action != null && lead.leadinteraction[0].action == 'saved')
             saved = true;
 
         return saved;
@@ -674,7 +665,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                 </View>
                             </View>
 
-                            {(this.state.activeLead?.leadinteraction != null && this.state.activeLead?.leadinteraction.length > 0 && this.state.activeLead.leadinteraction[0].notes != null) && (
+                            {(this.state.activeLead?.leadinteraction != null && this.state.activeLead?.leadinteraction.length > 0 && this.state.activeLead.leadinteraction[0]?.notes != null) && (
                                 <View>
                                     <Text style={{ fontSize: 18, fontWeight: '600', marginTop: 10 }}>Notes</Text>
                                     <Text style={{ fontSize: 16, color: 'grey', marginTop: 5 }}>{this.state.activeLead.leadinteraction[0].notes}</Text>
@@ -821,7 +812,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
                                     <View>
                                         <Text style={{ fontSize: 18, fontWeight: '600', marginTop: 10 }}>Notes</Text>
-                                        <Text style={{ fontSize: 16, color: 'grey', marginTop: 5 }}>{this.state.activeLead?.leadinteraction![0].notes}</Text>
+                                        <Text style={{ fontSize: 16, color: 'grey', marginTop: 5 }}>{this.state.activeLead?.leadinteraction[0].notes}</Text>
                                     </View>
                                 )}
 

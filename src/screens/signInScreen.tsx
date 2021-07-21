@@ -83,7 +83,7 @@ export default class SignInScreen extends React.Component<any, SignInScreenState
 
         await this.context.signIn(this.state.emailAddress, this.state.password);
 
-        this.setState({ isLoading: false })
+        //this.setState({ isLoading: false })
     }
 
     validEmail(email: string): boolean {

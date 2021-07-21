@@ -24,6 +24,16 @@ import * as Location from 'expo-location';
 import { activateAdapty, adapty, AdaptyProduct } from 'react-native-adapty';
 import { expo } from './app.json'
 
+interface userModel {
+
+  done: true,
+  name: string,
+  email: string,
+  surname: string,
+  userId: string,
+  token: string
+}
+
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
@@ -115,10 +125,12 @@ export default function App() {
         const info = await adapty.purchases.getInfo({})
         // "premium" is an identifier of default access level
 
-        //console.log('checking...')
+        console.log('checking...')
+        console.log(info)
 
         if (info?.accessLevels!['premium']?.isActive) {
           // grant access to premium features
+          console.log(info)
 
         }
         else {
@@ -242,18 +254,13 @@ export default function App() {
               platformVersion: Platform.Version
             })
           })
+
           if (res.status === 200) {
 
-            const responseData: {
-              done: true,
-              name: string,
-              email: string,
-              surname: string,
-              userId: string,
-              token: string
-            } = await res.json();
+            const responseData: userModel = await res.json();
 
-            console.log(responseData)
+            //console.log('user id', responseData.userId)
+            //console.log('user object', responseData)
 
             if (responseData.done) {
 
@@ -262,24 +269,27 @@ export default function App() {
               await AsyncStorage.setItem('username', emailAddress);
               await AsyncStorage.setItem('password', password);
 
-              dispatch({ type: 'SIGNED_IN', token: responseData.token });
+              const userIdString = responseData.userId.toString();
 
-              console.log(responseData.userId)
+              if (userIdString != undefined && userIdString != null && userIdString != '') {
+                await activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i', customerUserId: responseData.userId.toString() });
 
-              await activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i', customerUserId: responseData.userId, logLevel: 'verbose' });
-              //adapty.updateAttribution('')
+                try {
+                  await adapty.user.updateProfile({
+                    firstName: responseData.name,
+                    lastName: responseData.surname,
+                    email: responseData.email
+                  });
+                } catch (error: any) {
+                  //console.log('Morten testing', error)
+                }
 
-              try {
-                await adapty.user.updateProfile({
-                  customerUserId: responseData.userId,
-                  firstName: responseData.name,
-                  lastName: responseData.surname
-
-                });
-              } catch (error: any) { }
-
-              await checkSubscriptionStatus();
-              //return { user: 'test' }
+                dispatch({ type: 'SIGNED_IN', token: responseData.token });
+                await checkSubscriptionStatus();
+              }
+              else {
+                dispatch({ type: 'TO_SIGNIN_PAGE' });
+              }
             }
             else {
               dispatch({ type: 'TO_SIGNIN_PAGE' });
@@ -304,7 +314,7 @@ export default function App() {
     signOut: async () => {
 
       //console.log('sign out')
-
+      await adapty.user.logout();
       setshowSubscriptionWall(false);
       await AsyncStorage.removeItem('username');
       await AsyncStorage.removeItem('password');

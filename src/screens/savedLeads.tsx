@@ -5,8 +5,6 @@ import GLOBALS from '../globals';
 import { StackNavigationProp, createStackNavigator } from '@react-navigation/stack';
 import ActionSheet from "react-native-actions-sheet";
 import openMap from 'react-native-open-maps';
-import type { KmlMarker } from 'react-native-maps';
-
 import { Lead } from '../lib/types'
 
 const SaveLeadsStack = createStackNavigator();
@@ -87,8 +85,7 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
         try {
             const res = await fetch(GLOBALS.BASE_URL + '/api/client/getSavedLeads', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ radius: this.state.filterDistance })
+                headers: { 'Content-Type': 'application/json' }
             })
 
             this.setState({ isLoading: false })
@@ -112,23 +109,16 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
             console.error('An unexpected error happened occurred:', error)
         }
     }
+    async saveleadinteraction(lead: Lead, index: number, action: string) {
 
-    async saveleadinteraction(lead: Lead, index: number, action?: string) {
-
-        let actionString = '';
-
-        if (action != null && action != '')
-            actionString = action;
-
-        if (lead.leadinteraction == null || lead.leadinteraction.length < 1)
-            lead.leadinteraction = [{ id: 0, action: actionString, leadId: lead.id! }]
+        if (lead.leadinteraction == null || lead.leadinteraction.length < 1 || lead.leadinteraction[0] == null)
+            lead.leadinteraction = [{ id: 0, action: action, leadId: lead.id! }]
         else {
-            if (lead.leadinteraction[0].action == '')
-                lead.leadinteraction[0].action = actionString;
+            lead.leadinteraction[0].action = action;
         }
 
         try {
-            const res = await fetch(GLOBALS.BASE_URL + '/api/client/saveleadinteraction', {
+            const res = await fetch(GLOBALS.BASE_URL + '/api/client/saveLeadInteraction', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ lead: lead })
@@ -139,15 +129,11 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
 
                 if (data) {
 
-                    /*
                     let leads: Lead[] = [...this.state.leads];
-                    let lead2: Lead = { ...leads[index] };
-
-                    lead2.leadinteraction![0] = data.leadinteraction
-                    leads[index] = lead2;
+                    let lead2 = leads.find(le => le.id == lead.id)
+                    lead2 = lead;
 
                     this.setState({ isLoading: false, leads: leads })
-                    */
                 }
                 else {
 
@@ -155,6 +141,8 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
 
             } else {
 
+
+                console.log('something happened', res)
             }
         } catch (error) {
             console.error('An unexpected error happened occurred:', error)
@@ -167,7 +155,7 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
 
         this.setState({ activeLead: lead, activeIndex: index }, this.sheetRef.current?.setModalVisible())
 
-        this.saveleadinteraction(lead, index);
+        this.saveleadinteraction(lead, index,'saved');
     }
 
     openDetails() {
@@ -215,19 +203,21 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
         else
             lead!.leadinteraction = [{ id: 0, action: 'saved', leadId: lead!.id!, notes: this.state.activeLeadNotes }]
 
-        this.saveleadinteraction(lead!, this.state.activeIndex!);
+        this.saveleadinteraction(lead!, this.state.activeIndex!,'seen');
 
         this.cancelSaveDetails()
     }
 
     monthsToAge65(date: Date) {
 
+        console.log('test mnirteberg',date)
+
         const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
         return 'Turns 65 ' + monthNames[date.getMonth()] + ' ' + date.getFullYear();
     }
 
-    removeSavedLead() {
+    async removeSavedLead() {
 
         const lead = this.state.activeLead;
         const index = this.state.activeIndex;
@@ -235,13 +225,13 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
         lead!.leadinteraction![0].notes = '';
         lead!.leadinteraction![0].action = '';
 
-        this.saveleadinteraction(lead!, this.state.activeIndex!);
+        this.sheetRef.current?.setModalVisible(false);
+        await this.saveleadinteraction(lead!, this.state.activeIndex!,'seen');
 
         let leads: Lead[] = [...this.state.leads];
-        leads.splice(index!, 1);
+        leads = leads.filter(le => le.id != lead!.id)
 
-        this.setState({ isLoading: false, leads: leads });
-        this.sheetRef.current?.setModalVisible(false);
+        this.setState({leads:leads, isLoading: false,activeLead:undefined,activeIndex:undefined,activeLeadNotes:undefined });
     }
 
     getPinColorForLead(lead: Lead) {
@@ -301,12 +291,12 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
                                         }}>{item.lead.firstname} {item.lead.lastname}</ListItem.Title>
                                         <ListItem.Subtitle style={{ color: 'grey' }}>{item.lead.address}, {item.lead.city}</ListItem.Subtitle>
                                     </ListItem.Content>
-                                    <ListItem.Subtitle >{this.monthsToAge65(new Date(item.lead.dobdate || ''))}</ListItem.Subtitle>
+                                    <ListItem.Subtitle >{this.monthsToAge65(new Date(item.lead.dobdate))}</ListItem.Subtitle>
                                 </ListItem>
                             );
                         }}
                     />
-                    <ActionSheet ref={this.sheetRef} bounceOnOpen={true} onClose={() => this.setState({ savingLead: false })}>
+                    <ActionSheet ref={this.sheetRef} bounceOnOpen={true} onClose={() => this.setState({ savingLead: false,activeLead:undefined })}>
                         <View style={{
                             borderTopStartRadius: 0, borderTopRightRadius: 0, padding: 20, backgroundColor: 'white',
                             shadowColor: 'black', shadowOpacity: 0.15, shadowRadius: 5, shadowOffset: { width: 5, height: 50 }
