@@ -2,7 +2,7 @@ import React from 'react';
 import { validateAll } from 'indicative/validator';
 import { View, Text, KeyboardAvoidingView, ImageBackground, Modal, Alert } from 'react-native';
 import { Input, Button, Icon } from 'react-native-elements';
-import { AuthContext } from '../components/utils/authContext';
+import { AppContext } from '../components/utils/appContext';
 import ActionSheet from "react-native-actions-sheet";
 import GLOBALS from '../globals';
 
@@ -22,7 +22,7 @@ type SignInScreenState = {
 
 export default class SignInScreen extends React.Component<any, SignInScreenState> {
 
-    static contextType = AuthContext;
+    static contextType = AppContext;
     sheetRef: any;
 
     constructor(props: any) {

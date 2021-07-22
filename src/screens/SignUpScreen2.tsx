@@ -3,7 +3,7 @@ import GLOBALS from '../globals';
 import { View, Text, KeyboardAvoidingView, ActivityIndicator, StyleSheet, TouchableOpacity, StatusBar } from 'react-native';
 import { Input, Button, Icon, CheckBox } from 'react-native-elements';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { AuthContext } from '../components/utils/authContext';
+import { AppContext } from '../components/utils/appContext';
 import { Formik } from 'formik';
 import Wizard from "react-native-wizard"
 import * as Yup from 'yup';
@@ -52,7 +52,7 @@ type settingsState = {
 
 export class SignUpScreen extends React.Component<Props, settingsState> {
 
-    static contextType = AuthContext;
+    static contextType = AppContext;
     formUser: any;
     formPersonal: any;
     formContacts: any;

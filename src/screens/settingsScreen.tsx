@@ -3,7 +3,7 @@ import { View, Text, Alert, Modal, ActivityIndicator,ScrollView } from 'react-na
 import GLOBALS from '../globals';
 import { Button, Card, Input } from 'react-native-elements';
 import { StackNavigationProp, createStackNavigator } from '@react-navigation/stack';
-import { AuthContext } from '../components/utils/authContext';
+import { AppContext } from '../components/utils/appContext';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
@@ -34,7 +34,7 @@ type SettingsProps = {
 
 export class SettingsScreen extends React.Component<SettingsProps, settingsState> {
 
-    static contextType = AuthContext;
+    static contextType = AppContext;
     form: any;
     PasswordForm: any;
 

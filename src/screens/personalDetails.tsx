@@ -3,7 +3,7 @@ import { View, Text, Animated,ScrollView } from 'react-native';
 import { Button, Card, Input, Slider, ButtonGroup } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { createStackNavigator } from '@react-navigation/stack';
-import { AuthContext } from '../components/utils/authContext';
+import { AppContext } from '../components/utils/appContext';
 
 
 const PersonalDetailsStack = createStackNavigator();
@@ -26,7 +26,7 @@ type settingsProps = {
 
 export class PersonalDetailsScreen extends React.Component<settingsProps, settingsState> {
 
-    static contextType = AuthContext;
+    static contextType = AppContext;
 
     constructor(props: settingsProps) {
         super(props)
