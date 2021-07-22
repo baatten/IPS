@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Icon } from 'react-native-elements';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { HomeStackScreen } from '../../../src/screens/homeScreen'
 import { SettingsStackScreen } from '../../../src/screens/settingsScreen'

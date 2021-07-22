@@ -35,15 +35,14 @@ export default class SignInScreen extends React.Component<any, SignInScreenState
             password: '', email: '',
             securityCode: '',
             isSendingEmail: false,
-            didSendEmail: false, isLoading: false, modelIsOpen: false, passwordWasResat: false
+            didSendEmail: false,
+            isLoading: false,
+            modelIsOpen: false,
+            passwordWasResat: false
         };
     }
 
     async handleSignIn() {
-
-        const allowedLocation = await this.context.checkPermissions();
-
-        if (allowedLocation) {
 
             const rules = {
                 email: 'required|email',
@@ -75,7 +74,7 @@ export default class SignInScreen extends React.Component<any, SignInScreenState
 
                     //setSignUpErrors(formatError);
                 });
-        }
+        //}
     };
 
     async signIn() {

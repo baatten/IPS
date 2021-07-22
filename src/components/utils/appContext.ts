@@ -6,8 +6,7 @@ export const AppContext = createContext({
 
     signOut: async () => { },
 
-    signUp: async (data: any) => {
-    },
+    signUp: async (data: any) => { },
 
     subScribe: async (product: any) => { }
 });

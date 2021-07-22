@@ -2,23 +2,22 @@ import React from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import GLOBALS from './src/globals';
+import SplashScreen from './src/screens/splashScreen'
+import SignInScreen from './src/screens/signInScreen'
+import DisabledLocation from './src/screens/DisabledLocation';
+import ActionSheet from "react-native-actions-sheet";
+import * as Location from 'expo-location';
 import { AppState, View, Text, Linking, Modal, TouchableOpacity, ActivityIndicator, StyleSheet, Platform, FlexAlignType } from 'react-native'
 import { Button, CheckBox, Icon as SpecialIcon } from 'react-native-elements'
 import { Alert, StatusBar } from 'react-native';
 import { Tabs } from './src/components/utils/tabs'
 import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AppContext } from './src/components/utils/appContext';
 import { LoginReducer, initialState, LoginState } from './src/components/utils/reducers';
 import { stateConditionString } from './src/components/utils/stateCondition';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SignUpScreen } from './src/screens/SignUpScreen2'
-import SplashScreen from './src/screens/splashScreen'
-import SignInScreen from './src/screens/signInScreen'
-import DisabledLocation from './src/screens/DisabledLocation';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn'
-import ActionSheet from "react-native-actions-sheet";
-import * as Location from 'expo-location';
 import { activateAdapty, adapty, AdaptyProduct } from 'react-native-adapty';
 import { expo } from './app.json'
 
@@ -32,7 +31,6 @@ interface userModel {
   token: string
 }
 
-const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 type AppProps = {};
@@ -68,10 +66,17 @@ export default class App extends React.Component<AppProps, IPSState> {
     }
   }
 
-  async componentDidMount() {
+  componentDidMount() {
 
     AppState.addEventListener('change', this.handleAppStateChange);
     activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i' });
+  
+    this.start();
+  }
+
+  async start(){
+
+    //await this.checkPermissions()
 
     let username;
     let password;
@@ -83,7 +88,7 @@ export default class App extends React.Component<AppProps, IPSState> {
       // Restoring token failed
     }
 
-    if (username != null && password != null && await this.checkPermissions()) {
+    if (username != null && password != null) {
 
       this.signIn(username, password);
 
@@ -92,7 +97,6 @@ export default class App extends React.Component<AppProps, IPSState> {
     }
 
     this.dispatch({ type: 'RESTORED_TOKEN' });
-
   }
 
   dispatch(action: any) {
@@ -117,7 +121,7 @@ export default class App extends React.Component<AppProps, IPSState> {
     return false;
   }
 
-  checkPermissions = async () => {
+  async checkPermissions(): Promise<boolean> {
 
     let { status } = await Location.getForegroundPermissionsAsync();
 
@@ -130,29 +134,12 @@ export default class App extends React.Component<AppProps, IPSState> {
 
     else if (status == 'denied') {
 
-      //console.log('denied works')
-
       this.setState({ showMissingPermissions: true });
-      //sheetRef.current.setModalVisible(true);
+      return false;
     }
     else {
 
-      /*
-      let { status } = await Location.getForegroundPermissionsAsync()
-
-      if (status == 'granted')
-        return true;
-      else
-        sheetRef.current.setModalVisible(true);
-        */
-
-      //setShowMissingPermissions(true);
-      //sheetRef.current.setModalVisible(true);
-
       this.sheetRef.current.setModalVisible(true);
-      //if (status != 'granted')
-      //sheetRef.current.setModalVisible(true);
-
     }
 
     return false;
@@ -252,7 +239,7 @@ export default class App extends React.Component<AppProps, IPSState> {
 
   signIn = async (emailAddress: string, password: string) => {
 
-    if (emailAddress != null && password != null) {
+    if (emailAddress != null && password != null && await this.checkPermissions()) {
 
       //console.log('sign in')
 
@@ -440,7 +427,7 @@ export default class App extends React.Component<AppProps, IPSState> {
     return (
 
       <AppContext.Provider value={{
-        signIn: this.signIn,
+        signIn:  this.signIn,
         signOut: this.signOut,
         signUp: this.signUp,
         subScribe: this.subScribe
@@ -449,8 +436,8 @@ export default class App extends React.Component<AppProps, IPSState> {
           <StatusBar barStyle="light-content" hidden={false} backgroundColor="transparent" translucent={true} />
           {this.chooseScreen(this.state.loginState)}
         </NavigationContainer>
-        <ActionSheet ref={this.sheetRef} closeOnPressBack={false} closeOnTouchBackdrop={false} bounceOnOpen={true} containerStyle={{ backgroundColor: '#1D7DD7', padding: 50, height: '100%', minHeight: '100%' }}>
-          <View>
+        <ActionSheet ref={this.sheetRef} closeOnPressBack={false} closeOnTouchBackdrop={false} bounceOnOpen={true} containerStyle={{ backgroundColor: '#1D7DD7', padding: 50 }}>
+          <View style={{}}>
             <Icon name='street-view' color='white' size={150} style={{ marginTop: 25, textAlign: 'center' }}></Icon>
             <Text style={{ fontWeight: '700', fontSize: 24, alignSelf: 'center', marginTop: 20, color: 'white' }}>Location Services</Text>
             <Text style={{ fontWeight: '300', fontSize: 16, marginTop: 10, color: 'white', alignSelf: 'center', textAlign: 'center' }}>We'll need your current location to show you leads nearby completely automatically and save your time.</Text>
