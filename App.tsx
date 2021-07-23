@@ -82,8 +82,6 @@ export default class App extends React.Component<AppProps, IPSState> {
 
   async start() {
 
-    await this.checkPermissions()
-
     let username;
     let password;
 
@@ -94,7 +92,7 @@ export default class App extends React.Component<AppProps, IPSState> {
       // Restoring token failed
     }
 
-    if (username != null && password != null) {
+    if (username != null && password != null && await this.checkPermissions()) {
 
       this.signIn(username, password);
 

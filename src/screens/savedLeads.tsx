@@ -339,7 +339,7 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
                                     <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Remove</Text>
                                 </TouchableOpacity>
                             </View>
-                            <Text style={{ color: 'grey', fontSize: 15, textAlign: 'center', marginBottom: 10 }}>Built by <Text onPress={() => Linking.openURL('http://www.empowerbrokerage.com')} style={{ color: '#2185d0', fontSize: 15, padding: 0, margin: 0 }}>T65 Locator</Text></Text>
+                            <Text style={{ color: 'grey', fontSize: 15, textAlign: 'center', marginBottom: 10 }}>Built by <Text onPress={() => Linking.openURL('http://www.orbusmarketing.com')} style={{ color: '#2185d0', fontSize: 15, padding: 0, margin: 0 }}>T65 Locator</Text></Text>
                         </View>
                     </ActionSheet>
                 </>

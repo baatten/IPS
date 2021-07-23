@@ -7,7 +7,7 @@ import MapView, { Marker, EventUserLocation } from 'react-native-maps';
 import ActionSheet from "react-native-actions-sheet";
 import openMap from 'react-native-open-maps';
 import type { Camera } from 'react-native-maps';
-import Popover, { PopoverPlacement } from 'react-native-popover-view';
+import Popover, { PopoverMode, PopoverPlacement } from 'react-native-popover-view';
 import * as Location from 'expo-location'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Lead } from '../lib/types'
@@ -249,8 +249,8 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
             headerTitle: () => <LogoTitle activeView={this.state.activeView} updateView={this.changeView} />,
             headerTintColor: '#fff',
             headerStyle: { backgroundColor: '#2185d0' },
-            headerRight: () => <TouchableOpacity ref={this.filterPopover} onPress={() => this.setState({ showRadiusFilter: true })} style={{ marginRight: 5, backgroundColor: 'transparent' }} >
-                <Icon name='map-marked-alt' color='white' size={18} type='font-awesome-5' style={{ color: 'white' }} />
+            headerRight: () => <TouchableOpacity ref={this.filterPopover} onPress={() => this.setState({ showRadiusFilter: true })} style={{ marginRight: 10, backgroundColor: 'transparent' }} >
+                <Icon name='map-marked-alt' color='white' size={22} type='font-awesome-5' style={{ color: 'white' }} />
             </TouchableOpacity>
         })
     }
@@ -633,6 +633,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                     sortingType={this.state.leadSortingType}
                                     sortingDirection={this.state.leadSortingDirection}
                                     radius={this.state.filterDistance}
+                                    
                                     months={this.state.filterMonths}
                                     updateView={(radius: number, months: number) => this.changeFilterDistance(radius, months)} />
                             </Popover>
@@ -692,7 +693,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                     <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Save{this.leadIsSaved() && (<>d</>)}</Text>
                                 </TouchableOpacity>
                             </View>
-                            <Text style={{ color: 'grey', fontSize: 15, textAlign: 'center', marginBottom: 10 }}>Built by <Text onPress={() => Linking.openURL('http://www.empowerbrokerage.com')} style={{ color: '#2185d0', fontSize: 15, padding: 0, margin: 0 }}>T65 Locator</Text></Text>
+                            <Text style={{ color: 'grey', fontSize: 15, textAlign: 'center', marginBottom: 10 }}>Built by <Text onPress={() => Linking.openURL('http://www.orbusmarketing.com')} style={{ color: '#2185d0', fontSize: 15, padding: 0, margin: 0 }}>T65 Locator</Text></Text>
                         </View>
 
                     </ActionSheet>
@@ -840,7 +841,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                         <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Save{this.leadIsSaved() && (<>d</>)}</Text>
                                     </TouchableOpacity>
                                 </View>
-                                <Text style={{ color: 'grey', fontSize: 15, textAlign: 'center', marginBottom: 10 }}>Built by <Text onPress={() => Linking.openURL('http://www.empowerbrokerage.com')} style={{ color: '#2185d0', fontSize: 15, padding: 0, margin: 0 }}>T65 Locator</Text></Text>
+                                <Text style={{ color: 'grey', fontSize: 15, textAlign: 'center', marginBottom: 10 }}>Built by <Text onPress={() => Linking.openURL('http://www.orbusmarketing.com')} style={{ color: '#2185d0', fontSize: 15, padding: 0, margin: 0 }}>T65 Locator</Text></Text>
 
                             </View>
                         </ActionSheet>
