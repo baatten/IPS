@@ -48,6 +48,7 @@ type IPSState = {
 export default class App extends React.Component<AppProps, IPSState> {
 
   sheetRef: any;
+  appStateChangedListener: any;
 
   constructor(props: AppProps) {
     super(props)
@@ -68,13 +69,18 @@ export default class App extends React.Component<AppProps, IPSState> {
 
   componentDidMount() {
 
-    AppState.addEventListener('change', this.handleAppStateChange);
+    this.appStateChangedListener = AppState.addEventListener('change', () => this.handleAppStateChange);
     activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i' });
-  
+
     this.start();
   }
 
-  async start(){
+  componentWillUnmount() {
+
+    AppState.removeEventListener("change", this.appStateChangedListener);
+  }
+
+  async start() {
 
     await this.checkPermissions()
 
@@ -149,8 +155,7 @@ export default class App extends React.Component<AppProps, IPSState> {
 
     if (state == 'active') {
 
-      await this.checkPermissions();
-
+      this.checkPermissions();
       this.checkSubscriptionStatus();
     }
   }
@@ -162,6 +167,8 @@ export default class App extends React.Component<AppProps, IPSState> {
       try {
         const info = await adapty.purchases.getInfo({})
         // "premium" is an identifier of default access level
+
+        console.log(info)
 
         if (info?.accessLevels!['premium']?.isActive) {
           // grant access to premium features
@@ -425,7 +432,7 @@ export default class App extends React.Component<AppProps, IPSState> {
     return (
 
       <AppContext.Provider value={{
-        signIn:  this.signIn,
+        signIn: this.signIn,
         signOut: this.signOut,
         signUp: this.signUp,
         subScribe: this.subScribe
@@ -435,7 +442,7 @@ export default class App extends React.Component<AppProps, IPSState> {
           {this.chooseScreen(this.state.loginState)}
         </NavigationContainer>
         <ActionSheet ref={this.sheetRef} closeOnPressBack={false} closeOnTouchBackdrop={false} bounceOnOpen={true} containerStyle={{ backgroundColor: '#1D7DD7' }}>
-          <View style={{padding:50}}>
+          <View style={{ padding: 50 }}>
             <Icon name='street-view' color='white' size={150} style={{ marginTop: 25, textAlign: 'center' }}></Icon>
             <Text style={{ fontWeight: '700', fontSize: 24, alignSelf: 'center', marginTop: 20, color: 'white' }}>Location Services</Text>
             <Text style={{ fontWeight: '300', fontSize: 16, marginTop: 10, color: 'white', alignSelf: 'center', textAlign: 'center' }}>We'll need your current location to show you leads nearby completely automatically and save your time.</Text>
