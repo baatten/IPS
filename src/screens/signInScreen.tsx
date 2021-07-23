@@ -69,9 +69,11 @@ export default class SignInScreen extends React.Component<any, SignInScreenState
                     this.signIn();
 
                 })
-                .catch(err => {
+                .catch((err:{"field": string, "message": string, "validation": string}[]) => {
                     const formatError = {};
 
+                    
+                    Alert.alert(err[0].message)
                     //setSignUpErrors(formatError);
                 });
         //}
