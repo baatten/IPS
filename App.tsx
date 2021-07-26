@@ -82,6 +82,8 @@ export default class App extends React.Component<AppProps, IPSState> {
 
   async start() {
 
+    await this.checkPermissions();
+
     let username;
     let password;
 
