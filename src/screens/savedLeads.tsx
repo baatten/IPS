@@ -61,6 +61,15 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
         })
     }
 
+    async startCall() {
+
+        this.setState({ isLoading: true })
+
+        this.saveleadinteraction(this.state.activeLead!, this.state.activeIndex!, 'call');
+
+        Linking.openURL(`tel:${this.state.activeLead?.phone}`)
+    }
+
     changeView = (viewIndex: number) => {
 
         this.setState({ activeView: viewIndex });
@@ -110,17 +119,22 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
         }
     }
 
-    async saveleadinteraction(lead: Lead, index: number, action?: string) {
+    async saveleadinteraction(lead: Lead, index: number, newAction?: string) {
 
         let actionString = 'seen'
 
-        if (action != null)
-            actionString = action
+        if (newAction != null)
+            actionString = newAction
+
+        else if (lead.leadinteraction != null) {
+            actionString = lead.leadinteraction![0].action!;
+        }
 
         if (lead.leadinteraction == null || lead.leadinteraction.length < 1 || lead.leadinteraction[0] == null)
             lead.leadinteraction = [{ id: 0, action: actionString, leadId: lead.id!, saved: false }]
         else {
-            lead.leadinteraction[0].action = action;
+
+            lead.leadinteraction[0].action = actionString;
         }
 
         try {
@@ -228,6 +242,7 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
         const lead = this.state.activeLead;
 
         lead!.leadinteraction![0].notes = '';
+        lead!.leadinteraction![0].saved = false;
 
         this.sheetRef.current?.setModalVisible(false);
         await this.saveleadinteraction(lead!, this.state.activeIndex!);
@@ -239,15 +254,18 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
     }
 
     getPinColorForLead(lead: Lead) {
-        let color = 'green'
 
-        if (lead.leadinteraction!.length > 0) {
-            if (lead.leadinteraction![0].action == '')
-                color = 'orange';
-            else if (lead.leadinteraction![0].saved)
-                color = 'purple';
-            else
+        let color = 'orange'
+
+        if (this.state.activeLead?.id == lead.id) {
+            color = 'blue';
+        }
+        else if (lead.leadinteraction != undefined && lead.leadinteraction.length > 0) {
+
+            if (lead.leadinteraction[0].action == 'call')
                 color = 'red'
+            else if (lead.leadinteraction[0].action == 'navigation')
+                color = 'black'
         }
 
         return color;
@@ -332,7 +350,7 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
                                     <Icon name="car" type='font-awesome' color='white' />
                                     <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Navigation</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: '#2185d0', borderRadius: 10, padding: 15, marginLeft: 5, marginRight: 5 }]} onPress={() => Linking.openURL(`tel:${this.state.activeLead?.phone}`)}>
+                                <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: '#2185d0', borderRadius: 10, padding: 15, marginLeft: 5, marginRight: 5 }]} onPress={() => this.startCall()}>
                                     <Icon name="phone" type='font-awesome' color='white' />
                                     <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Call</Text>
                                 </TouchableOpacity>
