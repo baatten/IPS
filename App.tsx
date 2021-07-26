@@ -92,15 +92,13 @@ export default class App extends React.Component<AppProps, IPSState> {
       // Restoring token failed
     }
 
-    if (username != null && password != null && await this.checkPermissions()) {
+    if (username != null && password != null) {
 
       this.signIn(username, password);
 
     } else {
       this.dispatch({ type: 'TO_SIGNIN_PAGE' });
     }
-
-    this.dispatch({ type: 'RESTORED_TOKEN' });
   }
 
   dispatch(action: any) {
@@ -268,6 +266,7 @@ export default class App extends React.Component<AppProps, IPSState> {
         if (responseData.done) {
 
           //this.authContextValue.user = responseData.token as any;
+          this.setState({ user: responseData })
 
           await AsyncStorage.setItem('username', emailAddress);
           await AsyncStorage.setItem('password', password);
@@ -397,14 +396,14 @@ export default class App extends React.Component<AppProps, IPSState> {
 
       case 'LOAD_SIGNUP':
         arr.push(
-          <Stack.Navigator screenOptions={{ headerShown: false, animationTypeForReplace: this.state.user == null ? 'pop' : 'push' }}>
+          <Stack.Navigator screenOptions={{ headerShown: false, animationTypeForReplace: this.state.user != null ? 'pop' : 'push' }}>
             <Stack.Screen name="SignUp" component={SignUpScreen} />
           </Stack.Navigator>,
         );
         break;
       case 'LOAD_SIGNIN':
         arr.push(
-          <Stack.Navigator screenOptions={{ headerShown: false, animationTypeForReplace: this.state.user != null ? 'pop' : 'push' }}>
+          <Stack.Navigator screenOptions={{ headerShown: false ,animationEnabled:false}}>
             <Stack.Screen name="SignIn" component={SignInScreen} options={{ headerShown: false }} />
           </Stack.Navigator>);
         break;
@@ -418,7 +417,10 @@ export default class App extends React.Component<AppProps, IPSState> {
         break;
 
       default:
-        arr.push(<Stack.Screen name="SignIn" component={SignInScreen} />);
+        arr.push(
+          <Stack.Navigator screenOptions={{ headerShown: false, animationTypeForReplace: this.state.user != null ? 'pop' : 'push' }}>
+            <Stack.Screen name="SignIn" component={SignInScreen} options={{ headerShown: false }} />
+          </Stack.Navigator>);
         break;
     }
 

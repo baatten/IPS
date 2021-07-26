@@ -27,4 +27,5 @@ export type LeadInteraction = {
     userId?: number
     action?: string
     notes?: string
+    saved: boolean
 }

@@ -411,12 +411,23 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         }
     }
 
-    async saveleadinteraction(lead: Lead, index: number, action: string) {
+    async saveleadinteraction(lead: Lead, index: number, newAction?: string) {
+
+        let actionString = 'seen'
+
+        if (newAction != null)
+            actionString = newAction
+
+        else if(lead.leadinteraction != null)
+        {
+            actionString = lead.leadinteraction![0].action!;
+        }
 
         if (lead.leadinteraction == null || lead.leadinteraction.length < 1 || lead.leadinteraction[0] == null)
-            lead.leadinteraction = [{ id: 0, action: action, leadId: lead.id! }]
+            lead.leadinteraction = [{ id: 0, action: actionString, leadId: lead.id!, saved: false }]
         else {
-            lead.leadinteraction[0].action = action;
+
+            lead.leadinteraction[0].action = actionString;
         }
 
         try {
@@ -457,7 +468,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
         this.setState({ activeLead: lead, activeIndex: index }, () => {
 
-            this.saveleadinteraction(lead, index, 'seen');
+            this.saveleadinteraction(lead, index);
             this.sheetRef.current.setModalVisible()
 
         })
@@ -517,25 +528,36 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
         if (lead!.leadinteraction!.length > 0) {
             lead!.leadinteraction![0].notes = this.state.activeLeadNotes;
-            lead!.leadinteraction![0].action = 'saved';
+            lead!.leadinteraction![0].saved = true;
         }
         else
-            lead!.leadinteraction = [{ id: 0, action: 'saved', leadId: lead!.id!, notes: this.state.activeLeadNotes }]
+            lead!.leadinteraction = [{ id: 0, action: 'seen', leadId: lead!.id!, notes: this.state.activeLeadNotes, saved: true }]
 
-        this.saveleadinteraction(lead!, this.state.activeIndex!, 'saved');
+        this.saveleadinteraction(lead!, this.state.activeIndex!);
 
         this.saveLeadSheetRef.current?.setModalVisible(false);
-        this.setState({ savingLead: false, activeLeadNotes: '' });
+        //this.cancelSaveDetails()
     }
 
-    removeSavedLead() {
+    async removeSavedLead() {
 
         const lead = this.state.activeLead;
+        const index = this.state.activeIndex;
 
+        lead!.leadinteraction![0].action = 'seen';
         lead!.leadinteraction![0].notes = '';
-        lead!.leadinteraction![0].action = '';
+        lead!.leadinteraction![0].saved = false;
 
-        this.saveleadinteraction(lead!, this.state.activeIndex!, 'seen');
+        this.sheetRef.current?.setModalVisible(false);
+        await this.saveleadinteraction(lead!, this.state.activeIndex!, 'seen');
+
+        let leads: Lead[] = [...this.state.leads];
+        //leads = leads.filter(le => le.id != lead!.id)
+        let updateLead = leads.find(le => le.id != lead!.id)
+
+        updateLead = lead;
+
+        this.setState({ leads: leads, isLoading: false, activeLead: undefined, activeIndex: undefined, activeLeadNotes: undefined });
     }
 
     monthsToAge65(date: Date) {
@@ -554,9 +576,9 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         }
         else if (lead.leadinteraction != undefined && lead.leadinteraction.length > 0) {
 
-            if (lead.leadinteraction[0].action == 'seen')
+            if (lead.leadinteraction[0].action == 'seen' && !lead.leadinteraction[0].saved)
                 color = 'orange';
-            else if (lead.leadinteraction[0].action == 'saved')
+            else if (lead.leadinteraction[0].saved)
                 color = 'purple';
             else if (lead.leadinteraction[0].action == 'call')
                 color = 'red'
@@ -572,7 +594,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
         const lead = this.state.activeLead
 
-        if (lead != null && lead.leadinteraction != null && lead.leadinteraction.length > 0 && lead.leadinteraction[0]?.action != null && lead.leadinteraction[0].action == 'saved')
+        if (lead != null && lead.leadinteraction != null && lead.leadinteraction.length > 0 && lead.leadinteraction[0]?.action != null && lead.leadinteraction[0].saved)
             saved = true;
 
         return saved;
@@ -614,17 +636,6 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                             </View>
                         </View>
                     )}
-                    {this.state.showLocationUpdated && 'tt' == 'te' && (
-                        <View style={{ top: 25, position: 'absolute', zIndex: 99999, backgroundColor: 'white', paddingLeft: 20, paddingRight: 20, paddingBottom: 10, paddingTop: 10, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 5 }}>
-                            <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
-                                <TouchableOpacity onPress={() => this.getLeads()}>
-                                    <View style={[{ flexDirection: 'column' }]}>
-                                        <Text style={{ color: '#2185d0', fontWeight: '600' }}>Update Data Now</Text>
-                                    </View>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    )}
                     {this.state.currentLocation != undefined && (
                         <>
                             <Popover arrowShift={0} onRequestClose={() => this.setState({ showRadiusFilter: false })} from={this.filterPopover} isVisible={this.state.showRadiusFilter} popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}>
@@ -633,7 +644,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                     sortingType={this.state.leadSortingType}
                                     sortingDirection={this.state.leadSortingDirection}
                                     radius={this.state.filterDistance}
-                                    
+
                                     months={this.state.filterMonths}
                                     updateView={(radius: number, months: number) => this.changeFilterDistance(radius, months)} />
                             </Popover>
