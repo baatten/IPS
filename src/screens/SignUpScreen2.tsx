@@ -379,17 +379,17 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
 
                     validationSchema={Yup.object({
                         address: Yup.string()
-                            .min(4, 'Min. 4 characters')
-                            .required('Required'),
+                            .min(4, 'Min. 4 characters'),
+
                         city: Yup.string()
-                            .min(2, 'Min. 2 characters')
-                            .required('Required'),
+                            .min(2, 'Min. 2 characters'),
+
                         zipCode: Yup.string()
-                            .min(2, 'Min. 2 characters')
-                            .required('Required'),
+                            .min(2, 'Min. 2 characters'),
+
                         state: Yup.string()
-                            .min(2, 'Min. 2 characters')
-                            .required('Required')
+                            .min(2, 'Min. 2 characters'),
+
                     })}
 
                     onSubmit={(values, { setSubmitting }) => {
@@ -428,13 +428,12 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
 
                     validationSchema={Yup.object({
                         phone: Yup.string()
-                            .min(8, 'Min. 8 characters')
-                            .required('Required'),
+                            .min(8, 'Min. 8 characters'),
+
                         mobile: Yup.string()
-                            .min(8, 'Min. 8 characters')
-                            .required('Required'),
+                            .min(8, 'Min. 8 characters'),
                         dateOfBirthString: Yup.string()
-                            .required('Required')
+
                             .test('test date', 'Date must be in the format of: MM/DD/YYYY', value => this.isDateValid(value!))
                     })}
 
