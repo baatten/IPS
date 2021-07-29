@@ -48,6 +48,7 @@ type IPSState = {
 export default class App extends React.Component<AppProps, IPSState> {
 
   sheetRef: any;
+  appStateChangedListener: any;
 
   constructor(props: AppProps) {
     super(props)
@@ -68,15 +69,20 @@ export default class App extends React.Component<AppProps, IPSState> {
 
   componentDidMount() {
 
-    AppState.addEventListener('change', this.handleAppStateChange);
+    this.appStateChangedListener = AppState.addEventListener('change', () => this.handleAppStateChange);
     activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i' });
-  
+
     this.start();
   }
 
-  async start(){
+  componentWillUnmount() {
 
-    //await this.checkPermissions()
+    AppState.removeEventListener("change", this.appStateChangedListener);
+  }
+
+  async start() {
+
+    await this.checkPermissions();
 
     let username;
     let password;
@@ -95,8 +101,6 @@ export default class App extends React.Component<AppProps, IPSState> {
     } else {
       this.dispatch({ type: 'TO_SIGNIN_PAGE' });
     }
-
-    this.dispatch({ type: 'RESTORED_TOKEN' });
   }
 
   dispatch(action: any) {
@@ -145,12 +149,11 @@ export default class App extends React.Component<AppProps, IPSState> {
     return false;
   }
 
-  handleAppStateChange(state: any) {
+  async handleAppStateChange(state: any) {
 
     if (state == 'active') {
 
       this.checkPermissions();
-
       this.checkSubscriptionStatus();
     }
   }
@@ -162,6 +165,8 @@ export default class App extends React.Component<AppProps, IPSState> {
       try {
         const info = await adapty.purchases.getInfo({})
         // "premium" is an identifier of default access level
+
+        console.log(info)
 
         if (info?.accessLevels!['premium']?.isActive) {
           // grant access to premium features
@@ -241,8 +246,6 @@ export default class App extends React.Component<AppProps, IPSState> {
 
     if (emailAddress != null && password != null && await this.checkPermissions()) {
 
-      //console.log('sign in')
-
       const res = await fetch(GLOBALS.BASE_URL + '/api/client/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -265,6 +268,7 @@ export default class App extends React.Component<AppProps, IPSState> {
         if (responseData.done) {
 
           //this.authContextValue.user = responseData.token as any;
+          this.setState({ user: responseData })
 
           await AsyncStorage.setItem('username', emailAddress);
           await AsyncStorage.setItem('password', password);
@@ -394,14 +398,14 @@ export default class App extends React.Component<AppProps, IPSState> {
 
       case 'LOAD_SIGNUP':
         arr.push(
-          <Stack.Navigator screenOptions={{ headerShown: false, animationTypeForReplace: this.state.user == null ? 'pop' : 'push' }}>
+          <Stack.Navigator screenOptions={{ headerShown: false, animationTypeForReplace: this.state.user != null ? 'pop' : 'push' }}>
             <Stack.Screen name="SignUp" component={SignUpScreen} />
           </Stack.Navigator>,
         );
         break;
       case 'LOAD_SIGNIN':
         arr.push(
-          <Stack.Navigator screenOptions={{ headerShown: false, animationTypeForReplace: this.state.user != null ? 'pop' : 'push' }}>
+          <Stack.Navigator screenOptions={{ headerShown: false ,animationEnabled:false}}>
             <Stack.Screen name="SignIn" component={SignInScreen} options={{ headerShown: false }} />
           </Stack.Navigator>);
         break;
@@ -415,7 +419,10 @@ export default class App extends React.Component<AppProps, IPSState> {
         break;
 
       default:
-        arr.push(<Stack.Screen name="SignIn" component={SignInScreen} />);
+        arr.push(
+          <Stack.Navigator screenOptions={{ headerShown: false, animationTypeForReplace: this.state.user != null ? 'pop' : 'push' }}>
+            <Stack.Screen name="SignIn" component={SignInScreen} options={{ headerShown: false }} />
+          </Stack.Navigator>);
         break;
     }
 
@@ -427,7 +434,7 @@ export default class App extends React.Component<AppProps, IPSState> {
     return (
 
       <AppContext.Provider value={{
-        signIn:  this.signIn,
+        signIn: this.signIn,
         signOut: this.signOut,
         signUp: this.signUp,
         subScribe: this.subScribe
@@ -436,11 +443,12 @@ export default class App extends React.Component<AppProps, IPSState> {
           <StatusBar barStyle="light-content" hidden={false} backgroundColor="transparent" translucent={true} />
           {this.chooseScreen(this.state.loginState)}
         </NavigationContainer>
-        <ActionSheet ref={this.sheetRef} closeOnPressBack={false} closeOnTouchBackdrop={false} bounceOnOpen={true} containerStyle={{ backgroundColor: '#1D7DD7', padding: 50 }}>
-          <View style={{}}>
+        <ActionSheet ref={this.sheetRef} closeOnPressBack={false} closeOnTouchBackdrop={false} bounceOnOpen={true} containerStyle={{ backgroundColor: '#1D7DD7' }}>
+          <View style={{ padding: 50 }}>
             <Icon name='street-view' color='white' size={150} style={{ marginTop: 25, textAlign: 'center' }}></Icon>
             <Text style={{ fontWeight: '700', fontSize: 24, alignSelf: 'center', marginTop: 20, color: 'white' }}>Location Services</Text>
             <Text style={{ fontWeight: '300', fontSize: 16, marginTop: 10, color: 'white', alignSelf: 'center', textAlign: 'center' }}>We'll need your current location to show you leads nearby completely automatically and save your time.</Text>
+            <Text style={{ fontWeight: '300', fontSize: 16, marginTop: 10, color: 'white', alignSelf: 'center', textAlign: 'center' }}>If you don't enable location access, the app cannot show you leads nearby.</Text>
             <Button onPress={() => this.allowPermissions()} title='Continue' titleStyle={{ color: '#1D7DD7' }} style={{ marginTop: 25 }} buttonStyle={{ backgroundColor: 'white', margin: 0, marginTop: 5, padding: 15, borderRadius: 10 }} />
             <Button onPress={() => this.sheetRef.current.setModalVisible(false)} title='Not now' type='clear' titleStyle={{ color: 'white' }} style={{ marginTop: 10 }} />
           </View>

@@ -7,7 +7,7 @@ import MapView, { Marker, EventUserLocation } from 'react-native-maps';
 import ActionSheet from "react-native-actions-sheet";
 import openMap from 'react-native-open-maps';
 import type { Camera } from 'react-native-maps';
-import Popover, { PopoverPlacement } from 'react-native-popover-view';
+import Popover, { PopoverMode, PopoverPlacement } from 'react-native-popover-view';
 import * as Location from 'expo-location'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Lead } from '../lib/types'
@@ -249,10 +249,15 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
             headerTitle: () => <LogoTitle activeView={this.state.activeView} updateView={this.changeView} />,
             headerTintColor: '#fff',
             headerStyle: { backgroundColor: '#2185d0' },
-            headerRight: () => <TouchableOpacity ref={this.filterPopover} onPress={() => this.setState({ showRadiusFilter: true })} style={{ marginRight: 5, backgroundColor: 'transparent' }} >
-                <Icon name='map-marked-alt' color='white' size={18} type='font-awesome-5' style={{ color: 'white' }} />
+            headerRight: () => <TouchableOpacity ref={this.filterPopover} onPress={() => this.setState({ showRadiusFilter: true })} style={{ marginRight: 10, backgroundColor: 'transparent' }} >
+                <Icon name='map-marked-alt' color='white' size={22} type='font-awesome-5' style={{ color: 'white' }} />
             </TouchableOpacity>
         })
+
+        this.props.navigation.addListener('focus', (e) => {
+
+            this.getLeads();
+        });
     }
 
     componentWillUnmount() {
@@ -263,6 +268,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
         if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
 
+            //this.getLeads();
         }
 
         this.setState({ appState: nextAppState });
@@ -343,6 +349,8 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
     async getLeads() {
 
+        console.log('test')
+
         let location = this.state.currentLocation;
 
         if (location != null) {
@@ -411,12 +419,22 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         }
     }
 
-    async saveleadinteraction(lead: Lead, index: number, action: string) {
+    async saveleadinteraction(lead: Lead, index: number, newAction?: string) {
+
+        let actionString = 'seen'
+
+        if (newAction != null)
+            actionString = newAction
+
+        else if (lead.leadinteraction != null) {
+            actionString = lead.leadinteraction![0].action!;
+        }
 
         if (lead.leadinteraction == null || lead.leadinteraction.length < 1 || lead.leadinteraction[0] == null)
-            lead.leadinteraction = [{ id: 0, action: action, leadId: lead.id! }]
+            lead.leadinteraction = [{ id: 0, action: actionString, leadId: lead.id!, saved: false }]
         else {
-            lead.leadinteraction[0].action = action;
+
+            lead.leadinteraction[0].action = actionString;
         }
 
         try {
@@ -457,7 +475,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
         this.setState({ activeLead: lead, activeIndex: index }, () => {
 
-            this.saveleadinteraction(lead, index, 'seen');
+            this.saveleadinteraction(lead, index);
             this.sheetRef.current.setModalVisible()
 
         })
@@ -517,25 +535,36 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
         if (lead!.leadinteraction!.length > 0) {
             lead!.leadinteraction![0].notes = this.state.activeLeadNotes;
-            lead!.leadinteraction![0].action = 'saved';
+            lead!.leadinteraction![0].saved = true;
         }
         else
-            lead!.leadinteraction = [{ id: 0, action: 'saved', leadId: lead!.id!, notes: this.state.activeLeadNotes }]
+            lead!.leadinteraction = [{ id: 0, action: 'seen', leadId: lead!.id!, notes: this.state.activeLeadNotes, saved: true }]
 
-        this.saveleadinteraction(lead!, this.state.activeIndex!, 'saved');
+        this.saveleadinteraction(lead!, this.state.activeIndex!);
 
         this.saveLeadSheetRef.current?.setModalVisible(false);
-        this.setState({ savingLead: false, activeLeadNotes: '' });
+        //this.cancelSaveDetails()
     }
 
-    removeSavedLead() {
+    async removeSavedLead() {
 
         const lead = this.state.activeLead;
+        const index = this.state.activeIndex;
 
+        //lead!.leadinteraction![0].action = 'seen';
         lead!.leadinteraction![0].notes = '';
-        lead!.leadinteraction![0].action = '';
+        lead!.leadinteraction![0].saved = false;
 
-        this.saveleadinteraction(lead!, this.state.activeIndex!, 'seen');
+        this.sheetRef.current?.setModalVisible(false);
+        await this.saveleadinteraction(lead!, this.state.activeIndex!, 'seen');
+
+        let leads: Lead[] = [...this.state.leads];
+        //leads = leads.filter(le => le.id != lead!.id)
+        let updateLead = leads.find(le => le.id != lead!.id)
+
+        updateLead = lead;
+
+        this.setState({ leads: leads, isLoading: false, activeLead: undefined, activeIndex: undefined, activeLeadNotes: undefined });
     }
 
     monthsToAge65(date: Date) {
@@ -554,9 +583,9 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         }
         else if (lead.leadinteraction != undefined && lead.leadinteraction.length > 0) {
 
-            if (lead.leadinteraction[0].action == 'seen')
+            if (lead.leadinteraction[0].action == 'seen' && !lead.leadinteraction[0].saved)
                 color = 'orange';
-            else if (lead.leadinteraction[0].action == 'saved')
+            else if (lead.leadinteraction[0].saved)
                 color = 'purple';
             else if (lead.leadinteraction[0].action == 'call')
                 color = 'red'
@@ -572,7 +601,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
         const lead = this.state.activeLead
 
-        if (lead != null && lead.leadinteraction != null && lead.leadinteraction.length > 0 && lead.leadinteraction[0]?.action != null && lead.leadinteraction[0].action == 'saved')
+        if (lead != null && lead.leadinteraction != null && lead.leadinteraction.length > 0 && lead.leadinteraction[0]?.action != null && lead.leadinteraction[0].saved)
             saved = true;
 
         return saved;
@@ -614,17 +643,6 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                             </View>
                         </View>
                     )}
-                    {this.state.showLocationUpdated && 'tt' == 'te' && (
-                        <View style={{ top: 25, position: 'absolute', zIndex: 99999, backgroundColor: 'white', paddingLeft: 20, paddingRight: 20, paddingBottom: 10, paddingTop: 10, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 5 }}>
-                            <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
-                                <TouchableOpacity onPress={() => this.getLeads()}>
-                                    <View style={[{ flexDirection: 'column' }]}>
-                                        <Text style={{ color: '#2185d0', fontWeight: '600' }}>Update Data Now</Text>
-                                    </View>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    )}
                     {this.state.currentLocation != undefined && (
                         <>
                             <Popover arrowShift={0} onRequestClose={() => this.setState({ showRadiusFilter: false })} from={this.filterPopover} isVisible={this.state.showRadiusFilter} popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}>
@@ -633,6 +651,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                     sortingType={this.state.leadSortingType}
                                     sortingDirection={this.state.leadSortingDirection}
                                     radius={this.state.filterDistance}
+
                                     months={this.state.filterMonths}
                                     updateView={(radius: number, months: number) => this.changeFilterDistance(radius, months)} />
                             </Popover>
@@ -692,7 +711,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                     <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Save{this.leadIsSaved() && (<>d</>)}</Text>
                                 </TouchableOpacity>
                             </View>
-                            <Text style={{ color: 'grey', fontSize: 15, textAlign: 'center', marginBottom: 10 }}>Built by <Text onPress={() => Linking.openURL('http://www.empowerbrokerage.com')} style={{ color: '#2185d0', fontSize: 15, padding: 0, margin: 0 }}>T65 Locator</Text></Text>
+                            <Text style={{ color: 'grey', fontSize: 15, textAlign: 'center', marginBottom: 10 }}>Built by <Text onPress={() => Linking.openURL('http://www.orbusmarketing.com')} style={{ color: '#2185d0', fontSize: 15, padding: 0, margin: 0 }}>T65 Locator</Text></Text>
                         </View>
 
                     </ActionSheet>
@@ -789,7 +808,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                             }}
                         />
 
-                        <ActionSheet ref={this.sheetRef} bounceOnOpen={true} onClose={() => this.setState({ savingLead: false })}>
+                        <ActionSheet ref={this.sheetRef} bounceOnOpen={true} onClose={() => this.closeLeadData()}>
                             <View style={{
                                 borderTopStartRadius: 0, borderTopRightRadius: 0, padding: 20, backgroundColor: 'white',
                                 shadowColor: 'black', shadowOpacity: 0.15, shadowRadius: 5, shadowOffset: { width: 5, height: 50 }
@@ -808,11 +827,10 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                     </View>
                                 </View>
 
-                                {(this.state.activeLead?.leadinteraction != null && this.state.activeLead?.leadinteraction.length > 0 && this.state.activeLead.leadinteraction[0].notes != null) && (
-
+                                {(this.state.activeLead?.leadinteraction != null && this.state.activeLead?.leadinteraction.length > 0 && this.state.activeLead.leadinteraction[0]?.notes != null) && (
                                     <View>
                                         <Text style={{ fontSize: 18, fontWeight: '600', marginTop: 10 }}>Notes</Text>
-                                        <Text style={{ fontSize: 16, color: 'grey', marginTop: 5 }}>{this.state.activeLead?.leadinteraction[0].notes}</Text>
+                                        <Text style={{ fontSize: 16, color: 'grey', marginTop: 5 }}>{this.state.activeLead.leadinteraction[0].notes}</Text>
                                     </View>
                                 )}
 
@@ -825,26 +843,22 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                         <Icon name="car" type='font-awesome' color='white' />
                                         <Text style={{ color: 'white', marginTop: 5, fontSize: 10 }}>Navigation</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: '#2185d0', borderRadius: 10, padding: 15, marginLeft: 5, marginRight: 5 }]} onPress={() => Linking.openURL(`tel:${this.state.activeLead?.phone}`)}>
+                                    <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: '#2185d0', borderRadius: 10, padding: 15, marginLeft: 5, marginRight: 5 }]} onPress={() => this.startCall()}>
                                         <Icon name="phone" type='font-awesome' color='white' />
                                         <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Call</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: this.leadIsSaved() ? ('grey') : ('#2185d0'), borderRadius: 10, padding: 15, marginLeft: 5, marginRight: 5 }]}
-                                        onPress={
-                                            this.leadIsSaved() ?
-                                                () => this.removeSavedLead()
-                                                :
-                                                () => this.openDetails()
+                                    <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: this.leadIsSaved() ? ('grey') : ('#2185d0'), borderRadius: 10, padding: 15, marginLeft: 5 }]}
+                                        onPress={this.leadIsSaved() ? () => this.removeSavedLead() : () => this.openDetails()
                                         }>
                                         <Icon name={this.leadIsSaved() ? ('check') : ('plus')} type='font-awesome' color='white' />
                                         <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Save{this.leadIsSaved() && (<>d</>)}</Text>
                                     </TouchableOpacity>
                                 </View>
-                                <Text style={{ color: 'grey', fontSize: 15, textAlign: 'center', marginBottom: 10 }}>Built by <Text onPress={() => Linking.openURL('http://www.empowerbrokerage.com')} style={{ color: '#2185d0', fontSize: 15, padding: 0, margin: 0 }}>T65 Locator</Text></Text>
-
+                                <Text style={{ color: 'grey', fontSize: 15, textAlign: 'center', marginBottom: 10 }}>Built by <Text onPress={() => Linking.openURL('http://www.orbusmarketing.com')} style={{ color: '#2185d0', fontSize: 15, padding: 0, margin: 0 }}>T65 Locator</Text></Text>
                             </View>
+
                         </ActionSheet>
-                        <ActionSheet keyboardShouldPersistTaps='always' ref={this.saveLeadSheetRef} bounceOnOpen={true} onClose={() => this.setState({ savingLead: false })}>
+                        <ActionSheet keyboardShouldPersistTaps='always' ref={this.saveLeadSheetRef} bounceOnOpen={true} onClose={() => this.setState({ savingLead: false, activeLead: undefined })}>
                             <View style={{ borderTopStartRadius: 0, borderTopRightRadius: 0, backgroundColor: 'white', shadowColor: 'black', shadowOpacity: 0.15, shadowRadius: 5, shadowOffset: { width: 5, height: 50 } }}>
 
                                 <View style={[{ flexDirection: 'row', padding: 20, }]}>
@@ -853,7 +867,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                     </View>
                                     <View style={{ flexDirection: 'column', marginLeft: 10 }}>
                                         <Text style={styles.titleText}>{this.state.activeLead?.firstname} {this.state.activeLead?.lastname}</Text>
-                                        <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.address}</Text>
+                                        <Text style={{ fontSize: 16, color: 'gray', marginTop: 5 }}>{this.state.activeLead?.address}</Text>
 
                                         <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.zipcode} {this.state.activeLead?.county}</Text>
                                     </View>
@@ -884,7 +898,6 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                     </View>
                                 </KeyboardAvoidingView>
                             </View>
-
                         </ActionSheet>
                     </>
                 </>
