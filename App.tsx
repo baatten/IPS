@@ -178,7 +178,9 @@ export default class App extends React.Component<AppProps, IPSState> {
 
           //force user to buy subscription
           try {
-            const data = await adapty.paywalls.getPaywalls({ forceUpdate: true });
+            const data = await adapty.paywalls.getPaywalls({ forceUpdate: false });
+
+            console.log(data.products)
 
             if (this.state.subscriptions.length == 0)
               this.setState({ subscriptions: data.products })
@@ -198,9 +200,9 @@ export default class App extends React.Component<AppProps, IPSState> {
     }
   }
 
-  openLink = async () => {
+  openLink = async (url: string) => {
     try {
-      const url = 'https://api.t-65locator.com/privacyPolicy/'
+
       if (await InAppBrowser.isAvailable()) {
         const result = await InAppBrowser.open(url, {
           // iOS Properties
@@ -405,7 +407,7 @@ export default class App extends React.Component<AppProps, IPSState> {
         break;
       case 'LOAD_SIGNIN':
         arr.push(
-          <Stack.Navigator screenOptions={{ headerShown: false ,animationEnabled:false}}>
+          <Stack.Navigator screenOptions={{ headerShown: false, animationEnabled: false }}>
             <Stack.Screen name="SignIn" component={SignInScreen} options={{ headerShown: false }} />
           </Stack.Navigator>);
         break;
@@ -428,6 +430,8 @@ export default class App extends React.Component<AppProps, IPSState> {
 
     return arr[0];
   };
+
+
 
   render() {
 
@@ -489,7 +493,7 @@ export default class App extends React.Component<AppProps, IPSState> {
                     <View style={[{ flex: 3, flexDirection: 'column' }]}>
                       <Text style={{ color: this.state.activeSubscription?.localizedTitle == product.localizedTitle ? 'white' : '#2185d0', fontSize: 17, fontWeight: '600', marginBottom: 2 }}>{product.localizedTitle}</Text>
                       <Text style={{ color: this.state.activeSubscription?.localizedTitle == product.localizedTitle ? 'white' : '#2185d0', marginBottom: 2 }}>${product.price} / {product.localizedSubscriptionPeriod}</Text>
-                      <Text style={{ color: this.state.activeSubscription?.localizedTitle == product.localizedTitle ? 'white' : '#2185d0' }}>Paid {product.localizedDescription}</Text>
+                      <Text style={{ color: this.state.activeSubscription?.localizedTitle == product.localizedTitle ? 'white' : '#2185d0' }}>{product.localizedDescription}</Text>
                     </View>
                   </View>
                 </TouchableOpacity>
@@ -497,13 +501,14 @@ export default class App extends React.Component<AppProps, IPSState> {
               (
                 <ActivityIndicator />
               )}
+
             <View style={{ flexDirection: 'row', backgroundColor: 'transparent', borderColor: '#2185d0', borderRadius: 5 }}>
-              <View style={[{ flexDirection: 'column' }]}>
-                <CheckBox onPress={() => this.setState({ conditionAccepted: !this.state.conditionAccepted })} checked={this.state.conditionAccepted} containerStyle={{ padding: 0, backgroundColor: 'transparent', borderRadius: 5, borderWidth: 0 }} />
-              </View>
-              <View style={[{ flexDirection: 'column', justifyContent: 'center' }]}>
-                <Text style={{ lineHeight: 20 }}>By signing up you agree to the T65</Text>
-                <Text onPress={this.openLink} style={{ color: '#2185d0' }}>Privacy Policy</Text>
+
+              <CheckBox onPress={() => this.setState({ conditionAccepted: !this.state.conditionAccepted })} checked={this.state.conditionAccepted} containerStyle={{ padding: 0, backgroundColor: 'transparent', borderRadius: 5, borderWidth: 0 }} />
+
+              <View style={[{ flexDirection: 'row',marginTop:6 }]}>
+                <Text style={{ lineHeight: 20 }}>I accept the</Text>
+                <Text onPress={() => this.openLink('https://api.t-65locator.com/TermsofService.pdf')} style={{ marginLeft: 2, marginTop: 2, color: '#2185d0' }}>T65 locator terms of service</Text>
               </View>
             </View>
             <Button loading={this.state.subscribeLoading} onPress={() => this.subScribe(this.state.activeSubscription!)} disabled={!this.state.conditionAccepted || this.state.activeSubscription == undefined} title='Buy subscription' containerStyle={{ marginTop: 25 }} buttonStyle={{ paddingVertical: 15, borderRadius: 15 }} titleStyle={{ fontWeight: '600' }} />

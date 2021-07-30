@@ -106,7 +106,7 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
 
         const account = this.state.user;
 
-        const date = this.getDateFromString(account.dateOfBirthString!);
+        const date = this.getDateFromString(account.dateOfBirthString);
 
         if (date != null)
             account.dateOfBirth = date;
@@ -157,28 +157,31 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
         this.setState(step)
     }
 
-    getDateFromString(dateToConvert: string): Date | null {
+    getDateFromString(dateToConvert: string | undefined): Date | null {
 
-        let date: Date;
-        const dateStrings = dateToConvert.split('/');
+        if (dateToConvert != undefined) {
+            let date: Date;
+            const dateStrings = dateToConvert.split('/');
 
-        if (dateStrings.length != 3)
-            return null
-        else {
-            const day = parseInt(dateStrings[1]);
-            const month = parseInt(dateStrings[0]);
-            const year = parseInt(dateStrings[2]);
+            if (dateStrings.length != 3)
+                return null
+            else {
+                const day = parseInt(dateStrings[1]);
+                const month = parseInt(dateStrings[0]);
+                const year = parseInt(dateStrings[2]);
 
-            date = new Date();
-            date.setUTCFullYear(year);
-            date.setUTCMonth(month - 1, day);
-            date.setUTCHours(0);
-            date.setUTCMinutes(0);
-            date.setUTCSeconds(0);
-            date.setUTCMilliseconds(0);
+                date = new Date();
+                date.setUTCFullYear(year);
+                date.setUTCMonth(month - 1, day);
+                date.setUTCHours(0);
+                date.setUTCMinutes(0);
+                date.setUTCSeconds(0);
+                date.setUTCMilliseconds(0);
 
-            return date;
-        }
+                return date;
+            }
+        } else
+            return null;
     }
 
     isDateValid(dateToTest: string): boolean {
@@ -208,7 +211,7 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                 return valid;
             }
         } else
-            return false;
+            return true;
     }
 
     validEmail(email: string): boolean {
@@ -407,15 +410,15 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                     }} >
                     {({ values, errors, handleChange }) => (
                         <>
-                            <Input errorMessage={errors.address} onChangeText={handleChange('address')} label='Address' placeholder="Address" value={values.address} errorStyle={{ color: 'red' }} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }} inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
-                            <Input errorMessage={errors.city} onChangeText={handleChange('city')} label='City' placeholder="City" value={values.city} errorStyle={{ color: 'red' }} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }} inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
+                            <Input errorMessage={errors.address} onChangeText={handleChange('address')} label='Address (optional)' placeholder="Address" value={values.address} errorStyle={{ color: 'red' }} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }} inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
+                            <Input errorMessage={errors.city} onChangeText={handleChange('city')} label='City (optional)' placeholder="City" value={values.city} errorStyle={{ color: 'red' }} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }} inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
 
                             <View style={[{ borderColor: 'orange', flexDirection: 'row', alignItems: 'center' }]}>
                                 <View style={[{ borderColor: 'orange', flex: 1, flexDirection: 'column', justifyContent: 'flex-start' }]}>
-                                    <Input errorMessage={errors.zipCode} onChangeText={handleChange('zipCode')} keyboardType='phone-pad' label='Zip Code' placeholder="Zip code" value={values.zipCode} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }} inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 15, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }} inputContainerStyle={{ borderBottomWidth: 0 }} />
+                                    <Input errorMessage={errors.zipCode} onChangeText={handleChange('zipCode')} keyboardType='phone-pad' label='Zip Code (optional)' placeholder="Zip code" value={values.zipCode} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }} inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 15, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }} inputContainerStyle={{ borderBottomWidth: 0 }} />
                                 </View>
                                 <View style={[{ flex: 1, flexDirection: 'column' }]}>
-                                    <Input errorMessage={errors.state} onChangeText={handleChange('state')} label='State' placeholder="State" value={values.state} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }} inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
+                                    <Input errorMessage={errors.state} onChangeText={handleChange('state')} label='State (optional)' placeholder="State" value={values.state} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }} inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
                                 </View>
                             </View>
                         </>
@@ -450,9 +453,9 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                     }} >
                     {({ values, errors, handleChange, setFieldValue }) => (
                         <>
-                            <Input errorMessage={errors.phone} onChangeText={handleChange('phone')} keyboardType='phone-pad' label='Phone' placeholder="Phone" value={values.phone} errorStyle={{ color: 'red' }} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }} inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
-                            <Input errorMessage={errors.mobile} onChangeText={handleChange('mobile')} keyboardType='phone-pad' label='Mobile phone' placeholder="Mobile Phone" value={values.mobile} errorStyle={{ color: 'red' }} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }} inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
-                            <Input errorMessage={errors.dateOfBirthString} onChangeText={handleChange('dateOfBirthString')} keyboardType='numbers-and-punctuation' label='Date of birthday' placeholder="MM/DD/YYYY" value={values.dateOfBirthString} errorStyle={{ color: 'red' }} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }} inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
+                            <Input errorMessage={errors.phone} onChangeText={handleChange('phone')} keyboardType='phone-pad' label='Phone (optional)' placeholder="Phone" value={values.phone} errorStyle={{ color: 'red' }} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }} inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
+                            <Input errorMessage={errors.mobile} onChangeText={handleChange('mobile')} keyboardType='phone-pad' label='Mobile phone (optional)' placeholder="Mobile Phone" value={values.mobile} errorStyle={{ color: 'red' }} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }} inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
+                            <Input errorMessage={errors.dateOfBirthString} onChangeText={handleChange('dateOfBirthString')} keyboardType='numbers-and-punctuation' label='Date of birthday (optional)' placeholder="MM/DD/YYYY" value={values.dateOfBirthString} errorStyle={{ color: 'red' }} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }} inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
                         </>
                     )}
                 </Formik>

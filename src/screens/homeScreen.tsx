@@ -349,8 +349,6 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
     async getLeads() {
 
-        console.log('test')
-
         let location = this.state.currentLocation;
 
         if (location != null) {
@@ -426,8 +424,8 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         if (newAction != null)
             actionString = newAction
 
-        else if (lead.leadinteraction != null) {
-            actionString = lead.leadinteraction![0].action!;
+        else if (lead.leadinteraction != null && lead.leadinteraction[0]?.action != null) {
+            actionString = lead.leadinteraction[0].action;
         }
 
         if (lead.leadinteraction == null || lead.leadinteraction.length < 1 || lead.leadinteraction[0] == null)
@@ -521,11 +519,13 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
             const self = this;
 
+            /*
             setTimeout(function () {
 
-                self.sheetRef.current?.setModalVisible(true);
+                //self.sheetRef.current?.setModalVisible(true);
 
             }, 200);
+            */
         })
     }
 
@@ -737,11 +737,11 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                 <Input value={this.state.activeLeadNotes} onChange={(e) => this.setState({ activeLeadNotes: e.nativeEvent.text })}
                                     style={{ borderWidth: 0 }}
                                     inputContainerStyle={{ borderBottomWidth: 0 }}
-                                    inputStyle={{ margin: 0, padding: 0, height: 200, borderWidth: 0 }}
+                                    inputStyle={{ margin: 0, padding: 0, height: 150, borderWidth: 0 }}
                                     numberOfLines={10} multiline={true} placeholder='Add your notes here'></Input>
                             </View>
 
-                            <KeyboardAvoidingView behavior='position' keyboardVerticalOffset={120} style={[{}]}>
+                            <KeyboardAvoidingView behavior='padding' keyboardVerticalOffset={220} style={[{}]}>
                                 <Divider />
                                 <View style={{ flexDirection: 'row', paddingBottom: 30, paddingLeft: 20, paddingRight: 20, paddingTop: 10 }}>
                                     <TouchableOpacity style={[{ flex: 1, flexDirection: 'column' }]} onPress={() => this.cancelSaveDetails()}>
