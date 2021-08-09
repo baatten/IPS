@@ -312,7 +312,6 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
         }
 
         const stepList = [
-
             {
                 content: <Formik innerRef={p => (this.formUser = p)} enableReinitialize
                     initialValues={{ name: this.state.user.name, surname: this.state.user.surname, email: this.state.user.email, password: this.state.user.password }}
@@ -375,6 +374,14 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                         </View>
                     )}
                 </Formik>
+            },
+            {
+                content: <View style={{ marginLeft: 10, marginRight: 10, padding: 10, backgroundColor: 'white', borderRadius: 10, borderWidth: 1, borderColor: '#DDDEE1' }} >
+
+                    {this.state.agentTypes.map((type, index) => (
+                        <CheckBox key={index} checked={type.chosen} title={type.title} onPress={() => this.toggleType(index)} checkedIcon='dot-circle-o' uncheckedIcon='circle-o' containerStyle={styles.typeCheckbox} />
+                    ))}
+                </View>
             },
             {
                 content: <Formik innerRef={p => (this.formPersonal = p)}
@@ -459,14 +466,6 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                         </>
                     )}
                 </Formik>
-            },
-            {
-                content: <View style={{ marginLeft: 10, marginRight: 10, padding: 10, backgroundColor: 'white', borderRadius: 10, borderWidth: 1, borderColor: '#DDDEE1' }} >
-
-                    {this.state.agentTypes.map((type, index) => (
-                        <CheckBox key={index} checked={type.chosen} title={type.title} onPress={() => this.toggleType(index)} checkedIcon='dot-circle-o' uncheckedIcon='circle-o' containerStyle={styles.typeCheckbox} />
-                    ))}
-                </View>
             }
             /*,
             {
