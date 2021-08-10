@@ -7,7 +7,7 @@ import SignInScreen from './src/screens/signInScreen'
 import DisabledLocation from './src/screens/DisabledLocation';
 import ActionSheet from "react-native-actions-sheet";
 import * as Location from 'expo-location';
-import { AppState, View, Text, Linking, Modal, TouchableOpacity, ActivityIndicator, StyleSheet, Platform, FlexAlignType } from 'react-native'
+import { AppState, View, Text, Linking, Modal, TouchableOpacity, ActivityIndicator, StyleSheet, Platform } from 'react-native'
 import { Button, CheckBox, Icon as SpecialIcon } from 'react-native-elements'
 import { Alert, StatusBar } from 'react-native';
 import { Tabs } from './src/components/utils/tabs'

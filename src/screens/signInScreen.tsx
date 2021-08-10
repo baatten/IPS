@@ -44,38 +44,38 @@ export default class SignInScreen extends React.Component<any, SignInScreenState
 
     async handleSignIn() {
 
-            const rules = {
-                email: 'required|email',
-                password: 'required|string|min:1|max:40'
-            };
+        const rules = {
+            email: 'required|email',
+            password: 'required|string|min:1|max:40'
+        };
 
-            const data = {
-                email: this.state.emailAddress,
-                password: this.state.password
-            };
+        const data = {
+            email: this.state.emailAddress,
+            password: this.state.password
+        };
 
-            const messages = {
-                required: (field: any) => `${field} is required`,
-                'username.alpha': 'Username contains unallowed characters',
-                'email.email': 'Please enter a valid email address',
-                'password.min': 'Wrong Password?'
-            };
+        const messages = {
+            required: (field: any) => `${field} is required`,
+            'username.alpha': 'Username contains unallowed characters',
+            'email.email': 'Please enter a valid email address',
+            'password.min': 'Wrong Password?'
+        };
 
-            validateAll(data, rules, messages)
-                .then(() => {
-                    //.log('success sign in');
+        validateAll(data, rules, messages)
+            .then(() => {
+                //.log('success sign in');
 
-                    this.setState({ isLoading: true })
-                    this.signIn();
+                this.setState({ isLoading: true })
+                this.signIn();
 
-                })
-                .catch((err:{"field": string, "message": string, "validation": string}[]) => {
-                    const formatError = {};
+            })
+            .catch((err: { "field": string, "message": string, "validation": string }[]) => {
+                const formatError = {};
 
-                    
-                    Alert.alert(err[0].message)
-                    //setSignUpErrors(formatError);
-                });
+
+                Alert.alert(err[0].message)
+                //setSignUpErrors(formatError);
+            });
         //}
     };
 
@@ -182,7 +182,7 @@ export default class SignInScreen extends React.Component<any, SignInScreenState
     render() {
 
         return (
-            <>
+            <View style={{ flex: 1 }}>
                 <ImageBackground source={require('../../assets/splash.png')} style={{ flex: 1, alignSelf: 'stretch' }}>
                     <KeyboardAvoidingView style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', }} behavior="padding" enabled keyboardVerticalOffset={0}>
                         <View style={{ padding: 25 }}>
@@ -294,7 +294,7 @@ export default class SignInScreen extends React.Component<any, SignInScreenState
                         </KeyboardAvoidingView>
                     </View>
                 </Modal>
-            </>
+            </View>
         )
     }
 }
