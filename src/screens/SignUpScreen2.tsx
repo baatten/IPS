@@ -101,40 +101,44 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
         //check if a subscription has been selected.
         //if (this.state.selectedSubscription != undefined) {
 
-        this.setState({ isLoading: true })
-        this.wizard.current.next();
+        //this.setState({ isLoading: true })
+        //this.wizard.current.next();
 
         const account = this.state.user;
 
-        const date = this.getDateFromString(account.dateOfBirthString);
+        //const date = this.getDateFromString(account.dateOfBirthString);
 
-        if (date != null)
-            account.dateOfBirth = date;
+        //if (date != null)
+        //    account.dateOfBirth = date;
 
-        const types: string[] = []
+        //const types: string[] = []
 
+        /*
         this.state.agentTypes.forEach(element => {
 
             if (element.chosen)
                 types.push(element.title);
         });
+*/
 
         try {
             const res = await fetch(GLOBALS.BASE_URL + '/api/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(
-                    { accountData: account, subscription: '', agentTypes: types.join(',') }
+                    { accountData: account, subscription: '', agentTypes: '' }
                 )
             })
             if (res.status === 200) {
 
                 const responseData = await res.json();
 
-                this.setState({ isLoading: false })
+                this.context.signIn(this.state.user.email, this.state.user.password)
+
+                //this.setState({ isLoading: false })
             }
             else {
-                this.setState({ isLoading: false })
+                //this.setState({ isLoading: false })
             }
         }
         catch (error) {
@@ -374,7 +378,8 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                         </View>
                     )}
                 </Formik>
-            },
+            }
+            /*,
             {
                 content: <View style={{ marginLeft: 10, marginRight: 10, padding: 10, backgroundColor: 'white', borderRadius: 10, borderWidth: 1, borderColor: '#DDDEE1' }} >
 
@@ -382,7 +387,8 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                         <CheckBox key={index} checked={type.chosen} title={type.title} onPress={() => this.toggleType(index)} checkedIcon='dot-circle-o' uncheckedIcon='circle-o' containerStyle={styles.typeCheckbox} />
                     ))}
                 </View>
-            },
+            }
+            ,
             {
                 content: <Formik innerRef={p => (this.formPersonal = p)}
                     initialValues={this.state.user}
@@ -467,7 +473,7 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                     )}
                 </Formik>
             }
-            /*,
+            ,
             {
                 content: <View style={{ padding: 15 }} >
 
@@ -512,8 +518,8 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                     ) : (
                         <View style={{ padding: 15, alignItems: 'center' }} >
 
-                            <Text style={{ fontSize: 18, fontWeight: '600', marginBottom: 5, color: '#2185d0' }}>Registering your account.</Text>
-                            <Text style={{ color: 'rgba(0,0,0,0.7)', marginBottom: 5 }}>Done</Text>
+                            <Text style={{ fontSize: 18, fontWeight: '600', marginBottom: 5, color: '#2185d0' }}>Ready to register your account.</Text>
+                            <Text style={{ color: 'rgba(0,0,0,0.7)', marginBottom: 5 }}>Click to choose a subscription</Text>
                         </View>
                     )
             }
@@ -544,7 +550,7 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                                 )}
                             </View>
                             <View style={[{ flex: 1, flexDirection: 'column', marginLeft: 7 }]}>
-                                {this.state.currentStep == 3 ? (
+                                {this.state.currentStep == 1 ? (
                                     <Button onPress={() => this.saveUserDetails()} disabled={!this.state.contactAccepted}
                                         buttonStyle={{ backgroundColor: '#2185d0', padding: 10, borderColor: '#2185d0', borderWidth: 1, borderRadius: 10 }}
                                         titleStyle={{ color: 'white', fontSize: 16 }} title='Sign up' />
@@ -568,7 +574,7 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                         </View>
                     ) : (
                         !this.state.isLoading && (
-                            <Button loading={this.state.issigningIn} onPress={() => this.setState({ issigningIn: true }, () => this.context.signIn(this.state.user.email, this.state.user.password))}
+                            <Button loading={this.state.issigningIn} onPress={() => this.setState({ issigningIn: true }, () => this.saveUserDetails())}
                                 buttonStyle={{ backgroundColor: '#2185d0', marginLeft: 50, marginRight: 50, borderColor: '#2185d0', borderWidth: 1, borderRadius: 10 }}
                                 titleStyle={{ color: 'white', fontSize: 16 }} title='Get Started' />
                         ))}
