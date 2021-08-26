@@ -19,7 +19,8 @@
     "react-dom": "17.0.2",
     "react-native": "0.65.1",
     "react-native-actions-sheet": "^0.4.9",
-    "react-native-adapty": "^0.6.7",
+    "react-native-adapty": "^1.0.3",
+    "react-native-codegen": "0.0.7",
     "react-native-elements": "^3.4.2",
     "react-native-gesture-handler": "~1.10.3",
     "react-native-inappbrowser-reborn": "^3.6.3",
@@ -29,7 +30,7 @@
     "react-native-safe-area-context": "^3.3.0",
     "react-native-screens": "~3.0.0",
     "react-native-unimodules": "^0.14.6",
-    "react-native-vector-icons": "^7.1.0",
+    "react-native-vector-icons": "^8.1.0",
     "react-native-web": "^0.17.1",
     "react-native-wizard": "^2.1.0",
     "yup": "^0.29.3"

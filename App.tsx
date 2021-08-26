@@ -19,7 +19,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { SignUpScreen } from './src/screens/SignUpScreen2'
 import { InAppBrowser } from 'react-native-inappbrowser-reborn'
 import { activateAdapty, adapty, AdaptyProduct } from 'react-native-adapty';
-import { expo } from './app.json'
+import { version } from './app.json'
 
 interface userModel {
 
@@ -254,7 +254,7 @@ export default class App extends React.Component<AppProps, IPSState> {
         body: JSON.stringify({
           username: emailAddress,
           password: password,
-          release: expo.version,
+          release: version,
           platform: Platform.OS,
           platformVersion: Platform.Version
         })
@@ -285,9 +285,9 @@ export default class App extends React.Component<AppProps, IPSState> {
 
               //await activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i',customerUserId:userIdString });
               //await adapty.user.logout();
-              await adapty.user.identify(userIdString);
+              await adapty.profile.identify(userIdString);
 
-              await adapty.user.updateProfile({
+              await adapty.profile.update({
                 firstName: responseData.name,
                 lastName: responseData.surname,
                 email: responseData.email
@@ -332,7 +332,7 @@ export default class App extends React.Component<AppProps, IPSState> {
 
     this.setState({ showSubscriptionWall: false })
 
-    await adapty.user.logout();
+    await adapty.profile.logout();
     await AsyncStorage.removeItem('username');
     await AsyncStorage.removeItem('password');
 
@@ -492,7 +492,7 @@ export default class App extends React.Component<AppProps, IPSState> {
                     </View>
                     <View style={[{ flex: 3, flexDirection: 'column' }]}>
                       <Text style={{ color: this.state.activeSubscription?.localizedTitle == product.localizedTitle ? 'white' : '#2185d0', fontSize: 17, fontWeight: '600', marginBottom: 2 }}>{product.localizedTitle}</Text>
-                      <Text style={{ color: this.state.activeSubscription?.localizedTitle == product.localizedTitle ? 'white' : '#2185d0', marginBottom: 2 }}>${product.price} / {product.localizedSubscriptionPeriod}</Text>
+                      <Text style={{ color: this.state.activeSubscription?.localizedTitle == product.localizedTitle ? 'white' : '#2185d0', marginBottom: 2 }}>${product.price} / {product.subscriptionPeriod}</Text>
                       <Text style={{ color: this.state.activeSubscription?.localizedTitle == product.localizedTitle ? 'white' : '#2185d0' }}>{product.localizedDescription}</Text>
                     </View>
                   </View>
@@ -506,7 +506,7 @@ export default class App extends React.Component<AppProps, IPSState> {
 
               <CheckBox onPress={() => this.setState({ conditionAccepted: !this.state.conditionAccepted })} checked={this.state.conditionAccepted} containerStyle={{ padding: 0, backgroundColor: 'transparent', borderRadius: 5, borderWidth: 0 }} />
 
-              <View style={[{ flexDirection: 'row',marginTop:6 }]}>
+              <View style={[{ flexDirection: 'row', marginTop: 6 }]}>
                 <Text style={{ lineHeight: 20 }}>I accept the</Text>
                 <Text onPress={() => this.openLink('https://api.t-65locator.com/TermsofService.pdf')} style={{ marginLeft: 2, marginTop: 2, color: '#2185d0' }}>T65 locator terms of service</Text>
               </View>
