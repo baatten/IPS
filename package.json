@@ -26,7 +26,6 @@
     "react-native-maps": "^0.28.0",
     "react-native-open-maps": "^0.3.6",
     "react-native-popover-view": "^4.0.1",
-    "react-native-reanimated": "~2.1.0",
     "react-native-safe-area-context": "^3.3.0",
     "react-native-screens": "~3.0.0",
     "react-native-unimodules": "^0.14.6",
@@ -40,6 +39,7 @@
     "@types/react": "~16.9.35",
     "@types/react-native": "~0.63.2",
     "@types/yup": "^0.29.13",
+    "metro-react-native-babel-preset": "^0.66.2",
     "typescript": "~4.0.0"
   },
   "private": true,
