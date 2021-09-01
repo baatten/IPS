@@ -28,7 +28,7 @@ PODS:
   - ExpoModulesCore/Interfaces (0.2.0):
     - ExpoModulesCore/Core
     - UMCore
-  - EXSplashScreen (0.11.2):
+  - EXSplashScreen (0.11.4):
     - React-Core
     - UMCore
   - FBLazyVector (0.65.1)
@@ -298,12 +298,12 @@ PODS:
     - React-jsi (= 0.65.1)
     - React-perflogger (= 0.65.1)
   - React-jsinspector (0.65.1)
-  - react-native-adapty (1.0.3):
+  - react-native-adapty (1.0.4):
     - Adapty (= 1.13.2)
     - React
   - react-native-maps (0.28.0):
     - React-Core
-  - react-native-safe-area-context (3.3.0):
+  - react-native-safe-area-context (3.3.1):
     - React-Core
   - React-perflogger (0.65.1)
   - React-RCTActionSheet (0.65.1):
@@ -592,7 +592,7 @@ SPEC CHECKSUMS:
   EXImageLoader: 6494524ac2b99af4edcacada0e19c71600423e59
   EXLocation: bcb40b8b420a77c45f6cbcc93f80da9d84776c7c
   ExpoModulesCore: 730c7158b2fb179ba5921230e56a083a2304974d
-  EXSplashScreen: f9928db64cf96e1e69beebbc3610cc3b2db2d38f
+  EXSplashScreen: f537a41eed0ad091fa599e1591ad4f94e38c6ca9
   FBLazyVector: 33c82491102f20ecddb6c6a2c273696ace3191e0
   FBReactNativeSpec: df8f81d2a7541ee6755a047b398a5cb5a72acd0e
   Flipper: 3532e5cc3145575ed516093fe5227831cd62d464
@@ -619,9 +619,9 @@ SPEC CHECKSUMS:
   React-jsi: 12913c841713a15f64eabf5c9ad98592c0ec5940
   React-jsiexecutor: 43f2542aed3c26e42175b339f8d37fe3dd683765
   React-jsinspector: 41e58e5b8e3e0bf061fdf725b03f2144014a8fb0
-  react-native-adapty: 7f1f7805e1eb03cb43131c49469171709f8fa8a2
+  react-native-adapty: 6ce1a1b94b5fd2fda9c43b11e247bc4dc3a85875
   react-native-maps: 2d405b4e8cee0282e4c02bac434d81450dfea877
-  react-native-safe-area-context: 8465df05de8106c584b117f0e027e17174d6e02e
+  react-native-safe-area-context: 7cabce6690914e3727cac1c2fd1d5e643385a9aa
   React-perflogger: fd28ee1f2b5b150b00043f0301d96bd417fdc339
   React-RCTActionSheet: 7f3fa0855c346aa5d7c60f9ced16e067db6d29fa
   React-RCTAnimation: 2119a18ee26159004b001bc56404ca5dbaae6077
