@@ -7,10 +7,11 @@ import MapView, { Marker, EventUserLocation } from 'react-native-maps';
 import ActionSheet from "react-native-actions-sheet";
 import openMap from 'react-native-open-maps';
 import type { Camera } from 'react-native-maps';
-import Popover, { PopoverMode, PopoverPlacement } from 'react-native-popover-view';
+import Popover, { PopoverPlacement } from 'react-native-popover-view';
 import * as Location from 'expo-location'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Lead } from '../lib/types'
+import ModalDropdown from 'react-native-modal-dropdown';
 
 type Location = {
     accuracy?: number,
@@ -57,26 +58,20 @@ class LogoTitle extends React.Component<HomeTitleProps, HomeTitleState> {
     }
 }
 
-type FilterDropDownProps = { radius: number, months: number, sortingType: string, sortingDirection: number, updateView: any, updateSorting: (sortingType: string) => void }
-type FilterDropDownState = { radius: number, months: number }
+type FilterDropDownProps = { useCustomLocation: boolean, zipCode: number, radius: number, sortingType: string, sortingDirection: number, updateView: any, updateSorting: (sortingType: string) => void }
+type FilterDropDownState = { radius: number, useCustomLocation: boolean, zipCode: number, }
 class FilterDropDown extends React.Component<FilterDropDownProps, FilterDropDownState> {
 
     constructor(props: FilterDropDownProps) {
         super(props)
 
-        this.state = { radius: this.props.radius, months: props.months, };
-        this.updateView = this.updateView.bind(this)
-        //this.updateSorting = this.updateSorting.bind(this)
+        this.state = { radius: this.props.radius, useCustomLocation: props.useCustomLocation, zipCode: props.zipCode };
+        //this.updateView = this.updateView.bind(this)
     }
 
     updateView(radius: number) {
 
-
         this.setState({ radius: radius }, () => this.props.updateView(radius, this.state.months))
-    }
-
-    updateMonth(months: number) {
-        this.setState({ months: months }, () => this.updateView(this.state.radius))
     }
 
     render() {
@@ -121,9 +116,30 @@ class FilterDropDown extends React.Component<FilterDropDownProps, FilterDropDown
                         <ListItem.CheckBox size={18} checkedIcon='chevron-up' uncheckedIcon='chevron-down' checked={this.props.sortingDirection == 1} />
                     )}
                 </ListItem>
+            </ScrollView>
+        );
+    }
+}
 
-                <ListItem containerStyle={{ backgroundColor: '#eee' }} style={{ height: 5, backgroundColor: 'transparent' }}></ListItem>
+type DateDropDownProps = { months: number, updateMonth: (month: number) => void }
+type DateDropDownState = { months: number }
+class DateDropDown extends React.Component<DateDropDownProps, DateDropDownState> {
 
+    constructor(props: DateDropDownProps) {
+        super(props)
+
+        this.state = { months: props.months };
+        //this.updateView = this.updateView.bind(this)
+    }
+
+    updateMonth(months: number) {
+        this.setState({ months: months }, () => this.props.updateMonth(months));
+    }
+
+    render() {
+
+        return (
+            <ScrollView style={{ maxHeight: 500 }}>
                 <ListItem key={8} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(1)}>
                     <ListItem.Title>1 month</ListItem.Title>
                     <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.months == 1} />
@@ -182,6 +198,7 @@ type HomeState = {
     activeView: number
     currentLocation?: Location,
     showRadiusFilter: boolean,
+    showDateFilter: boolean,
     filterMonths: number,
     leadSortingType: string,
     leadSortingDirection: number,
@@ -193,6 +210,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
     sheetRef: any;
     mapRef: any;
     filterPopover: any;
+    datePopover: any;
     saveLeadSheetRef: any;
 
     constructor(props: HomeProps) {
@@ -202,12 +220,26 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         this.sheetRef = React.createRef<ActionSheet>();
         this.saveLeadSheetRef = React.createRef<ActionSheet>();
         this.filterPopover = React.createRef<TouchableOpacity>();
+        this.datePopover = React.createRef<TouchableOpacity>();
 
         const leads: Lead[] = [];
 
         this.setStartLocation()
 
-        this.state = { appState: AppState.currentState, leads: leads, isLoading: true, activeView: 0, filterDistance: 5, filterMonths: 3, savingLead: false, showRadiusFilter: false, leadSortingType: 'distance', leadSortingDirection: 1, showLocationUpdated: false };
+        this.state = {
+            appState: AppState.currentState,
+            leads: leads,
+            isLoading: true,
+            activeView: 0,
+            filterDistance: 5,
+            filterMonths: 3,
+            savingLead: false,
+            showRadiusFilter: false,
+            showDateFilter: false,
+            leadSortingType: 'distance',
+            leadSortingDirection: 1,
+            showLocationUpdated: false
+        };
     }
 
     async setStartLocation() {
@@ -249,9 +281,13 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
             headerTitle: () => <LogoTitle activeView={this.state.activeView} updateView={this.changeView} />,
             headerTintColor: '#fff',
             headerStyle: { backgroundColor: '#2185d0' },
-            headerRight: () => <TouchableOpacity ref={this.filterPopover} onPress={() => this.setState({ showRadiusFilter: true })} style={{ marginRight: 10, backgroundColor: 'transparent' }} >
+            headerRight: () => <TouchableOpacity ref={this.filterPopover} onPressIn={() => this.setState({ showRadiusFilter: true })} style={{ marginRight: 10, backgroundColor: 'transparent' }} >
                 <Icon name='map-marked-alt' color='white' size={22} type='font-awesome-5' style={{ color: 'white' }} />
-            </TouchableOpacity>
+            </TouchableOpacity>,
+            headerLeft: () =>
+                <TouchableOpacity ref={this.datePopover} onPressIn={() => this.setState({ showDateFilter: true })} style={{ marginLeft: 10, backgroundColor: 'transparent' }} >
+                    <Icon name='calendar-week' color='white' size={22} type='font-awesome-5' style={{ color: 'white' }} />
+                </TouchableOpacity>
         })
 
         this.props.navigation.addListener('focus', (e) => {
@@ -645,15 +681,22 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                     )}
                     {this.state.currentLocation != undefined && (
                         <>
-                            <Popover arrowShift={0} onRequestClose={() => this.setState({ showRadiusFilter: false })} from={this.filterPopover} isVisible={this.state.showRadiusFilter} popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}>
+                            <Popover arrowStyle={{ backgroundColor: 'transparent' }} onRequestClose={() => this.setState({ showRadiusFilter: false })} from={this.filterPopover} isVisible={this.state.showRadiusFilter} popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}>
                                 <FilterDropDown
                                     updateSorting={(sortingType: string) => this.updateLeadSorting(sortingType)}
                                     sortingType={this.state.leadSortingType}
                                     sortingDirection={this.state.leadSortingDirection}
                                     radius={this.state.filterDistance}
 
-                                    months={this.state.filterMonths}
+                         
                                     updateView={(radius: number, months: number) => this.changeFilterDistance(radius, months)} />
+                            </Popover>
+
+                            <Popover arrowStyle={{ backgroundColor: 'transparent' }} onRequestClose={() => this.setState({ showRadiusFilter: false })} from={this.filterPopover} isVisible={this.state.showRadiusFilter} popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}>
+                                <DateDropDown
+
+                                    updateMonth={(month) => this.setState({ filterMonths: month })}
+                                    months={this.state.filterMonths} />
                             </Popover>
 
                             <MapView ref={this.mapRef} showsMyLocationButton={true} onUserLocationChange={(e) => this.userLocationChanged(e)} initialRegion={{ latitude: this.state.currentLocation.latitude, longitude: this.state.currentLocation.longitude, latitudeDelta: 0.5, longitudeDelta: 0.5 }} style={{ flex: 1, height: 400, width: '100%' }} showsUserLocation={true}>
@@ -756,7 +799,6 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                             </KeyboardAvoidingView>
                         </View>
                     </ActionSheet>
-
                 </View>);
         }
         else {
