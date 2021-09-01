@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, ScrollView, Text, Linking, TouchableOpacity, KeyboardAvoidingView, ActivityIndicator, AppState, FlatList } from 'react-native';
-import { ButtonGroup, ListItem, Icon, Input, Divider } from 'react-native-elements';
+import { ButtonGroup, ListItem, Icon, Input, Divider, Button } from 'react-native-elements';
 import GLOBALS from '../globals';
 import { StackNavigationProp, createStackNavigator } from '@react-navigation/stack';
 import MapView, { Marker, EventUserLocation } from 'react-native-maps';
@@ -11,7 +11,6 @@ import Popover, { PopoverPlacement } from 'react-native-popover-view';
 import * as Location from 'expo-location'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Lead } from '../lib/types'
-import ModalDropdown from 'react-native-modal-dropdown';
 
 type Location = {
     accuracy?: number,
@@ -58,8 +57,17 @@ class LogoTitle extends React.Component<HomeTitleProps, HomeTitleState> {
     }
 }
 
-type FilterDropDownProps = { useCustomLocation: boolean, zipCode?: number, radius: number, sortingType: string, sortingDirection: number, updateView: any, updateSorting: (sortingType: string) => void }
-type FilterDropDownState = { radius: number, useCustomLocation: boolean, zipCode?: number, }
+type FilterDropDownProps = {
+    useCustomLocation: boolean,
+    zipCode?: string,
+    radius: number,
+    sortingType: string,
+    sortingDirection: number,
+    updateView: (radius: number) => void,
+    updateSorting: (sortingType: string) => void
+    setCustomLocation: (zipCode: number) => void
+}
+type FilterDropDownState = { radius: number, useCustomLocation: boolean, zipCode?: string, }
 class FilterDropDown extends React.Component<FilterDropDownProps, FilterDropDownState> {
 
     constructor(props: FilterDropDownProps) {
@@ -69,36 +77,107 @@ class FilterDropDown extends React.Component<FilterDropDownProps, FilterDropDown
         //this.updateView = this.updateView.bind(this)
     }
 
-    updateView(radius: number) {
+    updateRadius(radius: number) {
 
-        this.setState({ radius: radius }, () => this.props.updateView(radius))
+        this.setState({ radius: radius },
+            () => this.props.updateView(
+                radius
+
+
+            ))
+    }
+
+    updateZipCode(zipCode: string) {
+
+        this.setState({ zipCode: zipCode }, () => this.props.updateView(
+            this.state.radius
+
+        ))
+    }
+
+    useCustomLocation(activate: boolean) {
+
+        this.setState({ useCustomLocation: activate });
+    }
+
+    setCustomLocation() {
+
+        this.props.setCustomLocation(Number.parseInt(this.state.zipCode!))
+
     }
 
     render() {
 
         return (
-            <ScrollView style={{ maxHeight: 500 }}>
-                <ListItem key={0} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateView(1)}>
+            <ScrollView keyboardShouldPersistTaps='always' style={{ maxHeight: 600 }}>
+                <ListItem key={8} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.useCustomLocation(false)}>
+                    <ListItem.Title>My location</ListItem.Title>
+                    {!this.state.useCustomLocation && (
+                        <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' checked={!this.state.useCustomLocation} />
+                    )}
+                </ListItem>
+                <ListItem key={9} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.useCustomLocation(true)}>
+                    <ListItem.Title>Custom location</ListItem.Title>
+                    {this.state.useCustomLocation && (
+                        <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' checked={this.state.useCustomLocation} />
+                    )}
+                </ListItem>
+                {this.state.useCustomLocation && (
+                    <ListItem key={10} bottomDivider containerStyle={{ padding: 3 }}>
+                        <ListItem.Content>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <View style={{ flex: 3 }}>
+                                    <Input inputStyle={{ padding: 0 }}
+                                        inputContainerStyle={{ borderBottomWidth: 0, backgroundColor: 'white' }}
+                                        containerStyle={{ backgroundColor: 'white', borderBottomLeftRadius: 10, borderBottomRightRadius: 10, height: 40 }}
+                                        placeholder="zip code"
+                                        keyboardType='numeric'
+                                        value={this.state.zipCode}
+                                        autoFocus
+
+                                        onChangeText={(text => this.setState({ zipCode: text }))}
+
+                                    />
+                                </View>
+                                <Button title='GO'
+                                    //iconRight
+                                    //icon={<Icon size={12} containerStyle={{marginLeft:5}} name='chevron-right' type='font-awesome-5' color='white' />}
+                                    titleStyle={{ fontSize: 12, fontWeight: 'bold' }}
+                                    style={{ maxHeight: 28, padding: 0, margin: 0 }}
+                                    buttonStyle={{ padding: 5, margin: 0 }}
+                                    containerStyle={{ margin: 0, marginRight: 5 }}
+                                    disabled={this.state.zipCode == null || this.state.zipCode.length != 5}
+                                    onPress={() => this.setCustomLocation()}
+                                />
+                            </View>
+
+                        </ListItem.Content>
+                    </ListItem>
+                )}
+
+                <ListItem containerStyle={{ backgroundColor: '#eee' }} style={{ height: 5, backgroundColor: 'transparent' }}></ListItem>
+
+                <ListItem key={0} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(1)}>
                     <ListItem.Title>1 mile radius</ListItem.Title>
                     <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 1} />
                 </ListItem>
-                <ListItem key={1} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateView(3)}>
+                <ListItem key={1} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(3)}>
                     <ListItem.Title>3 miles radius</ListItem.Title>
                     <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 3} />
                 </ListItem>
-                <ListItem key={2} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateView(5)}>
+                <ListItem key={2} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(5)}>
                     <ListItem.Title>5 miles radius</ListItem.Title>
                     <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 5} />
                 </ListItem>
-                <ListItem key={3} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateView(10)}>
+                <ListItem key={3} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(10)}>
                     <ListItem.Title>10 miles radius</ListItem.Title>
                     <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 10} />
                 </ListItem>
-                <ListItem key={4} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateView(25)}>
+                <ListItem key={4} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(25)}>
                     <ListItem.Title>25 miles radius</ListItem.Title>
                     <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 25} />
                 </ListItem>
-                <ListItem key={5} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateView(50)}>
+                <ListItem key={5} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(50)}>
                     <ListItem.Title>50 miles radius</ListItem.Title>
                     <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 50} />
                 </ListItem>
@@ -118,20 +197,8 @@ class FilterDropDown extends React.Component<FilterDropDownProps, FilterDropDown
                     )}
                 </ListItem>
 
-                <ListItem containerStyle={{ backgroundColor: '#eee' }} style={{ height: 5, backgroundColor: 'transparent' }}></ListItem>
 
-                <ListItem key={8} bottomDivider containerStyle={{ padding: 12 }} >
-                    <ListItem.Title>Use My location</ListItem.Title>
-                    {!this.props.useCustomLocation && (
-                        <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' checked={this.props.sortingDirection == 1} />
-                    )}
-                </ListItem>
-                <ListItem key={9} bottomDivider containerStyle={{ padding: 12 }} >
-                    <ListItem.Title>Use Custom location</ListItem.Title>
-                    {this.props.useCustomLocation && (
-                        <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' checked={this.props.sortingDirection == 1} />
-                    )}
-                </ListItem>
+
             </ScrollView>
         );
     }
@@ -229,6 +296,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
     datePopover: any;
     saveLeadSheetRef: any;
 
+
     constructor(props: HomeProps) {
         super(props);
 
@@ -237,6 +305,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         this.saveLeadSheetRef = React.createRef<ActionSheet>();
         this.filterPopover = React.createRef<TouchableOpacity>();
         this.datePopover = React.createRef<TouchableOpacity>();
+
 
         const leads: Lead[] = [];
 
@@ -461,6 +530,52 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         }
     }
 
+    async getLeadsFromZip(zipcode: number) {
+
+        this.setState({ isLoading: true, showLocationUpdated: false })
+
+        try {
+            const res = await fetch(GLOBALS.BASE_URL + '/api/client/getLeads', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    radius: this.state.filterDistance,
+                    filterMonths: this.state.filterMonths,
+                    useZip: true,
+                    zipcode: zipcode
+                })
+            })
+
+            this.setState({ isLoading: false })
+
+            if (res.status === 200) {
+
+                const data: any = await res.json();
+
+                if (data) {
+
+                    //console.log(data.leads[0])
+                    const leads = this.sortLeads(data.leads, this.state.leadSortingType, this.state.leadSortingDirection)
+
+                    this.setState({ leads: leads }, () => {
+
+                        if (this.state.leads.length > 0)
+                            this.animateViewToMarkers();
+                    })
+                }
+                else {
+
+                }
+
+            } else {
+
+            }
+        } catch (error) {
+            console.error('An unexpected error happened occurred:', error)
+        }
+
+    }
+
     animateViewToMarkers() {
 
         if (this != null && this.state.leads.length > 0) {
@@ -583,9 +698,9 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
             /*
             setTimeout(function () {
-
+    
                 //self.sheetRef.current?.setModalVisible(true);
-
+    
             }, 200);
             */
         })
@@ -688,6 +803,11 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         }
     }
 
+    async setCustomLocation(zipCode: number) {
+
+        this.getLeadsFromZip(zipCode);
+    }
+
     render() {
 
         if (this.state.activeView == 0) {
@@ -713,9 +833,9 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                     sortingType={this.state.leadSortingType}
                                     sortingDirection={this.state.leadSortingDirection}
                                     radius={this.state.filterDistance}
-                                    useCustomLocation={false}
+                                    setCustomLocation={(zipCode: number) => this.setCustomLocation(zipCode)}
+                                    updateView={(radius: number) => this.changeFilterDistance(radius)} />
 
-                                    updateView={(radius: number, months: number) => this.changeFilterDistance(radius)} />
                             </Popover>
 
                             <Popover arrowStyle={{ backgroundColor: 'transparent' }} onRequestClose={() => this.setState({ showDateFilter: false })} from={this.datePopover} isVisible={this.state.showDateFilter} popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}>
@@ -837,7 +957,10 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                             sortingDirection={this.state.leadSortingDirection}
                             radius={this.state.filterDistance}
                             useCustomLocation={false}
-                            updateView={(radius: number, months: number) => this.changeFilterDistance(radius)} />
+                            updateView={(radius: number) => this.changeFilterDistance(radius)}
+                            setCustomLocation={(zipCode: number) => this.setCustomLocation(zipCode)}
+                        />
+
                     </Popover>
 
                     <Popover arrowShift={0} onRequestClose={() => this.setState({ showDateFilter: false })} from={this.datePopover} isVisible={this.state.showDateFilter} popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}>
