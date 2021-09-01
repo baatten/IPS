@@ -58,8 +58,8 @@ class LogoTitle extends React.Component<HomeTitleProps, HomeTitleState> {
     }
 }
 
-type FilterDropDownProps = { useCustomLocation: boolean, zipCode: number, radius: number, sortingType: string, sortingDirection: number, updateView: any, updateSorting: (sortingType: string) => void }
-type FilterDropDownState = { radius: number, useCustomLocation: boolean, zipCode: number, }
+type FilterDropDownProps = { useCustomLocation: boolean, zipCode?: number, radius: number, sortingType: string, sortingDirection: number, updateView: any, updateSorting: (sortingType: string) => void }
+type FilterDropDownState = { radius: number, useCustomLocation: boolean, zipCode?: number, }
 class FilterDropDown extends React.Component<FilterDropDownProps, FilterDropDownState> {
 
     constructor(props: FilterDropDownProps) {
@@ -71,7 +71,7 @@ class FilterDropDown extends React.Component<FilterDropDownProps, FilterDropDown
 
     updateView(radius: number) {
 
-        this.setState({ radius: radius }, () => this.props.updateView(radius, this.state.months))
+        this.setState({ radius: radius }, () => this.props.updateView(radius))
     }
 
     render() {
@@ -102,6 +102,7 @@ class FilterDropDown extends React.Component<FilterDropDownProps, FilterDropDown
                     <ListItem.Title>50 miles radius</ListItem.Title>
                     <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 50} />
                 </ListItem>
+
                 <ListItem containerStyle={{ backgroundColor: '#eee' }} style={{ height: 5, backgroundColor: 'transparent' }}></ListItem>
 
                 <ListItem key={6} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.props.updateSorting('distance')}>
@@ -114,6 +115,21 @@ class FilterDropDown extends React.Component<FilterDropDownProps, FilterDropDown
                     <ListItem.Title>Sort By Birthday</ListItem.Title>
                     {this.props.sortingType == 'birthday' && (
                         <ListItem.CheckBox size={18} checkedIcon='chevron-up' uncheckedIcon='chevron-down' checked={this.props.sortingDirection == 1} />
+                    )}
+                </ListItem>
+
+                <ListItem containerStyle={{ backgroundColor: '#eee' }} style={{ height: 5, backgroundColor: 'transparent' }}></ListItem>
+
+                <ListItem key={8} bottomDivider containerStyle={{ padding: 12 }} >
+                    <ListItem.Title>Use My location</ListItem.Title>
+                    {!this.props.useCustomLocation && (
+                        <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' checked={this.props.sortingDirection == 1} />
+                    )}
+                </ListItem>
+                <ListItem key={9} bottomDivider containerStyle={{ padding: 12 }} >
+                    <ListItem.Title>Use Custom location</ListItem.Title>
+                    {this.props.useCustomLocation && (
+                        <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' checked={this.props.sortingDirection == 1} />
                     )}
                 </ListItem>
             </ScrollView>
@@ -310,14 +326,24 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         this.setState({ appState: nextAppState });
     };
 
-    async changeFilterDistance(radius: number, months: number) {
+    async changeFilterDistance(radius: number) {
 
-        this.setState({ filterDistance: radius, filterMonths: months }, () => {
+        this.setState({ filterDistance: radius }, () => {
             this.setState({ showRadiusFilter: false })
             this.getLeads()
         })
 
         await AsyncStorage.setItem('radius', radius.toString());
+    }
+
+    async changeFilterMonth(months: number) {
+
+        this.setState({ filterMonths: months }, () => {
+            this.setState({ showDateFilter: false })
+            this.getLeads()
+        })
+
+        //await AsyncStorage.setItem('radius', radius.toString());
     }
 
     updateLeadSorting(sortingType: string) {
@@ -687,15 +713,15 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                     sortingType={this.state.leadSortingType}
                                     sortingDirection={this.state.leadSortingDirection}
                                     radius={this.state.filterDistance}
+                                    useCustomLocation={false}
 
-                         
-                                    updateView={(radius: number, months: number) => this.changeFilterDistance(radius, months)} />
+                                    updateView={(radius: number, months: number) => this.changeFilterDistance(radius)} />
                             </Popover>
 
-                            <Popover arrowStyle={{ backgroundColor: 'transparent' }} onRequestClose={() => this.setState({ showRadiusFilter: false })} from={this.filterPopover} isVisible={this.state.showRadiusFilter} popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}>
+                            <Popover arrowStyle={{ backgroundColor: 'transparent' }} onRequestClose={() => this.setState({ showDateFilter: false })} from={this.datePopover} isVisible={this.state.showDateFilter} popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}>
                                 <DateDropDown
 
-                                    updateMonth={(month) => this.setState({ filterMonths: month })}
+                                    updateMonth={(month) => this.changeFilterMonth(month)}
                                     months={this.state.filterMonths} />
                             </Popover>
 
@@ -809,8 +835,18 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                             updateSorting={(sortingType: string) => this.updateLeadSorting(sortingType)}
                             sortingType={this.state.leadSortingType}
                             sortingDirection={this.state.leadSortingDirection}
-                            radius={this.state.filterDistance} months={this.state.filterMonths} updateView={(radius: number, months: number) => this.changeFilterDistance(radius, months)} />
+                            radius={this.state.filterDistance}
+                            useCustomLocation={false}
+                            updateView={(radius: number, months: number) => this.changeFilterDistance(radius)} />
                     </Popover>
+
+                    <Popover arrowShift={0} onRequestClose={() => this.setState({ showDateFilter: false })} from={this.datePopover} isVisible={this.state.showDateFilter} popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}>
+                        <DateDropDown
+                            months={this.state.filterMonths}
+                            updateMonth={(month) => this.changeFilterMonth(month)}
+                        />
+                    </Popover>
+
                     {this.state.isLoading && (
                         <View style={{ top: 25, alignSelf: 'center', position: 'absolute', zIndex: 99999, backgroundColor: 'white', paddingLeft: 25, paddingRight: 25, paddingBottom: 10, paddingTop: 10, borderRadius: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 5 }}>
                             <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
