@@ -1,7 +1,7 @@
 {
   "name": "T65 Locator",
   "slug": "IPS",
-  "version": "1.0.31",
+  "version": "1.0.32",
   "orientation": "portrait",
   "icon": "./assets/icon.png",
   "splash": {
@@ -24,7 +24,7 @@
     "favicon": "./assets/favicon.png"
   },
   "android": {
-    "versionCode": 31,
+    "versionCode": 32,
     "package": "com.t-65locator.t65",
     "permissions": [
       "ACCESS_COARSE_LOCATION",

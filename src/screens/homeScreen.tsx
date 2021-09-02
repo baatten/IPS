@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView, Text, Linking, TouchableOpacity, KeyboardAvoidingView, ActivityIndicator, AppState, FlatList } from 'react-native';
+import { StyleSheet, View, ScrollView, Text, Linking, TouchableOpacity, KeyboardAvoidingView, ActivityIndicator, AppState, FlatList, Alert } from 'react-native';
 import { ButtonGroup, ListItem, Icon, Input, Divider, Button } from 'react-native-elements';
 import GLOBALS from '../globals';
 import { StackNavigationProp, createStackNavigator } from '@react-navigation/stack';
@@ -66,6 +66,7 @@ type FilterDropDownProps = {
     updateView: (radius: number) => void,
     updateSorting: (sortingType: string) => void
     setCustomLocation: (zipCode: number) => void
+    useMyLocation: () => void
 }
 type FilterDropDownState = { radius: number, useCustomLocation: boolean, zipCode?: string, }
 class FilterDropDown extends React.Component<FilterDropDownProps, FilterDropDownState> {
@@ -82,8 +83,6 @@ class FilterDropDown extends React.Component<FilterDropDownProps, FilterDropDown
         this.setState({ radius: radius },
             () => this.props.updateView(
                 radius
-
-
             ))
     }
 
@@ -91,19 +90,20 @@ class FilterDropDown extends React.Component<FilterDropDownProps, FilterDropDown
 
         this.setState({ zipCode: zipCode }, () => this.props.updateView(
             this.state.radius
-
         ))
     }
 
     useCustomLocation(activate: boolean) {
 
         this.setState({ useCustomLocation: activate });
+
+        if (!activate)
+            this.props.useMyLocation();
     }
 
     setCustomLocation() {
 
         this.props.setCustomLocation(Number.parseInt(this.state.zipCode!))
-
     }
 
     render() {
@@ -111,13 +111,13 @@ class FilterDropDown extends React.Component<FilterDropDownProps, FilterDropDown
         return (
             <ScrollView keyboardShouldPersistTaps='always' style={{ maxHeight: 600 }}>
                 <ListItem key={8} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.useCustomLocation(false)}>
-                    <ListItem.Title>My location</ListItem.Title>
+                    <ListItem.Title>Use My Location</ListItem.Title>
                     {!this.state.useCustomLocation && (
                         <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' checked={!this.state.useCustomLocation} />
                     )}
                 </ListItem>
                 <ListItem key={9} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.useCustomLocation(true)}>
-                    <ListItem.Title>Custom location</ListItem.Title>
+                    <ListItem.Title>Use Zipcode</ListItem.Title>
                     {this.state.useCustomLocation && (
                         <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' checked={this.state.useCustomLocation} />
                     )}
@@ -155,32 +155,36 @@ class FilterDropDown extends React.Component<FilterDropDownProps, FilterDropDown
                     </ListItem>
                 )}
 
-                <ListItem containerStyle={{ backgroundColor: '#eee' }} style={{ height: 5, backgroundColor: 'transparent' }}></ListItem>
+                {!this.state.useCustomLocation && (
+                    <>
+                        <ListItem containerStyle={{ backgroundColor: '#eee' }} style={{ height: 5, backgroundColor: 'transparent' }}></ListItem>
 
-                <ListItem key={0} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(1)}>
-                    <ListItem.Title>1 mile radius</ListItem.Title>
-                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 1} />
-                </ListItem>
-                <ListItem key={1} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(3)}>
-                    <ListItem.Title>3 miles radius</ListItem.Title>
-                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 3} />
-                </ListItem>
-                <ListItem key={2} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(5)}>
-                    <ListItem.Title>5 miles radius</ListItem.Title>
-                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 5} />
-                </ListItem>
-                <ListItem key={3} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(10)}>
-                    <ListItem.Title>10 miles radius</ListItem.Title>
-                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 10} />
-                </ListItem>
-                <ListItem key={4} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(25)}>
-                    <ListItem.Title>25 miles radius</ListItem.Title>
-                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 25} />
-                </ListItem>
-                <ListItem key={5} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(50)}>
-                    <ListItem.Title>50 miles radius</ListItem.Title>
-                    <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 50} />
-                </ListItem>
+                        <ListItem key={0} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(1)}>
+                            <ListItem.Title>1 mile radius</ListItem.Title>
+                            <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 1} />
+                        </ListItem>
+                        <ListItem key={1} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(3)}>
+                            <ListItem.Title>3 miles radius</ListItem.Title>
+                            <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 3} />
+                        </ListItem>
+                        <ListItem key={2} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(5)}>
+                            <ListItem.Title>5 miles radius</ListItem.Title>
+                            <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 5} />
+                        </ListItem>
+                        <ListItem key={3} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(10)}>
+                            <ListItem.Title>10 miles radius</ListItem.Title>
+                            <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 10} />
+                        </ListItem>
+                        <ListItem key={4} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(25)}>
+                            <ListItem.Title>25 miles radius</ListItem.Title>
+                            <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 25} />
+                        </ListItem>
+                        <ListItem key={5} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(50)}>
+                            <ListItem.Title>50 miles radius</ListItem.Title>
+                            <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 50} />
+                        </ListItem>
+                    </>
+                )}
 
                 <ListItem containerStyle={{ backgroundColor: '#eee' }} style={{ height: 5, backgroundColor: 'transparent' }}></ListItem>
 
@@ -285,7 +289,9 @@ type HomeState = {
     filterMonths: number,
     leadSortingType: string,
     leadSortingDirection: number,
-    showLocationUpdated: boolean
+    showLocationUpdated: boolean,
+    useCustomLocation: boolean,
+    zipCode?: number
 }
 
 export class HomeScreen extends React.Component<HomeProps, HomeState> {
@@ -323,7 +329,8 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
             showDateFilter: false,
             leadSortingType: 'distance',
             leadSortingDirection: 1,
-            showLocationUpdated: false
+            showLocationUpdated: false,
+            useCustomLocation: false
         };
     }
 
@@ -407,9 +414,12 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
     async changeFilterMonth(months: number) {
 
-        this.setState({ filterMonths: months }, () => {
-            this.setState({ showDateFilter: false })
-            this.getLeads()
+        this.setState({ filterMonths: months, showDateFilter: false }, () => {
+
+            if (this.state.useCustomLocation)
+                this.getLeadsFromZip(this.state.zipCode!)
+            else
+                this.getLeads()
         })
 
         //await AsyncStorage.setItem('radius', radius.toString());
@@ -532,7 +542,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
     async getLeadsFromZip(zipcode: number) {
 
-        this.setState({ isLoading: true, showLocationUpdated: false })
+        this.setState({ isLoading: true, showLocationUpdated: false, useCustomLocation: true, zipCode: zipcode })
 
         try {
             const res = await fetch(GLOBALS.BASE_URL + '/api/client/getLeads', {
@@ -561,6 +571,8 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
                         if (this.state.leads.length > 0)
                             this.animateViewToMarkers();
+                        else
+                            Alert.alert('No leads found!', 'We currently have no leads with zipcode ' + this.state.zipCode)
                     })
                 }
                 else {
@@ -805,6 +817,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
     async setCustomLocation(zipCode: number) {
 
+        this.setState({ showRadiusFilter: false, useCustomLocation: true, zipCode: zipCode });
         this.getLeadsFromZip(zipCode);
     }
 
@@ -834,7 +847,11 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                     sortingDirection={this.state.leadSortingDirection}
                                     radius={this.state.filterDistance}
                                     setCustomLocation={(zipCode: number) => this.setCustomLocation(zipCode)}
-                                    updateView={(radius: number) => this.changeFilterDistance(radius)} />
+                                    updateView={(radius: number) => this.changeFilterDistance(radius)}
+                                    useCustomLocation={this.state.useCustomLocation}
+                                    zipCode={this.state.zipCode?.toString()}
+                                    useMyLocation={() => this.setState({ useCustomLocation: false, showRadiusFilter: false }, () => this.getLeads())}
+                                />
 
                             </Popover>
 
@@ -956,9 +973,12 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                             sortingType={this.state.leadSortingType}
                             sortingDirection={this.state.leadSortingDirection}
                             radius={this.state.filterDistance}
-                            useCustomLocation={false}
+                            useCustomLocation={this.state.useCustomLocation}
+                            zipCode={this.state.zipCode?.toString()}
                             updateView={(radius: number) => this.changeFilterDistance(radius)}
                             setCustomLocation={(zipCode: number) => this.setCustomLocation(zipCode)}
+                            useMyLocation={() => this.setState({ useCustomLocation: false, showRadiusFilter: false }, () => this.getLeads())}
+
                         />
 
                     </Popover>
