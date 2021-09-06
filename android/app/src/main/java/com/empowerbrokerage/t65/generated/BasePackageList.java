@@ -1,4 +1,4 @@
-package com.empowerbrokerage.t65.generated;
+package com.t65locator.t65.generated;
 
 import java.util.Arrays;
 import java.util.List;

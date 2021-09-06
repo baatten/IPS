@@ -1,4 +1,4 @@
-package com.empowerbrokerage.t65;
+package com.t65locator.t65;
 import android.content.res.Configuration;
 import android.content.Intent;
 

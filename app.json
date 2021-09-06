@@ -18,14 +18,14 @@
   ],
   "ios": {
     "supportsTablet": true,
-    "bundleIdentifier": "com.t-65locator.t65"
+    "bundleIdentifier": "com.t65locator.t65"
   },
   "web": {
     "favicon": "./assets/favicon.png"
   },
   "android": {
     "versionCode": 32,
-    "package": "com.t-65locator.t65",
+    "package": "com.t65locator.t65",
     "permissions": [
       "ACCESS_COARSE_LOCATION",
       "ACCESS_FINE_LOCATION, BILLING"

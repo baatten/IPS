@@ -135,7 +135,7 @@ android {
     }
 
     defaultConfig {
-        applicationId 'com.empowerbrokerage.t65'
+        applicationId 'com.t65locator.t65'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         multiDexEnabled true

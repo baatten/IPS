@@ -5,7 +5,7 @@ PODS:
   - CocoaAsyncSocket (7.6.5)
   - CryptoSwift (1.4.0)
   - DoubleConversion (1.1.6)
-  - EXConstants (11.0.1):
+  - EXConstants (11.0.2):
     - ExpoModulesCore
     - UMCore
   - EXFileSystem (11.1.3):
@@ -587,7 +587,7 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   CryptoSwift: 7cc902df1784de3b389a387756c7d710f197730c
   DoubleConversion: 831926d9b8bf8166fd87886c4abab286c2422662
-  EXConstants: 5fc49c1bf567558e4576befcccb5e99f49f9c2ce
+  EXConstants: 4cb52b6d8f636c767104a44bf7db3873e9c01a6f
   EXFileSystem: 94496f1160b0bf7f000fe04e38ecb2aa63083a2c
   EXImageLoader: 6494524ac2b99af4edcacada0e19c71600423e59
   EXLocation: bcb40b8b420a77c45f6cbcc93f80da9d84776c7c
