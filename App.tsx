@@ -116,7 +116,7 @@ export default class App extends React.Component<AppProps, IPSState> {
     if (Platform.OS == 'ios')
       status = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
     else if (Platform.OS == 'android')
-      status = await request(PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION);
+      status = await request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
     //console.log(status)
 
     if (status == 'granted') {
@@ -138,7 +138,7 @@ export default class App extends React.Component<AppProps, IPSState> {
     if (Platform.OS == 'ios')
       status = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
     else if (Platform.OS == 'android')
-      status = await check(PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION);
+      status = await check(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
 
     //console.log(status)
 

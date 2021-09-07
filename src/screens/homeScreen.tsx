@@ -9,7 +9,8 @@ import openMap from 'react-native-open-maps';
 import type { Camera } from 'react-native-maps';
 import Popover, { PopoverPlacement } from 'react-native-popover-view';
 //import * as Location from 'expo-location'
-import Geolocation from '@react-native-community/geolocation';
+//import Geolocation from '@react-native-community/geolocation';
+import Geolocation from 'react-native-geolocation-service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Lead } from '../lib/types'
 
@@ -359,18 +360,19 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         Geolocation.getCurrentPosition(
             (response) => {
 
+                console.log(response)
                 //success
                 this.setState({ filterDistance: radius }, () => {
 
                     this.setState({ currentLocation: { latitude: response.coords.latitude, longitude: response.coords.longitude } },
                         () => this.getLeads());
                 })
-            }
-
-            ,
-            () => {
+            },
+            (error:any) => {
                 //error
-            });
+                console.log(error)
+            },
+            {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000});
 
         //location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
 
@@ -853,7 +855,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                         </View>
                     )}
                     {this.state.currentLocation != undefined && (
-                        <>
+                        <View style={StyleSheet.absoluteFillObject}>
                             <Popover arrowStyle={{ backgroundColor: 'transparent' }} onRequestClose={() => this.setState({ showRadiusFilter: false })} from={this.filterPopover} isVisible={this.state.showRadiusFilter} popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}>
                                 <FilterDropDown
                                     updateSorting={(sortingType: string) => this.updateLeadSorting(sortingType)}
@@ -876,14 +878,14 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                     months={this.state.filterMonths} />
                             </Popover>
 
-                            <MapView ref={this.mapRef} showsMyLocationButton={true} onUserLocationChange={(e) => this.userLocationChanged(e)} initialRegion={{ latitude: this.state.currentLocation.latitude, longitude: this.state.currentLocation.longitude, latitudeDelta: 0.5, longitudeDelta: 0.5 }} style={{ flex: 1, height: 400, width: '100%' }} showsUserLocation={true}>
+                            <MapView loadingEnabled ref={this.mapRef} showsMyLocationButton={true} onUserLocationChange={(e) => this.userLocationChanged(e)} initialRegion={{ latitude: this.state.currentLocation.latitude, longitude: this.state.currentLocation.longitude, latitudeDelta: 0.5, longitudeDelta: 0.5 }} style={StyleSheet.absoluteFill} showsUserLocation={true}>
                                 {this.state.leads.map((lead: Lead, index: any) => (
                                     <Marker identifier={lead.id?.toString()} key={index}
                                         pinColor={this.getPinColorForLead(lead)}
                                         onPress={() => this.showLeadData(lead, index)} coordinate={lead.marker!.coordinate} />
                                 ))}
                             </MapView>
-                        </>
+                        </View>
                     )}
                     <ActionSheet ref={this.sheetRef} bounceOnOpen={true} onClose={() => this.closeLeadData()}>
                         <View style={{
