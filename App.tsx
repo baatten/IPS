@@ -6,10 +6,9 @@ import SplashScreen from './src/screens/splashScreen'
 import SignInScreen from './src/screens/signInScreen'
 import DisabledLocation from './src/screens/DisabledLocation';
 import ActionSheet from "react-native-actions-sheet";
-import {request,check, PERMISSIONS, RESULTS} from 'react-native-permissions';
-import { AppState, View, Text, Linking, Modal, TouchableOpacity, ActivityIndicator, StyleSheet, Platform } from 'react-native'
+import { request, check, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import { AppState, View, Text, Linking, Modal, TouchableOpacity, ActivityIndicator, StyleSheet, Platform,Alert, StatusBar } from 'react-native'
 import { Button, CheckBox, Icon as SpecialIcon } from 'react-native-elements'
-import { Alert, StatusBar } from 'react-native';
 import { Tabs } from './src/components/utils/tabs'
 import { NavigationContainer } from '@react-navigation/native';
 import { AppContext } from './src/components/utils/appContext';
@@ -111,9 +110,13 @@ export default class App extends React.Component<AppProps, IPSState> {
   async allowPermissions() {
 
     this.sheetRef.current.setModalVisible(false);
- 
-    const status = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
-    
+
+    let status;
+
+    if (Platform.OS == 'ios')
+      status = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+    else if (Platform.OS == 'android')
+      status = await request(PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION);
     //console.log(status)
 
     if (status == 'granted') {
@@ -131,7 +134,11 @@ export default class App extends React.Component<AppProps, IPSState> {
 
   async checkPermissions(): Promise<boolean> {
 
-    let status  = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+    let status;
+    if (Platform.OS == 'ios')
+      status = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+    else if (Platform.OS == 'android')
+      status = await check(PERMISSIONS.ANDROID.ACCESS_COARSE_LOCATION);
 
     //console.log(status)
 
@@ -252,8 +259,14 @@ export default class App extends React.Component<AppProps, IPSState> {
 
   signIn = async (emailAddress: string, password: string) => {
 
+  
+
     if (emailAddress != null && password != null && await this.checkPermissions()) {
 
+      console.log('sign in')
+      console.log(GLOBALS.BASE_URL + '/api/client/login')
+
+      try{
       const res = await fetch(GLOBALS.BASE_URL + '/api/client/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -270,13 +283,15 @@ export default class App extends React.Component<AppProps, IPSState> {
 
         const responseData: userModel = await res.json();
 
-        //console.log('user id', responseData.userId)
+        console.log('user id', responseData.userId)
         //console.log('user object', responseData)
 
         if (responseData.done) {
 
           //this.authContextValue.user = responseData.token as any;
           this.setState({ user: responseData })
+
+
 
           await AsyncStorage.setItem('username', emailAddress);
           await AsyncStorage.setItem('password', password);
@@ -290,14 +305,32 @@ export default class App extends React.Component<AppProps, IPSState> {
             try {
 
               //await activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i',customerUserId:userIdString });
-              //await adapty.user.logout();
-              await adapty.profile.identify(userIdString);
+              //await adapty.profile.logout();
+              //await adapty.profile.identify(userIdString);
 
-              await adapty.profile.update({
+
+    
+                //await adapty.profile.identify(userIdString);
+         
+
+                
+              console.log(userIdString)
+
+              console.log(responseData.name)
+              console.log(responseData.surname)
+              console.log(responseData.email)
+              /*
+              */
+
+              /*
+              const profile = await adapty.profile.update({
                 firstName: responseData.name,
                 lastName: responseData.surname,
                 email: responseData.email
               });
+            */
+
+
 
             } catch (error: any) {
               console.log('Morten testing', error)
@@ -325,6 +358,11 @@ export default class App extends React.Component<AppProps, IPSState> {
 
         this.dispatch({ type: 'TO_SIGNIN_PAGE' });
       }
+
+    }catch(error:any){
+
+      console.log('morten',error)
+    }
 
     } else {
       this.dispatch({ type: 'TO_SIGNIN_PAGE' });
