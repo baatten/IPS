@@ -8,7 +8,8 @@ import ActionSheet from "react-native-actions-sheet";
 import openMap from 'react-native-open-maps';
 import type { Camera } from 'react-native-maps';
 import Popover, { PopoverPlacement } from 'react-native-popover-view';
-import * as Location from 'expo-location'
+//import * as Location from 'expo-location'
+import Geolocation from '@react-native-community/geolocation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Lead } from '../lib/types'
 
@@ -350,18 +351,30 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
             radius = parseInt(radiusStore);
         }
 
-        let location = await Location.getLastKnownPositionAsync()
+        //let location = await Location.getLastKnownPositionAsync()
 
-        if (location != null)
-            this.setState({ currentLocation: { latitude: location.coords.latitude, longitude: location.coords.longitude } });
+        //if (location != null)
+        //    this.setState({ currentLocation: { latitude: location.coords.latitude, longitude: location.coords.longitude } });
 
-        location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
+        Geolocation.getCurrentPosition(
+            (response) => {
 
-        this.setState({ filterDistance: radius }, () => {
-            if (location != null)
-                this.setState({ currentLocation: { latitude: location.coords.latitude, longitude: location.coords.longitude } },
-                    () => this.getLeads());
-        })
+                //success
+                this.setState({ filterDistance: radius }, () => {
+
+                    this.setState({ currentLocation: { latitude: response.coords.latitude, longitude: response.coords.longitude } },
+                        () => this.getLeads());
+                })
+            }
+
+            ,
+            () => {
+                //error
+            });
+
+        //location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
+
+
     }
 
     componentDidMount() {
@@ -390,6 +403,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
     componentWillUnmount() {
         AppState.removeEventListener('change', this._handleAppStateChange);
+        this.props.navigation.removeListener('focus', () => null);
     }
 
     _handleAppStateChange = (nextAppState: any) => {

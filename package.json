@@ -1,18 +1,15 @@
 {
   "scripts": {
-    "start": "react-native start",
     "android": "react-native run-android",
-    "ios": "react-native run-ios"
+    "ios": "react-native run-ios",
+    "start": "react-native start"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.15.7",
-    "@react-native-community/masked-view": "0.1.10",
+    "@react-native-community/geolocation": "^2.0.2",
     "@react-navigation/bottom-tabs": "^5.11.15",
     "@react-navigation/native": "^5.9.8",
     "@react-navigation/stack": "^5.14.9",
-    "expo-location": "^12.1.2",
-    "expo-splash-screen": "^0.11.4",
-    "expo-status-bar": "~1.0.4",
     "formik": "^2.2.9",
     "indicative": "^7.4.4",
     "react": "17.0.2",
@@ -26,22 +23,25 @@
     "react-native-inappbrowser-reborn": "^3.6.3",
     "react-native-maps": "^0.28.0",
     "react-native-open-maps": "^0.3.6",
+    "react-native-permissions": "^3.0.5",
     "react-native-popover-view": "^4.0.3",
     "react-native-safe-area-context": "^3.3.2",
-    "react-native-screens": "~3.0.0",
+    "react-native-screens": "^3.6.0",
     "react-native-unimodules": "^0.14.6",
     "react-native-vector-icons": "^8.1.0",
-    "react-native-web": "^0.17.1",
     "react-native-wizard": "^2.1.0",
     "yup": "^0.29.3"
   },
   "devDependencies": {
-    "@babel/core": "^7.15.5",
+    "@babel/core": "^7.12.9",
+    "@babel/runtime": "^7.12.5",
     "@types/react": "~16.9.35",
-    "@types/react-native": "~0.63.2",
+    "@types/react-native": "0.64.13",
     "@types/react-native-modal-dropdown": "^0.7.1",
     "@types/yup": "^0.29.13",
-    "metro-react-native-babel-preset": "^0.66.2",
+    "metro-react-native-babel-preset": "^0.66.0",
+    "react-native-codegen": "^0.0.7",
+    "react-test-renderer": "17.0.2",
     "typescript": "~4.0.0"
   },
   "private": true,

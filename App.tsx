@@ -6,7 +6,7 @@ import SplashScreen from './src/screens/splashScreen'
 import SignInScreen from './src/screens/signInScreen'
 import DisabledLocation from './src/screens/DisabledLocation';
 import ActionSheet from "react-native-actions-sheet";
-import * as Location from 'expo-location';
+import {request,check, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import { AppState, View, Text, Linking, Modal, TouchableOpacity, ActivityIndicator, StyleSheet, Platform } from 'react-native'
 import { Button, CheckBox, Icon as SpecialIcon } from 'react-native-elements'
 import { Alert, StatusBar } from 'react-native';
@@ -20,6 +20,7 @@ import { SignUpScreen } from './src/screens/SignUpScreen2'
 import { InAppBrowser } from 'react-native-inappbrowser-reborn'
 import { activateAdapty, adapty, AdaptyProduct } from 'react-native-adapty';
 import { version } from './app.json'
+
 
 interface userModel {
 
@@ -110,7 +111,10 @@ export default class App extends React.Component<AppProps, IPSState> {
   async allowPermissions() {
 
     this.sheetRef.current.setModalVisible(false);
-    let { status } = await Location.requestForegroundPermissionsAsync()
+ 
+    const status = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+    
+    //console.log(status)
 
     if (status == 'granted') {
 
@@ -127,7 +131,9 @@ export default class App extends React.Component<AppProps, IPSState> {
 
   async checkPermissions(): Promise<boolean> {
 
-    let { status } = await Location.getForegroundPermissionsAsync();
+    let status  = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+
+    //console.log(status)
 
     if (status == 'granted') {
 
@@ -136,7 +142,7 @@ export default class App extends React.Component<AppProps, IPSState> {
       return true;
     }
 
-    else if (status == 'denied') {
+    else if (status == 'blocked') {
 
       this.setState({ showMissingPermissions: true });
       return false;
@@ -166,7 +172,7 @@ export default class App extends React.Component<AppProps, IPSState> {
         const info = await adapty.purchases.getInfo({})
         // "premium" is an identifier of default access level
 
-        console.log(info)
+        //console.log(info)
 
         if (info?.accessLevels!['premium']?.isActive) {
           // grant access to premium features
@@ -180,7 +186,7 @@ export default class App extends React.Component<AppProps, IPSState> {
           try {
             const data = await adapty.paywalls.getPaywalls({ forceUpdate: false });
 
-            console.log(data.products)
+            //console.log(data.products)
 
             if (this.state.subscriptions.length == 0)
               this.setState({ subscriptions: data.products })
@@ -240,7 +246,7 @@ export default class App extends React.Component<AppProps, IPSState> {
       }
       else Linking.openURL(url)
     } catch (error) {
-      Alert.alert(error.message)
+      //Alert.alert(error.message)
     }
   }
 
@@ -492,7 +498,7 @@ export default class App extends React.Component<AppProps, IPSState> {
                     </View>
                     <View style={[{ flex: 3, flexDirection: 'column' }]}>
                       <Text style={{ color: this.state.activeSubscription?.localizedTitle == product.localizedTitle ? 'white' : '#2185d0', fontSize: 17, fontWeight: '600', marginBottom: 2 }}>{product.localizedTitle}</Text>
-                      <Text style={{ color: this.state.activeSubscription?.localizedTitle == product.localizedTitle ? 'white' : '#2185d0', marginBottom: 2 }}>${product.price} / {product.subscriptionPeriod}</Text>
+                      <Text style={{ color: this.state.activeSubscription?.localizedTitle == product.localizedTitle ? 'white' : '#2185d0', marginBottom: 2 }}>${product.price} / {product.subscriptionPeriod.unit}</Text>
                       <Text style={{ color: this.state.activeSubscription?.localizedTitle == product.localizedTitle ? 'white' : '#2185d0' }}>{product.localizedDescription}</Text>
                     </View>
                   </View>
