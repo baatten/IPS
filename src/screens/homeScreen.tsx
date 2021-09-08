@@ -157,7 +157,7 @@ class FilterDropDown extends React.Component<FilterDropDownProps, FilterDropDown
                     </ListItem>
                 )}
 
-                {!this.state.useCustomLocation && (
+                
                     <>
                         <ListItem containerStyle={{ backgroundColor: '#eee' }} style={{ height: 5, backgroundColor: 'transparent' }}></ListItem>
 
@@ -186,7 +186,7 @@ class FilterDropDown extends React.Component<FilterDropDownProps, FilterDropDown
                             <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 50} />
                         </ListItem>
                     </>
-                )}
+                
 
                 <ListItem containerStyle={{ backgroundColor: '#eee' }} style={{ height: 5, backgroundColor: 'transparent' }}></ListItem>
 
@@ -422,7 +422,11 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
         this.setState({ filterDistance: radius }, () => {
             this.setState({ showRadiusFilter: false })
-            this.getLeads()
+            
+            if (this.state.useCustomLocation)
+                this.getLeadsFromZip(this.state.zipCode!)
+            else
+                this.getLeads()
         })
 
         await AsyncStorage.setItem('radius', radius.toString());
