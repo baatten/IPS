@@ -70,14 +70,15 @@ export default class App extends React.Component<AppProps, IPSState> {
   componentDidMount() {
 
     this.appStateChangedListener = AppState.addEventListener('change', () => this.handleAppStateChange);
-    activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i' });
+    activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i',logLevel:'verbose' });
 
     this.start();
   }
 
   componentWillUnmount() {
 
-    AppState.removeEventListener("change", this.appStateChangedListener);
+    
+    //AppState.currentState.removeEventListener("change", this.appStateChangedListener);
   }
 
   async start() {
@@ -298,9 +299,9 @@ export default class App extends React.Component<AppProps, IPSState> {
 
           const userIdString = responseData.userId.toString();
 
-          //console.log('id:', userIdString)
+          
 
-          if (userIdString !== undefined && userIdString !== null && userIdString !== '') {
+          if (userIdString !== null && userIdString !== '') {
 
             try {
 
@@ -309,26 +310,24 @@ export default class App extends React.Component<AppProps, IPSState> {
               //await adapty.profile.identify(userIdString);
 
 
-    
-                //await adapty.profile.identify(userIdString);
-         
+              console.log('id:', userIdString)
+              console.log('profile getting ready')
+                await adapty.profile.identify(userIdString);
+                
+                console.log('profile ready')
 
                 
-              console.log(userIdString)
-
-              console.log(responseData.name)
-              console.log(responseData.surname)
-              console.log(responseData.email)
+      
               /*
               */
 
-              /*
+              
               const profile = await adapty.profile.update({
                 firstName: responseData.name,
                 lastName: responseData.surname,
                 email: responseData.email
               });
-            */
+            
 
 
 
@@ -337,7 +336,7 @@ export default class App extends React.Component<AppProps, IPSState> {
             }
 
             this.dispatch({ type: 'SIGNED_IN', token: responseData.token });
-            await this.checkSubscriptionStatus();
+            this.checkSubscriptionStatus();
 
           }
           else {
@@ -376,7 +375,7 @@ export default class App extends React.Component<AppProps, IPSState> {
 
     this.setState({ showSubscriptionWall: false })
 
-    await adapty.profile.logout();
+    //await adapty.profile.logout();
     await AsyncStorage.removeItem('username');
     await AsyncStorage.removeItem('password');
 
@@ -536,7 +535,7 @@ export default class App extends React.Component<AppProps, IPSState> {
                     </View>
                     <View style={[{ flex: 3, flexDirection: 'column' }]}>
                       <Text style={{ color: this.state.activeSubscription?.localizedTitle == product.localizedTitle ? 'white' : '#2185d0', fontSize: 17, fontWeight: '600', marginBottom: 2 }}>{product.localizedTitle}</Text>
-                      <Text style={{ color: this.state.activeSubscription?.localizedTitle == product.localizedTitle ? 'white' : '#2185d0', marginBottom: 2 }}>${product.price} / {product.subscriptionPeriod.unit}</Text>
+                      <Text style={{ color: this.state.activeSubscription?.localizedTitle == product.localizedTitle ? 'white' : '#2185d0', marginBottom: 2 }}>{product.currencyCode} {product.price} / {product.subscriptionPeriod.unit}</Text>
                       <Text style={{ color: this.state.activeSubscription?.localizedTitle == product.localizedTitle ? 'white' : '#2185d0' }}>{product.localizedDescription}</Text>
                     </View>
                   </View>

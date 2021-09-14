@@ -7,7 +7,7 @@
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.15.7",
     "@react-native-community/geolocation": "^2.0.2",
-    "@react-native-community/masked-view": "0.1.10",
+    "@react-native-community/masked-view": "0.1.11",
     "@react-navigation/bottom-tabs": "^5.11.15",
     "@react-navigation/native": "^5.9.8",
     "@react-navigation/stack": "^5.14.9",
@@ -17,7 +17,7 @@
     "react-dom": "17.0.2",
     "react-native": "0.65.1",
     "react-native-actions-sheet": "^0.5.4",
-    "react-native-adapty": "^1.0.4",
+    "react-native-adapty": "^1.1.0",
     "react-native-codegen": "0.0.7",
     "react-native-elements": "^3.4.2",
     "react-native-geolocation-service": "^5.2.0",
@@ -28,21 +28,21 @@
     "react-native-permissions": "^3.0.5",
     "react-native-popover-view": "^4.0.3",
     "react-native-safe-area-context": "^3.3.2",
-    "react-native-screens": "~3.0.0",
+    "react-native-screens": "^3.7.2",
     "react-native-unimodules": "^0.14.6",
     "react-native-vector-icons": "^8.1.0",
     "react-native-web": "^0.17.1",
     "react-native-wizard": "^2.1.0",
-    "yup": "^0.29.3"
+    "yup": "^0.32.9"
   },
   "devDependencies": {
     "@babel/core": "^7.15.5",
     "@types/react": "~17.0.20",
-    "@types/react-native": "^0.64.14",
+    "@types/react-native": "^0.65.0npm ",
     "@types/react-native-modal-dropdown": "^0.7.1",
     "@types/yup": "^0.29.13",
     "metro-react-native-babel-preset": "^0.66.2",
-    "typescript": "~4.0.0"
+    "typescript": "~4.4.3"
   },
   "private": true,
   "name": "ips",
