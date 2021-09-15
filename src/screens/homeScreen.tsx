@@ -303,7 +303,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
     filterPopover: any;
     datePopover: any;
     saveLeadSheetRef: any;
-
+    appStateSubscription: any;
 
     constructor(props: HomeProps) {
         super(props);
@@ -381,7 +381,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
     componentDidMount() {
 
-        AppState.addEventListener('change', this._handleAppStateChange);
+        this.appStateSubscription = AppState.addEventListener('change', this._handleAppStateChange);
 
         this.props.navigation.setOptions({
             headerShown: true,
@@ -404,7 +404,9 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
     }
 
     componentWillUnmount() {
-        AppState.removeEventListener('change', this._handleAppStateChange);
+
+        this.appStateSubscription.remove();
+        //AppState.removeEventListener('change', this._handleAppStateChange);
         this.props.navigation.removeListener('focus', () => null);
     }
 

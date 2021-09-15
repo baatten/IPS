@@ -7,7 +7,7 @@ import SignInScreen from './src/screens/signInScreen'
 import DisabledLocation from './src/screens/DisabledLocation';
 import ActionSheet from "react-native-actions-sheet";
 import { request, check, PERMISSIONS, RESULTS } from 'react-native-permissions';
-import { AppState, View, Text, Linking, Modal, TouchableOpacity, ActivityIndicator, StyleSheet, Platform,Alert, StatusBar } from 'react-native'
+import { AppState, View, Text, Linking, Modal, TouchableOpacity, ActivityIndicator, StyleSheet, Platform,Alert, StatusBar,EventSubscription } from 'react-native'
 import { Button, CheckBox, Icon as SpecialIcon } from 'react-native-elements'
 import { Tabs } from './src/components/utils/tabs'
 import { NavigationContainer } from '@react-navigation/native';
@@ -48,12 +48,14 @@ type IPSState = {
 export default class App extends React.Component<AppProps, IPSState> {
 
   sheetRef: any;
-  appStateChangedListener: any;
+  //appStateChangedListener: EmitterSubscription;
+  appStateSubscription: any;
 
   constructor(props: AppProps) {
     super(props)
 
     this.sheetRef = React.createRef<ActionSheet>();
+    
 
     this.state = {
 
@@ -69,7 +71,7 @@ export default class App extends React.Component<AppProps, IPSState> {
 
   componentDidMount() {
 
-    this.appStateChangedListener = AppState.addEventListener('change', () => this.handleAppStateChange);
+    this.appStateSubscription = AppState.addEventListener('change', () => this.handleAppStateChange);
     activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i',logLevel:'verbose' });
 
     this.start();
@@ -77,7 +79,7 @@ export default class App extends React.Component<AppProps, IPSState> {
 
   componentWillUnmount() {
 
-    
+    this.appStateSubscription.remove();
     //AppState.currentState.removeEventListener("change", this.appStateChangedListener);
   }
 
