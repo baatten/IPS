@@ -325,7 +325,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
             isLoading: true,
             activeView: 0,
             filterDistance: 5,
-            filterMonths: 3,
+            filterMonths: 9,
             savingLead: false,
             showRadiusFilter: false,
             showDateFilter: false,
@@ -481,9 +481,9 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
         if (sortingType == 'birthday') {
             if (direction == 0)
-                leads.sort((a, b) => b.dobmon - a.dobmon);
+                leads.sort((a, b) => new Date(b.dobdate).getTime() - new Date(a.dobdate).getTime());
             else
-                leads.sort((a, b) => a.dobmon - b.dobmon);
+                leads.sort((a, b) => new Date(a.dobdate).getTime() - new Date(b.dobdate).getTime());
         }
 
         return leads;

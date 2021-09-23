@@ -5,6 +5,7 @@ import { Input, Button, Icon } from 'react-native-elements';
 import { AppContext } from '../components/utils/appContext';
 import ActionSheet from "react-native-actions-sheet";
 import GLOBALS from '../globals';
+import { ScrollView } from 'react-native-gesture-handler';
 
 type SignInScreenState = {
 
@@ -229,11 +230,12 @@ export default class SignInScreen extends React.Component<any, SignInScreenState
                 </ImageBackground>
 
                 <Modal animationType="slide" presentationStyle='fullScreen' visible={this.state.modelIsOpen}>
-                    <View style={{ backgroundColor: '#1D7DD7', height: '100%', flex: 1, alignSelf: 'stretch' }}>
+                   <ScrollView style={{ backgroundColor: '#1D7DD7', height: '100%', flex: 1, alignSelf: 'stretch' }} keyboardShouldPersistTaps='always'>
+                    <View style={{ backgroundColor: '#1D7DD7', flex: 1}}>
 
                         <Icon color='rgba(255,255,255,0.15)' onPress={() => this.closeModal()} containerStyle={{ alignSelf: 'flex-end', marginTop: 50, marginRight: 25, zIndex: 99 }} style={{}} name="close" iconStyle={{ color: 'white', alignSelf: 'center', marginLeft: 2, marginTop: 1, zIndex: 999 }} size={18} reverse />
 
-                        <KeyboardAvoidingView behavior='position' keyboardVerticalOffset={-130} style={{ marginLeft: 25, marginRight: 25, flex: 1, flexDirection: 'column', justifyContent: 'center' }}>
+                        <KeyboardAvoidingView behavior='position' keyboardVerticalOffset={50} style={{ marginLeft: 25, marginRight: 25, flex: 1, flexDirection: 'column', justifyContent: 'center' }}>
                             <Icon color='rgba(255,255,255,0.15)' containerStyle={{ alignSelf: 'center', margin: 20 }} style={{}} name="lock" iconStyle={{ color: 'white', alignSelf: 'center' }} size={70} reverse />
                             <Text style={{ fontSize: 24, fontWeight: '700', textAlign: 'center', color: 'white', marginBottom: 10 }}>Recover password</Text>
                             {this.state.passwordWasResat ? (
@@ -293,6 +295,7 @@ export default class SignInScreen extends React.Component<any, SignInScreenState
 
                         </KeyboardAvoidingView>
                     </View>
+                    </ScrollView>
                 </Modal>
             </View>
         )

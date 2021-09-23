@@ -19,6 +19,7 @@ import { SignUpScreen } from './src/screens/SignUpScreen2'
 import { InAppBrowser } from 'react-native-inappbrowser-reborn'
 import { activateAdapty, adapty, AdaptyProduct } from 'react-native-adapty';
 import { version } from './app.json'
+import { ScrollView } from 'react-native-gesture-handler';
 
 
 interface userModel {
@@ -493,17 +494,17 @@ export default class App extends React.Component<AppProps, IPSState> {
           {this.chooseScreen(this.state.loginState)}
         </NavigationContainer>
         <ActionSheet ref={this.sheetRef} closeOnPressBack={false} closeOnTouchBackdrop={false} bounceOnOpen={true} containerStyle={{ backgroundColor: '#1D7DD7' }}>
-          <View style={{ padding: 50 }}>
+          <ScrollView  keyboardShouldPersistTaps='always' style={{ padding: 50 }}>
             <Icon name='street-view' color='white' size={150} style={{ marginTop: 25, textAlign: 'center' }}></Icon>
             <Text style={{ fontWeight: '700', fontSize: 24, alignSelf: 'center', marginTop: 20, color: 'white' }}>Location Services</Text>
             <Text style={{ fontWeight: '300', fontSize: 16, marginTop: 10, color: 'white', alignSelf: 'center', textAlign: 'center' }}>We'll need your current location to show you leads nearby completely automatically and save your time.</Text>
             <Text style={{ fontWeight: '300', fontSize: 16, marginTop: 10, color: 'white', alignSelf: 'center', textAlign: 'center' }}>If you don't enable location access, the app cannot show you leads nearby.</Text>
             <Button onPress={() => this.allowPermissions()} title='Continue' titleStyle={{ color: '#1D7DD7' }} style={{ marginTop: 25 }} buttonStyle={{ backgroundColor: 'white', margin: 0, marginTop: 5, padding: 15, borderRadius: 10 }} />
-            <Button onPress={() => this.sheetRef.current.setModalVisible(false)} title='Not now' type='clear' titleStyle={{ color: 'white' }} style={{ marginTop: 10 }} />
-          </View>
+            <Button onPress={() => this.sheetRef.current.setModalVisible(false)} title='Not now' type='clear' titleStyle={{ color: 'white' }} style={{ marginTop: 10,marginBottom:50 }} />
+          </ScrollView>
         </ActionSheet>
         <Modal presentationStyle='pageSheet' visible={this.state.showMissingPermissions} animationType='slide'>
-          <View style={{ backgroundColor: '#1D7DD7', padding: 50, height: '100%', minHeight: '100%' }}>
+          <ScrollView  keyboardShouldPersistTaps='always' style={{ backgroundColor: '#1D7DD7', padding: 50, height: '100%', minHeight: '100%' }}>
             <Icon name='street-view' color='white' size={150} style={{ marginTop: 25, textAlign: 'center' }}></Icon>
             <View>
               <Text style={{ fontWeight: '700', fontSize: 24, alignSelf: 'center', marginTop: 20, color: 'white' }}>Location Services</Text>
@@ -518,11 +519,12 @@ export default class App extends React.Component<AppProps, IPSState> {
               <Text style={{ fontWeight: '300', fontSize: 16, marginTop: 10, color: 'white' }}>5. Open T65 app again.</Text>
             </View>
             <Button onPress={() => Linking.openSettings()} title='Open Settings' titleStyle={{ color: '#1D7DD7' }} style={{ marginTop: 25 }} buttonStyle={{ backgroundColor: 'white', borderRadius: 10, padding: 15 }} />
-          </View>
+          </ScrollView>
         </Modal>
 
         <Modal presentationStyle='fullScreen' visible={this.state.showSubscriptionWall} animationType='slide'>
-          <View style={{ backgroundColor: '#f7fafb', padding: 20, height: '100%', minHeight: '100%', justifyContent: 'center' }}>
+          <ScrollView  keyboardShouldPersistTaps='always' style={{ backgroundColor: '#f7fafb', padding: 20, height: '100%', minHeight: '100%' }}>
+            <View style={{ backgroundColor: '#f7fafb', padding: 20, height: '100%', minHeight: '100%', justifyContent: 'center' }}>
             <View style={{}}>
               <Text style={{ fontWeight: '700', fontSize: 28, alignSelf: 'center', color: '#2185d0' }}>T65 Locator</Text>
               <Text style={{ fontWeight: '500', color: '#2185d0', fontSize: 18, marginTop: 10, marginBottom: 25, alignSelf: 'center', textAlign: 'center' }}>Please choose a subscription to continue using T65.</Text>
@@ -558,7 +560,8 @@ export default class App extends React.Component<AppProps, IPSState> {
             </View>
             <Button loading={this.state.subscribeLoading} onPress={() => this.subScribe(this.state.activeSubscription!)} disabled={!this.state.conditionAccepted || this.state.activeSubscription == undefined} title='Buy subscription' containerStyle={{ marginTop: 25 }} buttonStyle={{ paddingVertical: 15, borderRadius: 15 }} titleStyle={{ fontWeight: '600' }} />
             <Button onPress={() => this.signOut()} title='Sign out' containerStyle={{ marginTop: 5 }} titleStyle={{ color: '#2185d0' }} buttonStyle={{ backgroundColor: 'transparent' }} />
-          </View>
+            </View>
+          </ScrollView>
         </Modal>
 
       </AppContext.Provider>
