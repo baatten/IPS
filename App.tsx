@@ -7,7 +7,7 @@ import SignInScreen from './src/screens/signInScreen'
 import DisabledLocation from './src/screens/DisabledLocation';
 import ActionSheet from "react-native-actions-sheet";
 import { request, check, PERMISSIONS, RESULTS } from 'react-native-permissions';
-import { AppState, View, Text, Linking, Modal, TouchableOpacity, ActivityIndicator, StyleSheet, Platform,Alert, StatusBar,EventSubscription } from 'react-native'
+import { AppState, View, Text, Linking, Modal, TouchableOpacity, ActivityIndicator, StyleSheet, Platform, Alert, StatusBar, EventSubscription } from 'react-native'
 import { Button, CheckBox, Icon as SpecialIcon } from 'react-native-elements'
 import { Tabs } from './src/components/utils/tabs'
 import { NavigationContainer } from '@react-navigation/native';
@@ -56,7 +56,7 @@ export default class App extends React.Component<AppProps, IPSState> {
     super(props)
 
     this.sheetRef = React.createRef<ActionSheet>();
-    
+
 
     this.state = {
 
@@ -73,7 +73,7 @@ export default class App extends React.Component<AppProps, IPSState> {
   componentDidMount() {
 
     this.appStateSubscription = AppState.addEventListener('change', () => this.handleAppStateChange);
-    activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i',logLevel:'verbose' });
+    activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i', logLevel: 'verbose' });
 
     this.start();
   }
@@ -121,7 +121,6 @@ export default class App extends React.Component<AppProps, IPSState> {
       status = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
     else if (Platform.OS == 'android')
       status = await request(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
-    //console.log(status)
 
     if (status == 'granted') {
 
@@ -143,8 +142,6 @@ export default class App extends React.Component<AppProps, IPSState> {
       status = await check(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
     else if (Platform.OS == 'android')
       status = await check(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION);
-
-    //console.log(status)
 
     if (status == 'granted') {
 
@@ -188,6 +185,7 @@ export default class App extends React.Component<AppProps, IPSState> {
         if (info?.accessLevels!['premium']?.isActive) {
           // grant access to premium features
 
+          console.log('test', info.accessLevels)
         }
         else {
 
@@ -263,108 +261,104 @@ export default class App extends React.Component<AppProps, IPSState> {
 
   signIn = async (emailAddress: string, password: string) => {
 
-  
-
     if (emailAddress != null && password != null && await this.checkPermissions()) {
 
-      console.log('sign in')
-      console.log(GLOBALS.BASE_URL + '/api/client/login')
+      //console.log('sign in')
+      //console.log(GLOBALS.BASE_URL + '/api/client/login')
 
-      try{
-      const res = await fetch(GLOBALS.BASE_URL + '/api/client/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username: emailAddress,
-          password: password,
-          release: version,
-          platform: Platform.OS,
-          platformVersion: Platform.Version
+      try {
+        const res = await fetch(GLOBALS.BASE_URL + '/api/client/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: emailAddress,
+            password: password,
+            release: version,
+            platform: Platform.OS,
+            platformVersion: Platform.Version
+          })
         })
-      })
 
-      if (res.status === 200) {
+        if (res.status === 200) {
 
-        const responseData: userModel = await res.json();
+          const responseData: userModel = await res.json();
 
-        console.log('user id', responseData.userId)
-        //console.log('user object', responseData)
+          console.log('user id', responseData.userId)
+          //console.log('user object', responseData)
 
-        if (responseData.done) {
+          if (responseData.done) {
 
-          //this.authContextValue.user = responseData.token as any;
-          this.setState({ user: responseData })
+            //this.authContextValue.user = responseData.token as any;
+            this.setState({ user: responseData })
 
+            await AsyncStorage.setItem('username', emailAddress);
+            await AsyncStorage.setItem('password', password);
 
-
-          await AsyncStorage.setItem('username', emailAddress);
-          await AsyncStorage.setItem('password', password);
-
-          const userIdString = responseData.userId.toString();
-
-          
-
-          if (userIdString !== null && userIdString !== '') {
-
-            try {
-
-              //await activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i',customerUserId:userIdString });
-              //await adapty.profile.logout();
-              //await adapty.profile.identify(userIdString);
+            const userIdString = responseData.userId.toString();
 
 
-              console.log('id:', userIdString)
-              console.log('profile getting ready')
+
+            if (userIdString !== null && userIdString !== '') {
+
+              try {
+
+                //await activateAdapty({ sdkKey: 'public_live_IzA6ISaF.w70tuOGpyeOnvk8By66i',customerUserId:userIdString });
+                //await adapty.profile.logout();
+                //await adapty.profile.identify(userIdString);
+
+
+                //console.log('id:', userIdString)
+                //console.log('profile getting ready')
                 await adapty.profile.identify(userIdString);
-                
-                console.log('profile ready')
 
-                
-      
-              /*
-              */
-
-              
-              const profile = await adapty.profile.update({
-                firstName: responseData.name,
-                lastName: responseData.surname,
-                email: responseData.email
-              });
-            
+                //console.log('profile ready')
 
 
 
-            } catch (error: any) {
-              console.log('Morten testing', error)
+                /*
+                */
+
+
+                const profile = await adapty.profile.update({
+                  firstName: responseData.name,
+                  lastName: responseData.surname,
+                  email: responseData.email
+                });
+
+
+
+
+              } catch (error: any) {
+                console.log('Morten testing', error)
+              }
+
+              this.dispatch({ type: 'SIGNED_IN', token: responseData.token });
+              this.checkSubscriptionStatus();
+
             }
+            else {
+              this.dispatch({ type: 'TO_SIGNIN_PAGE' });
 
-            this.dispatch({ type: 'SIGNED_IN', token: responseData.token });
-            this.checkSubscriptionStatus();
-
+            }
           }
           else {
             this.dispatch({ type: 'TO_SIGNIN_PAGE' });
+            //console.log('sign error')
 
           }
-        }
-        else {
+        } else {
+          //this.setState({loading:false,error:true})
+          //throw new Error(await res.text())
+          //console.log(await res.text());
+          Alert.alert('Error', 'Username or password is wrong.');
+
           this.dispatch({ type: 'TO_SIGNIN_PAGE' });
-          //console.log('sign error')
-
         }
-      } else {
-        //this.setState({loading:false,error:true})
-        //throw new Error(await res.text())
-        //console.log(await res.text());
-        Alert.alert('Error', 'Username or password is wrong.');
 
-        this.dispatch({ type: 'TO_SIGNIN_PAGE' });
+      } catch (error: any) {
+
+        console.log('morten', error)
       }
-
-    }catch(error:any){
-
-      console.log('morten',error)
-    }
 
     } else {
       this.dispatch({ type: 'TO_SIGNIN_PAGE' });
@@ -376,9 +370,9 @@ export default class App extends React.Component<AppProps, IPSState> {
 
   signOut = async () => {
 
-    this.setState({ showSubscriptionWall: false })
+    this.setState({ showSubscriptionWall: false, user: undefined })
 
-    //await adapty.profile.logout();
+    await adapty.profile.logout();
     await AsyncStorage.removeItem('username');
     await AsyncStorage.removeItem('password');
 
@@ -477,8 +471,6 @@ export default class App extends React.Component<AppProps, IPSState> {
     return arr[0];
   };
 
-
-
   render() {
 
     return (
@@ -494,17 +486,17 @@ export default class App extends React.Component<AppProps, IPSState> {
           {this.chooseScreen(this.state.loginState)}
         </NavigationContainer>
         <ActionSheet ref={this.sheetRef} closeOnPressBack={false} closeOnTouchBackdrop={false} bounceOnOpen={true} containerStyle={{ backgroundColor: '#1D7DD7' }}>
-          <ScrollView  keyboardShouldPersistTaps='always' style={{ padding: 50 }}>
+          <ScrollView keyboardShouldPersistTaps='always' style={{ padding: 50 }}>
             <Icon name='street-view' color='white' size={150} style={{ marginTop: 25, textAlign: 'center' }}></Icon>
             <Text style={{ fontWeight: '700', fontSize: 24, alignSelf: 'center', marginTop: 20, color: 'white' }}>Location Services</Text>
             <Text style={{ fontWeight: '300', fontSize: 16, marginTop: 10, color: 'white', alignSelf: 'center', textAlign: 'center' }}>We'll need your current location to show you leads nearby completely automatically and save your time.</Text>
             <Text style={{ fontWeight: '300', fontSize: 16, marginTop: 10, color: 'white', alignSelf: 'center', textAlign: 'center' }}>If you don't enable location access, the app cannot show you leads nearby.</Text>
             <Button onPress={() => this.allowPermissions()} title='Continue' titleStyle={{ color: '#1D7DD7' }} style={{ marginTop: 25 }} buttonStyle={{ backgroundColor: 'white', margin: 0, marginTop: 5, padding: 15, borderRadius: 10 }} />
-            <Button onPress={() => this.sheetRef.current.setModalVisible(false)} title='Not now' type='clear' titleStyle={{ color: 'white' }} style={{ marginTop: 10,marginBottom:50 }} />
+            <Button onPress={() => this.sheetRef.current.setModalVisible(false)} title='Not now' type='clear' titleStyle={{ color: 'white' }} style={{ marginTop: 10, marginBottom: 50 }} />
           </ScrollView>
         </ActionSheet>
         <Modal presentationStyle='pageSheet' visible={this.state.showMissingPermissions} animationType='slide'>
-          <ScrollView  keyboardShouldPersistTaps='always' style={{ backgroundColor: '#1D7DD7', padding: 50, height: '100%', minHeight: '100%' }}>
+          <ScrollView keyboardShouldPersistTaps='always' style={{ backgroundColor: '#1D7DD7', padding: 50, height: '100%', minHeight: '100%' }}>
             <Icon name='street-view' color='white' size={150} style={{ marginTop: 25, textAlign: 'center' }}></Icon>
             <View>
               <Text style={{ fontWeight: '700', fontSize: 24, alignSelf: 'center', marginTop: 20, color: 'white' }}>Location Services</Text>
@@ -523,43 +515,43 @@ export default class App extends React.Component<AppProps, IPSState> {
         </Modal>
 
         <Modal presentationStyle='fullScreen' visible={this.state.showSubscriptionWall} animationType='slide'>
-          <ScrollView  keyboardShouldPersistTaps='always' style={{ backgroundColor: '#f7fafb', padding: 20, height: '100%', minHeight: '100%' }}>
+          <ScrollView keyboardShouldPersistTaps='always' style={{ backgroundColor: '#f7fafb', padding: 20, height: '100%', minHeight: '100%' }}>
             <View style={{ backgroundColor: '#f7fafb', padding: 20, height: '100%', minHeight: '100%', justifyContent: 'center' }}>
-            <View style={{}}>
-              <Text style={{ fontWeight: '700', fontSize: 28, alignSelf: 'center', color: '#2185d0' }}>T65 Locator</Text>
-              <Text style={{ fontWeight: '500', color: '#2185d0', fontSize: 18, marginTop: 10, marginBottom: 25, alignSelf: 'center', textAlign: 'center' }}>Please choose a subscription to continue using T65.</Text>
+              <View style={{}}>
+                <Text style={{ fontWeight: '700', fontSize: 28, alignSelf: 'center', color: '#2185d0' }}>T65 Locator</Text>
+                <Text style={{ fontWeight: '500', color: '#2185d0', fontSize: 18, marginTop: 10, marginBottom: 25, alignSelf: 'center', textAlign: 'center' }}>Please choose a subscription to continue using T65.</Text>
 
-            </View>
-            {this.state.subscriptions != null && this.state.subscriptions.length > 1 ? (
-              this.state.subscriptions.filter(prod => prod.price > 0).map((product: AdaptyProduct) => (
-                <TouchableOpacity key={product.vendorProductId} activeOpacity={1} onPress={() => this.setState({ activeSubscription: product })}>
-                  <View style={(this.state.activeSubscription?.localizedTitle == product.localizedTitle) ? (this.styles.subscriptionSelected) : (this.styles.subscription)}>
-                    <View style={[{ flex: 1, flexDirection: 'column', marginRight: 15, borderRadius: 10, justifyContent: 'center', borderWidth: 1, borderColor: this.state.activeSubscription?.localizedTitle == product.localizedTitle ? 'white' : '#2185d0' }]}>
-                      <SpecialIcon name='calendar-week' type='font-awesome-5' color={this.state.activeSubscription?.localizedTitle == product.localizedTitle ? 'white' : '#2185d0'} />
-                    </View>
-                    <View style={[{ flex: 3, flexDirection: 'column' }]}>
-                      <Text style={{ color: this.state.activeSubscription?.localizedTitle == product.localizedTitle ? 'white' : '#2185d0', fontSize: 17, fontWeight: '600', marginBottom: 2 }}>{product.localizedTitle}</Text>
-                      <Text style={{ color: this.state.activeSubscription?.localizedTitle == product.localizedTitle ? 'white' : '#2185d0', marginBottom: 2 }}>{product.currencyCode} {product.price} / {product.subscriptionPeriod.unit}</Text>
-                      <Text style={{ color: this.state.activeSubscription?.localizedTitle == product.localizedTitle ? 'white' : '#2185d0' }}>{product.localizedDescription}</Text>
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              ))) :
-              (
-                <ActivityIndicator />
-              )}
-
-            <View style={{ flexDirection: 'row', backgroundColor: 'transparent', borderColor: '#2185d0', borderRadius: 5 }}>
-
-              <CheckBox onPress={() => this.setState({ conditionAccepted: !this.state.conditionAccepted })} checked={this.state.conditionAccepted} containerStyle={{ padding: 0, backgroundColor: 'transparent', borderRadius: 5, borderWidth: 0 }} />
-
-              <View style={[{ flexDirection: 'row', marginTop: 6 }]}>
-                <Text style={{ lineHeight: 20 }}>I accept the</Text>
-                <Text onPress={() => this.openLink('https://api.t-65locator.com/TermsofService.pdf')} style={{ marginLeft: 2, marginTop: 2, color: '#2185d0' }}>T65 locator terms of service</Text>
               </View>
-            </View>
-            <Button loading={this.state.subscribeLoading} onPress={() => this.subScribe(this.state.activeSubscription!)} disabled={!this.state.conditionAccepted || this.state.activeSubscription == undefined} title='Buy subscription' containerStyle={{ marginTop: 25 }} buttonStyle={{ paddingVertical: 15, borderRadius: 15 }} titleStyle={{ fontWeight: '600' }} />
-            <Button onPress={() => this.signOut()} title='Sign out' containerStyle={{ marginTop: 5 }} titleStyle={{ color: '#2185d0' }} buttonStyle={{ backgroundColor: 'transparent' }} />
+              {this.state.subscriptions != null && this.state.subscriptions.length > 1 ? (
+                this.state.subscriptions.filter(prod => prod.price > 0).map((product: AdaptyProduct) => (
+                  <TouchableOpacity key={product.vendorProductId} activeOpacity={1} onPress={() => this.setState({ activeSubscription: product })}>
+                    <View style={(this.state.activeSubscription?.localizedTitle == product.localizedTitle) ? (this.styles.subscriptionSelected) : (this.styles.subscription)}>
+                      <View style={[{ flex: 1, flexDirection: 'column', marginRight: 15, borderRadius: 10, justifyContent: 'center', borderWidth: 1, borderColor: this.state.activeSubscription?.localizedTitle == product.localizedTitle ? 'white' : '#2185d0' }]}>
+                        <SpecialIcon name='calendar-week' type='font-awesome-5' color={this.state.activeSubscription?.localizedTitle == product.localizedTitle ? 'white' : '#2185d0'} />
+                      </View>
+                      <View style={[{ flex: 3, flexDirection: 'column' }]}>
+                        <Text style={{ color: this.state.activeSubscription?.localizedTitle == product.localizedTitle ? 'white' : '#2185d0', fontSize: 17, fontWeight: '600', marginBottom: 2 }}>{product.localizedTitle}</Text>
+                        <Text style={{ color: this.state.activeSubscription?.localizedTitle == product.localizedTitle ? 'white' : '#2185d0', marginBottom: 2 }}>{product.currencyCode} {product.price} / {product.subscriptionPeriod.unit}</Text>
+                        <Text style={{ color: this.state.activeSubscription?.localizedTitle == product.localizedTitle ? 'white' : '#2185d0' }}>{product.localizedDescription}</Text>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                ))) :
+                (
+                  <ActivityIndicator />
+                )}
+
+              <View style={{ flexDirection: 'row', backgroundColor: 'transparent', borderColor: '#2185d0', borderRadius: 5 }}>
+
+                <CheckBox onPress={() => this.setState({ conditionAccepted: !this.state.conditionAccepted })} checked={this.state.conditionAccepted} containerStyle={{ padding: 0, backgroundColor: 'transparent', borderRadius: 5, borderWidth: 0 }} />
+
+                <View style={[{ flexDirection: 'row', marginTop: 6 }]}>
+                  <Text style={{ lineHeight: 20 }}>I accept the</Text>
+                  <Text onPress={() => this.openLink('https://api.t-65locator.com/TermsofService.pdf')} style={{ marginLeft: 2, marginTop: 2, color: '#2185d0' }}>T65 locator terms of service</Text>
+                </View>
+              </View>
+              <Button loading={this.state.subscribeLoading} onPress={() => this.subScribe(this.state.activeSubscription!)} disabled={!this.state.conditionAccepted || this.state.activeSubscription == undefined} title='Buy subscription' containerStyle={{ marginTop: 25 }} buttonStyle={{ paddingVertical: 15, borderRadius: 15 }} titleStyle={{ fontWeight: '600' }} />
+              <Button onPress={() => this.signOut()} title='Sign out' containerStyle={{ marginTop: 5 }} titleStyle={{ color: '#2185d0' }} buttonStyle={{ backgroundColor: 'transparent' }} />
             </View>
           </ScrollView>
         </Modal>

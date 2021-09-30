@@ -274,7 +274,7 @@ PODS:
     - React-jsi (= 0.65.1)
     - React-perflogger (= 0.65.1)
   - React-jsinspector (0.65.1)
-  - react-native-adapty (1.1.0):
+  - react-native-adapty (1.1.1):
     - Adapty (= 1.13.2)
     - React
   - react-native-geolocation (2.0.2):
@@ -571,7 +571,7 @@ SPEC CHECKSUMS:
   React-jsi: 12913c841713a15f64eabf5c9ad98592c0ec5940
   React-jsiexecutor: 43f2542aed3c26e42175b339f8d37fe3dd683765
   React-jsinspector: 41e58e5b8e3e0bf061fdf725b03f2144014a8fb0
-  react-native-adapty: 02399328f71abd619804d6bf095a347a60aef4c6
+  react-native-adapty: e79f7f5bfe8649b04b04fdb37cb1e84ced854a3d
   react-native-geolocation: c956aeb136625c23e0dce0467664af2c437888c9
   react-native-geolocation-service: 7c9436da6dfdecd9526c62eac62ea2bc3f0cc8ea
   react-native-maps: 41d01d8e0afcebe32bec9eea3bd945adc1b18f7a
