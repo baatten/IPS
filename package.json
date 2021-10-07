@@ -31,14 +31,14 @@
     "react-native-screens": "^3.7.2",
     "react-native-unimodules": "^0.14.6",
     "react-native-vector-icons": "^8.1.0",
-    "react-native-web": "^0.17.1",
+    "react-native-web": "^0.17.5",
     "react-native-wizard": "^2.1.0",
     "yup": "^0.32.9"
   },
   "devDependencies": {
     "@babel/core": "^7.15.5",
-    "@types/react": "~17.0.20",
-    "@types/react-native": "^0.65.0npm ",
+    "@types/react": "~17.0.27",
+    "@types/react-native": "^0.65.5",
     "@types/react-native-modal-dropdown": "^0.7.1",
     "@types/yup": "^0.29.13",
     "metro-react-native-babel-preset": "^0.66.2",
