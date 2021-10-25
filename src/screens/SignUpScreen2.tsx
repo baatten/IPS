@@ -1,6 +1,6 @@
 import React from 'react';
 import GLOBALS from '../globals';
-import { View, Text, KeyboardAvoidingView, ActivityIndicator, StyleSheet, TouchableOpacity, StatusBar } from 'react-native';
+import { View, Text, KeyboardAvoidingView, ActivityIndicator, StyleSheet, TouchableOpacity, StatusBar, Platform } from 'react-native';
 import { Input, Button, Icon, CheckBox } from 'react-native-elements';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AppContext } from '../components/utils/appContext';
@@ -526,7 +526,7 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
         ]
 
         return (
-            <KeyboardAvoidingView style={{ paddingLeft: 15, paddingRight: 15, backgroundColor: '#f7fafb', flex: 1, flexDirection: 'column', justifyContent: 'center', }} behavior="padding" enabled keyboardVerticalOffset={0}>
+            <KeyboardAvoidingView style={{ paddingLeft: 15, paddingRight: 15, backgroundColor: '#f7fafb', flex: 1, flexDirection: 'column', justifyContent: 'center', }} behavior={Platform.OS == 'android' ? "padding" : 'position'} enabled keyboardVerticalOffset={Platform.OS =='android'? -200:0}>
                 <StatusBar barStyle='dark-content' />
                 <View style={(this.state.currentStep == 1) && ({ marginTop: -80 })}>
                     <Text style={{ color: 'rgba(0,0,0,0.7)', fontSize: 30, fontWeight: '700', textAlign: "center", paddingTop: 50 }}>T65 Locator</Text>

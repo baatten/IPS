@@ -157,36 +157,36 @@ class FilterDropDown extends React.Component<FilterDropDownProps, FilterDropDown
                     </ListItem>
                 )}
 
-                
-                    <>
-                        <ListItem containerStyle={{ backgroundColor: '#eee' }} style={{ height: 5, backgroundColor: 'transparent' }}></ListItem>
 
-                        <ListItem key={0} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(1)}>
-                            <ListItem.Title>1 mile radius</ListItem.Title>
-                            <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 1} />
-                        </ListItem>
-                        <ListItem key={1} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(3)}>
-                            <ListItem.Title>3 miles radius</ListItem.Title>
-                            <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 3} />
-                        </ListItem>
-                        <ListItem key={2} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(5)}>
-                            <ListItem.Title>5 miles radius</ListItem.Title>
-                            <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 5} />
-                        </ListItem>
-                        <ListItem key={3} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(10)}>
-                            <ListItem.Title>10 miles radius</ListItem.Title>
-                            <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 10} />
-                        </ListItem>
-                        <ListItem key={4} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(25)}>
-                            <ListItem.Title>25 miles radius</ListItem.Title>
-                            <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 25} />
-                        </ListItem>
-                        <ListItem key={5} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(50)}>
-                            <ListItem.Title>50 miles radius</ListItem.Title>
-                            <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 50} />
-                        </ListItem>
-                    </>
-                
+                <>
+                    <ListItem containerStyle={{ backgroundColor: '#eee' }} style={{ height: 5, backgroundColor: 'transparent' }}></ListItem>
+
+                    <ListItem key={0} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(1)}>
+                        <ListItem.Title>1 mile radius</ListItem.Title>
+                        <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 1} />
+                    </ListItem>
+                    <ListItem key={1} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(3)}>
+                        <ListItem.Title>3 miles radius</ListItem.Title>
+                        <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 3} />
+                    </ListItem>
+                    <ListItem key={2} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(5)}>
+                        <ListItem.Title>5 miles radius</ListItem.Title>
+                        <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 5} />
+                    </ListItem>
+                    <ListItem key={3} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(10)}>
+                        <ListItem.Title>10 miles radius</ListItem.Title>
+                        <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 10} />
+                    </ListItem>
+                    <ListItem key={4} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(25)}>
+                        <ListItem.Title>25 miles radius</ListItem.Title>
+                        <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 25} />
+                    </ListItem>
+                    <ListItem key={5} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(50)}>
+                        <ListItem.Title>50 miles radius</ListItem.Title>
+                        <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 50} />
+                    </ListItem>
+                </>
+
 
                 <ListItem containerStyle={{ backgroundColor: '#eee' }} style={{ height: 5, backgroundColor: 'transparent' }}></ListItem>
 
@@ -368,11 +368,11 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                         () => this.getLeads());
                 })
             },
-            (error:any) => {
+            (error: any) => {
                 //error
                 console.log(error)
             },
-            {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000});
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 });
 
         //location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
 
@@ -424,7 +424,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
         this.setState({ filterDistance: radius }, () => {
             this.setState({ showRadiusFilter: false })
-            
+
             if (this.state.useCustomLocation)
                 this.getLeadsFromZip(this.state.zipCode!)
             else
@@ -682,6 +682,10 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
     async showLeadData(lead: Lead, index: number) {
 
+
+        Alert.alert('Show lead')
+        console.log('show lead')
+
         this.setState({ activeLead: lead, activeIndex: index }, () => {
 
             this.saveleadinteraction(lead, index);
@@ -886,9 +890,13 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
                             <MapView loadingEnabled ref={this.mapRef} showsMyLocationButton={true} onUserLocationChange={(e) => this.userLocationChanged(e)} initialRegion={{ latitude: this.state.currentLocation.latitude, longitude: this.state.currentLocation.longitude, latitudeDelta: 0.5, longitudeDelta: 0.5 }} style={StyleSheet.absoluteFill} showsUserLocation={true}>
                                 {this.state.leads.map((lead: Lead, index: any) => (
-                                    <Marker identifier={lead.id?.toString()} key={index}
+                                    <Marker
+                                      draggable={false}
+                                        key={index}
                                         pinColor={this.getPinColorForLead(lead)}
-                                        onPress={() => this.showLeadData(lead, index)} coordinate={lead.marker!.coordinate} />
+                                        onPress={() => this.showLeadData(lead, index)}
+                                        coordinate={lead.marker!.coordinate}
+                                    />
                                 ))}
                             </MapView>
                         </View>
