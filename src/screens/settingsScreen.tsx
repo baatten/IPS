@@ -300,7 +300,7 @@ export class SettingsScreen extends React.Component<SettingsProps, settingsState
                                         newPassConfirm: Yup.string()
                                             .min(1, 'Minimum 6 characters')
                                             .required('Required')
-                                            .test('passwords-match', 'Passwords must match ya fool', function (value) {
+                                            .test('passwords-match', 'Passwords must match!', function (value) {
                                                 return this.parent.newPassword === value;
                                             }),
                                     })}>
