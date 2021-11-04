@@ -6,7 +6,7 @@ import { StackNavigationProp, createStackNavigator } from '@react-navigation/sta
 import MapView, { Marker, EventUserLocation } from 'react-native-maps';
 import ActionSheet from "react-native-actions-sheet";
 import openMap from 'react-native-open-maps';
-import type { Camera, LatLng } from 'react-native-maps';
+import type { Camera } from 'react-native-maps';
 import Popover, { PopoverPlacement } from 'react-native-popover-view';
 //import * as Location from 'expo-location'
 //import Geolocation from '@react-native-community/geolocation';
@@ -359,6 +359,8 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
         Geolocation.getCurrentPosition(
             (response) => {
+
+                console.log(response)
                 //success
                 this.setState({ filterDistance: radius }, () => {
 
@@ -384,6 +386,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         this.props.navigation.setOptions({
             headerShown: true,
             headerTitle: () => <LogoTitle activeView={this.state.activeView} updateView={this.changeView} />,
+            headerTitleAlign: 'center',
             headerTintColor: '#fff',
             headerStyle: { backgroundColor: '#2185d0' },
             headerRight: () => <TouchableOpacity ref={this.filterPopover} onPressIn={() => this.setState({ showRadiusFilter: true })} style={{ marginRight: 10, backgroundColor: 'transparent' }} >
@@ -538,7 +541,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
                     if (data) {
 
-           
+                        //console.log(data.leads[0])
                         const leads = this.sortLeads(data.leads, this.state.leadSortingType, this.state.leadSortingDirection)
 
                         this.setState({ leads: leads }, () => {
@@ -584,7 +587,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
                 if (data) {
 
-
+                    //console.log(data.leads[0])
                     const leads = this.sortLeads(data.leads, this.state.leadSortingType, this.state.leadSortingDirection)
 
                     this.setState({ leads: leads }, () => {
@@ -610,53 +613,22 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
     animateViewToMarkers() {
 
-        console.log('animate')
-
         if (this != null && this.state.leads.length > 0) {
 
 
-            const markerIds: string[] = this.state.leads.filter(lead => lead.id != null).map((lead: Lead) => {
 
-                return lead!.id!.toString();
-            })
+            //const markerIds: string[] = this.state.leads.map((lead: Lead) => {
 
-            const corrdinates: LatLng[] = this.state.leads.map((lead: Lead) => {
+            //         return lead.id!.toString();
+            // })
 
-                return { latitude: lead.latitude, longitude: lead.longitude };
-            })
-
-
-            console.log(this.mapRef.current.fitToCoordinates(corrdinates));
-            /*
             if (this.state.activeView == 0)
-                this.mapRef.fitToCoordinates(corrdinates,
-                    {
-                        edgePadding:
-                        {
-                            top: 50,
-                            right: 50,
-                            bottom: 50,
-                            left: 50
-                        }
-                    },
-                    true);
 
-                    */
-            
-            if (this.state.activeView == 0)
-                this.mapRef.current.fitToSuppliedMarkers(
-                    markerIds,
-                    {
-                        edgePadding:
-                        {
-                            top: 50,
-                            right: 50,
-                            bottom: 50,
-                            left: 50
-                        }
-                    }
-                );
-                
+                //console.log(markerIds[0])
+                //console.log(this.mapRef.current.getCamera())
+                //this.mapRef.current.fitToSuppliedMarkers(markerIds);
+                this.mapRef.current.fitToElements();
+
 
         }
     }
@@ -719,6 +691,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
             this.saveleadinteraction(lead, index);
             this.sheetRef.current.setModalVisible()
+
         })
 
         if (this.state.activeView == 0) {
@@ -764,9 +737,9 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
             /*
             setTimeout(function () {
-     
+    
                 //self.sheetRef.current?.setModalVisible(true);
-     
+    
             }, 200);
             */
         })
@@ -916,13 +889,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                     months={this.state.filterMonths} />
                             </Popover>
 
-                            <MapView loadingEnabled
-                             ref={this.mapRef} 
-                        
-                             onRegionChange={() => 'changed'}
-                             onLayout={() => console.log('test')}
-                        
-                             showsMyLocationButton={true} onUserLocationChange={(e) => this.userLocationChanged(e)} initialRegion={{ latitude: this.state.currentLocation.latitude, longitude: this.state.currentLocation.longitude, latitudeDelta: 0.5, longitudeDelta: 0.5 }} style={StyleSheet.absoluteFill} showsUserLocation={true}>
+                            <MapView loadingEnabled ref={this.mapRef} showsMyLocationButton={true} onUserLocationChange={(e) => this.userLocationChanged(e)} initialRegion={{ latitude: this.state.currentLocation.latitude, longitude: this.state.currentLocation.longitude, latitudeDelta: 0.5, longitudeDelta: 0.5 }} style={StyleSheet.absoluteFill} showsUserLocation={true}>
                                 {this.state.leads.map((lead: Lead, index: any) => (
                                     <Marker
                                         draggable={false}
@@ -930,7 +897,6 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                         pinColor={this.getPinColorForLead(lead)}
                                         onPress={() => this.showLeadData(lead, index)}
                                         coordinate={lead.marker!.coordinate}
-                                        
                                     />
                                 ))}
                             </MapView>

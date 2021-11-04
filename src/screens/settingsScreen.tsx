@@ -52,6 +52,7 @@ export class SettingsScreen extends React.Component<SettingsProps, settingsState
         this.props.navigation.setOptions({
             headerShown: true,
             headerTintColor: '#fff',
+            headerTitleAlign:'center',
             headerStyle: { backgroundColor: '#2185d0' },
             headerLeft: () => (
                 <Button title='Sign out' onPress={() => this.signout()} style={{ paddingLeft: 5 }} type='clear' titleStyle={{ color: 'white' }} />
