@@ -1,6 +1,6 @@
 import React from 'react';
 import { validateAll } from 'indicative/validator';
-import { View, Text, KeyboardAvoidingView, ImageBackground, Modal, Alert } from 'react-native';
+import { View, Text, KeyboardAvoidingView, ImageBackground, Modal, Alert,Platform } from 'react-native';
 import { Input, Button, Icon } from 'react-native-elements';
 import { AppContext } from '../components/utils/appContext';
 import ActionSheet from "react-native-actions-sheet";
@@ -185,7 +185,7 @@ export default class SignInScreen extends React.Component<any, SignInScreenState
         return (
             <View style={{ flex: 1 }}>
                 <ImageBackground source={require('../../assets/splash.png')} style={{ flex: 1, alignSelf: 'stretch' }}>
-                    <KeyboardAvoidingView style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', }} behavior="padding" enabled keyboardVerticalOffset={0}>
+                    <KeyboardAvoidingView style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', }} behavior={Platform.OS === "ios" ? "padding" : "height"} keyboardVerticalOffset={Platform.OS === "ios" ? 0 : -400} enabled >
                         <View style={{ padding: 25 }}>
                             <Text style={{ color: 'white', fontSize: 30, fontWeight: '700', textAlign: "center", paddingBottom: 10 }}>T65 Locator</Text>
                             <Text style={{ color: 'white', fontSize: 16, fontWeight: '300', textAlign: "center", paddingBottom: 25, lineHeight: 24 }}>We pride ourselves on our thorough and friendly support. We work in the trenches with agents like you to help make your jobs easier and more financially rewarding.</Text>

@@ -67,7 +67,7 @@ type FilterDropDownProps = {
     sortingDirection: number,
     updateView: (radius: number) => void,
     updateSorting: (sortingType: string) => void
-    setCustomLocation: (zipCode: number) => void
+    setCustomLocation: (zipCode: string) => void
     useMyLocation: () => void
 }
 type FilterDropDownState = { radius: number, useCustomLocation: boolean, zipCode?: string, }
@@ -105,7 +105,7 @@ class FilterDropDown extends React.Component<FilterDropDownProps, FilterDropDown
 
     setCustomLocation() {
 
-        this.props.setCustomLocation(Number.parseInt(this.state.zipCode!))
+        this.props.setCustomLocation(this.state.zipCode!)
     }
 
     render() {
@@ -293,7 +293,7 @@ type HomeState = {
     leadSortingDirection: number,
     showLocationUpdated: boolean,
     useCustomLocation: boolean,
-    zipCode?: number
+    zipCode?: string
 }
 
 export class HomeScreen extends React.Component<HomeProps, HomeState> {
@@ -563,7 +563,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         }
     }
 
-    async getLeadsFromZip(zipcode: number) {
+    async getLeadsFromZip(zipcode: string) {
 
         this.setState({ isLoading: true, showLocationUpdated: false, useCustomLocation: true, zipCode: zipcode })
 
@@ -842,7 +842,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         }
     }
 
-    async setCustomLocation(zipCode: number) {
+    async setCustomLocation(zipCode: string) {
 
         this.setState({ showRadiusFilter: false, useCustomLocation: true, zipCode: zipCode });
         this.getLeadsFromZip(zipCode);
@@ -873,7 +873,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                     sortingType={this.state.leadSortingType}
                                     sortingDirection={this.state.leadSortingDirection}
                                     radius={this.state.filterDistance}
-                                    setCustomLocation={(zipCode: number) => this.setCustomLocation(zipCode)}
+                                    setCustomLocation={(zipCode: string) => this.setCustomLocation(zipCode)}
                                     updateView={(radius: number) => this.changeFilterDistance(radius)}
                                     useCustomLocation={this.state.useCustomLocation}
                                     zipCode={this.state.zipCode?.toString()}
@@ -1007,7 +1007,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                             useCustomLocation={this.state.useCustomLocation}
                             zipCode={this.state.zipCode?.toString()}
                             updateView={(radius: number) => this.changeFilterDistance(radius)}
-                            setCustomLocation={(zipCode: number) => this.setCustomLocation(zipCode)}
+                            setCustomLocation={(zipCode: string) => this.setCustomLocation(zipCode)}
                             useMyLocation={() => this.setState({ useCustomLocation: false, showRadiusFilter: false }, () => this.getLeads())}
 
                         />
