@@ -26,6 +26,10 @@
   "android": {
     "versionCode": 38,
     "package": "com.t65locator.t65",
+    "adaptiveIcon": {
+      "foregroundImage": "./assets/iconForeground.png",
+      "backgroundImage": "./assets/iconbackground.png"
+    },
     "permissions": [
       "ACCESS_COARSE_LOCATION",
       "ACCESS_FINE_LOCATION, BILLING"
