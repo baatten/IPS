@@ -52,6 +52,7 @@ export class SettingsScreen extends React.Component<SettingsProps, settingsState
         this.props.navigation.setOptions({
             headerShown: true,
             headerTintColor: '#fff',
+            headerTitleAlign:'center',
             headerStyle: { backgroundColor: '#2185d0' },
             headerLeft: () => (
                 <Button title='Sign out' onPress={() => this.signout()} style={{ paddingLeft: 5 }} type='clear' titleStyle={{ color: 'white' }} />
@@ -300,7 +301,7 @@ export class SettingsScreen extends React.Component<SettingsProps, settingsState
                                         newPassConfirm: Yup.string()
                                             .min(1, 'Minimum 6 characters')
                                             .required('Required')
-                                            .test('passwords-match', 'Passwords must match ya fool', function (value) {
+                                            .test('passwords-match', 'Passwords must match!', function (value) {
                                                 return this.parent.newPassword === value;
                                             }),
                                     })}>

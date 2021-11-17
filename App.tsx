@@ -516,10 +516,10 @@ export default class App extends React.Component<AppProps, IPSState> {
 
         <Modal presentationStyle='fullScreen' visible={this.state.showSubscriptionWall} animationType='slide'>
           <ScrollView keyboardShouldPersistTaps='always' style={{ backgroundColor: '#f7fafb', padding: 20, height: '100%', minHeight: '100%' }}>
-            <View style={{ backgroundColor: '#f7fafb', padding: 20, height: '100%', minHeight: '100%', justifyContent: 'center' }}>
+            <View style={{ backgroundColor: '#f7fafb', padding: 20, justifyContent: 'center' }}>
               <View style={{}}>
                 <Text style={{ fontWeight: '700', fontSize: 28, alignSelf: 'center', color: '#2185d0' }}>T65 Locator</Text>
-                <Text style={{ fontWeight: '500', color: '#2185d0', fontSize: 18, marginTop: 10, marginBottom: 25, alignSelf: 'center', textAlign: 'center' }}>Please choose a subscription to continue using T65.</Text>
+                <Text style={{  color: '#606060', fontSize: 16, marginTop: 10, marginBottom: 25, alignSelf: 'center', textAlign: 'center' }}>Please choose a subscription to continue using T65.</Text>
 
               </View>
               {this.state.subscriptions != null && this.state.subscriptions.length > 1 ? (

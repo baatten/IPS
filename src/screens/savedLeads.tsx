@@ -46,6 +46,7 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
             headerShown: true,
             headerTitle: 'Saved Leads',
             headerTintColor: '#fff',
+            headerTitleAlign:'center',
             headerStyle: { backgroundColor: '#2185d0' }
         })
 

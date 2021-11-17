@@ -67,7 +67,7 @@ type FilterDropDownProps = {
     sortingDirection: number,
     updateView: (radius: number) => void,
     updateSorting: (sortingType: string) => void
-    setCustomLocation: (zipCode: number) => void
+    setCustomLocation: (zipCode: string) => void
     useMyLocation: () => void
 }
 type FilterDropDownState = { radius: number, useCustomLocation: boolean, zipCode?: string, }
@@ -105,7 +105,7 @@ class FilterDropDown extends React.Component<FilterDropDownProps, FilterDropDown
 
     setCustomLocation() {
 
-        this.props.setCustomLocation(Number.parseInt(this.state.zipCode!))
+        this.props.setCustomLocation(this.state.zipCode!)
     }
 
     render() {
@@ -293,7 +293,7 @@ type HomeState = {
     leadSortingDirection: number,
     showLocationUpdated: boolean,
     useCustomLocation: boolean,
-    zipCode?: number
+    zipCode?: string
 }
 
 export class HomeScreen extends React.Component<HomeProps, HomeState> {
@@ -386,6 +386,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         this.props.navigation.setOptions({
             headerShown: true,
             headerTitle: () => <LogoTitle activeView={this.state.activeView} updateView={this.changeView} />,
+            headerTitleAlign: 'center',
             headerTintColor: '#fff',
             headerStyle: { backgroundColor: '#2185d0' },
             headerRight: () => <TouchableOpacity ref={this.filterPopover} onPressIn={() => this.setState({ showRadiusFilter: true })} style={{ marginRight: 10, backgroundColor: 'transparent' }} >
@@ -562,7 +563,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         }
     }
 
-    async getLeadsFromZip(zipcode: number) {
+    async getLeadsFromZip(zipcode: string) {
 
         this.setState({ isLoading: true, showLocationUpdated: false, useCustomLocation: true, zipCode: zipcode })
 
@@ -615,16 +616,20 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         if (this != null && this.state.leads.length > 0) {
 
 
-            const markerIds: string[] = this.state.leads.map((lead: Lead) => {
 
-                if (lead.id != null)
-                    return lead.id.toString();
-                else
-                    return ''
-            })
+            //const markerIds: string[] = this.state.leads.map((lead: Lead) => {
+
+            //         return lead.id!.toString();
+            // })
 
             if (this.state.activeView == 0)
-                this.mapRef.current.fitToSuppliedMarkers(markerIds);
+
+                //console.log(markerIds[0])
+                //console.log(this.mapRef.current.getCamera())
+                //this.mapRef.current.fitToSuppliedMarkers(markerIds);
+                this.mapRef.current.fitToElements();
+
+
         }
     }
 
@@ -681,10 +686,6 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
     }
 
     async showLeadData(lead: Lead, index: number) {
-
-
-        Alert.alert('Show lead')
-        console.log('show lead')
 
         this.setState({ activeLead: lead, activeIndex: index }, () => {
 
@@ -841,7 +842,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         }
     }
 
-    async setCustomLocation(zipCode: number) {
+    async setCustomLocation(zipCode: string) {
 
         this.setState({ showRadiusFilter: false, useCustomLocation: true, zipCode: zipCode });
         this.getLeadsFromZip(zipCode);
@@ -872,7 +873,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                     sortingType={this.state.leadSortingType}
                                     sortingDirection={this.state.leadSortingDirection}
                                     radius={this.state.filterDistance}
-                                    setCustomLocation={(zipCode: number) => this.setCustomLocation(zipCode)}
+                                    setCustomLocation={(zipCode: string) => this.setCustomLocation(zipCode)}
                                     updateView={(radius: number) => this.changeFilterDistance(radius)}
                                     useCustomLocation={this.state.useCustomLocation}
                                     zipCode={this.state.zipCode?.toString()}
@@ -891,7 +892,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                             <MapView loadingEnabled ref={this.mapRef} showsMyLocationButton={true} onUserLocationChange={(e) => this.userLocationChanged(e)} initialRegion={{ latitude: this.state.currentLocation.latitude, longitude: this.state.currentLocation.longitude, latitudeDelta: 0.5, longitudeDelta: 0.5 }} style={StyleSheet.absoluteFill} showsUserLocation={true}>
                                 {this.state.leads.map((lead: Lead, index: any) => (
                                     <Marker
-                                      draggable={false}
+                                        draggable={false}
                                         key={index}
                                         pinColor={this.getPinColorForLead(lead)}
                                         onPress={() => this.showLeadData(lead, index)}
@@ -1006,7 +1007,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                             useCustomLocation={this.state.useCustomLocation}
                             zipCode={this.state.zipCode?.toString()}
                             updateView={(radius: number) => this.changeFilterDistance(radius)}
-                            setCustomLocation={(zipCode: number) => this.setCustomLocation(zipCode)}
+                            setCustomLocation={(zipCode: string) => this.setCustomLocation(zipCode)}
                             useMyLocation={() => this.setState({ useCustomLocation: false, showRadiusFilter: false }, () => this.getLeads())}
 
                         />
