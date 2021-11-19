@@ -3,7 +3,7 @@ import { StyleSheet, View, ScrollView, Text, Linking, TouchableOpacity, Keyboard
 import { ButtonGroup, ListItem, Icon, Input, Divider, Button } from 'react-native-elements';
 import GLOBALS from '../globals';
 import { StackNavigationProp, createStackNavigator } from '@react-navigation/stack';
-import MapView, { Marker, EventUserLocation } from 'react-native-maps';
+import MapView, { Marker, EventUserLocation, LatLng } from 'react-native-maps';
 import ActionSheet from "react-native-actions-sheet";
 import openMap from 'react-native-open-maps';
 import type { Camera } from 'react-native-maps';
@@ -622,14 +622,38 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
             //         return lead.id!.toString();
             // })
 
+            /*
+            const coordinates: LatLng[] = this.state.leads.map((lead: Lead) => {
+
+                return { latitude: lead.latitude, longitude: lead.longitude };
+            })
+            */
+
             if (this.state.activeView == 0)
+
+                /*
+                    this.mapRef.current.fitToCoordinates(coordinates, {
+                        edgePadding: {
+                            bottom: 50,
+                            left: 50,
+                            right: 50,
+                            top: 50,
+                        },
+                    })
+                    */
 
                 //console.log(markerIds[0])
                 //console.log(this.mapRef.current.getCamera())
                 //this.mapRef.current.fitToSuppliedMarkers(markerIds);
-                this.mapRef.current.fitToElements();
 
-
+                this.mapRef.current.fitToElements({
+                    edgePadding: {
+                        bottom: 50,
+                        left: 50,
+                        right: 50,
+                        top: 50,
+                    },
+                });
         }
     }
 
@@ -737,9 +761,9 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
             /*
             setTimeout(function () {
-    
+     
                 //self.sheetRef.current?.setModalVisible(true);
-    
+     
             }, 200);
             */
         })
