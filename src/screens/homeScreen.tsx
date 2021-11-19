@@ -5,7 +5,6 @@ import GLOBALS from '../globals';
 import { StackNavigationProp, createStackNavigator } from '@react-navigation/stack';
 import MapView, { Marker, EventUserLocation } from 'react-native-maps';
 import ActionSheet from "react-native-actions-sheet";
-import openMap from 'react-native-open-maps';
 import type { Camera } from 'react-native-maps';
 import Popover, { PopoverPlacement } from 'react-native-popover-view';
 //import * as Location from 'expo-location'
@@ -13,6 +12,7 @@ import Popover, { PopoverPlacement } from 'react-native-popover-view';
 import Geolocation from 'react-native-geolocation-service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Lead } from '../lib/types'
+import { LeadPopUp } from '../components/general/leadPopup';
 
 type Location = {
     accuracy?: number,
@@ -282,7 +282,6 @@ type HomeState = {
     activeLead?: Lead,
     activeIndex?: number,
     savingLead: boolean,
-    activeLeadNotes?: string,
     filterDistance: number
     activeView: number
     currentLocation?: Location,
@@ -493,22 +492,6 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
     changeView = (viewIndex: number) => {
 
         this.setState({ activeView: viewIndex }, () => { if (viewIndex == 0) this.animateViewToMarkers() });
-    }
-
-    async startNavigation(address: string, lead: Lead, index: number) {
-
-        this.saveleadinteraction(lead, index, 'navigation');
-
-        openMap({ travelType: 'drive', end: address, provider: 'apple' });
-    }
-
-    async startCall() {
-
-        this.setState({ isLoading: true })
-
-        this.saveleadinteraction(this.state.activeLead!, this.state.activeIndex!, 'call');
-
-        Linking.openURL(`tel:${this.state.activeLead?.phone}`)
     }
 
     async getLeads() {
@@ -745,16 +728,16 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         })
     }
 
-    saveLead() {
+    saveLead(text: string) {
 
         const lead = this.state.activeLead;
 
         if (lead!.leadinteraction!.length > 0) {
-            lead!.leadinteraction![0].notes = this.state.activeLeadNotes;
+            lead!.leadinteraction![0].notes = text;
             lead!.leadinteraction![0].saved = true;
         }
         else
-            lead!.leadinteraction = [{ id: 0, action: 'seen', leadId: lead!.id!, notes: this.state.activeLeadNotes, saved: true }]
+            lead!.leadinteraction = [{ id: 0, action: 'seen', leadId: lead!.id!, notes: text, saved: true }]
 
         this.saveleadinteraction(lead!, this.state.activeIndex!);
 
@@ -783,7 +766,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         this.setState({ leads: leads, isLoading: false, activeLead: undefined, activeIndex: undefined, activeLeadNotes: undefined });
     }
 
-    monthsToAge65(date: Date) {
+    monthsToAge65(date: Date): string {
 
         const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -903,95 +886,18 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                         </View>
                     )}
                     <ActionSheet ref={this.sheetRef} bounceOnOpen={true} onClose={() => this.closeLeadData()}>
-                        <View style={{
-                            borderTopStartRadius: 0, borderTopRightRadius: 0, padding: 20, backgroundColor: 'white',
-                            shadowColor: 'black', shadowOpacity: 0.15, shadowRadius: 5, shadowOffset: { width: 5, height: 50 }
-                        }}>
-                            <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
-                                <View style={[{ flex: 4, flexDirection: 'column' }]}>
-                                    <Text style={styles.titleText}>{this.state.activeLead?.firstname} {this.state.activeLead?.lastname}</Text>
-                                    <Text style={{ fontSize: 16, color: 'gray', marginTop: 1 }}>{(Math.round((this.state.activeLead?.distance || 0) * 10) / 10)} miles away</Text>
-                                    <Text style={{ fontSize: 18, fontWeight: '600', marginTop: 10 }}>Address</Text>
-                                    <Text style={{ fontSize: 16, color: 'gray', marginTop: 5 }}>{this.state.activeLead?.address}</Text>
-                                    <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.city}</Text>
-                                    <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.zipcode} {this.state.activeLead?.county}</Text>
-                                </View>
-                                <View style={[{ flex: 1, flexDirection: 'column', borderWidth: 1, borderColor: '#2185d0', borderRadius: 10, padding: 10 }]}>
-                                    <Text style={{ textAlign: 'center', color: '#2185d0', fontSize: 13 }}>{this.monthsToAge65(new Date(this.state.activeLead?.dobdate || ''))}</Text>
-                                </View>
-                            </View>
-
-                            {(this.state.activeLead?.leadinteraction != null && this.state.activeLead?.leadinteraction.length > 0 && this.state.activeLead.leadinteraction[0]?.notes != null) && (
-                                <View>
-                                    <Text style={{ fontSize: 18, fontWeight: '600', marginTop: 10 }}>Notes</Text>
-                                    <Text style={{ fontSize: 16, color: 'grey', marginTop: 5 }}>{this.state.activeLead.leadinteraction[0].notes}</Text>
-                                </View>
-                            )}
-
-                            <View style={[{ flexDirection: 'row', alignItems: 'center', marginTop: 20, marginBottom: 20 }]}>
-                                <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: '#2185d0', borderRadius: 10, padding: 15, marginRight: 5 }]} onPress={() => this.startNavigation(this.state.activeLead!.address + ' ' +
-                                    this.state.activeLead!.city + ' ' +
-                                    this.state.activeLead!.county + ' ' +
-                                    this.state.activeLead!.state, this.state.activeLead!, this.state.activeIndex!
-                                )}>
-                                    <Icon name="car" type='font-awesome' color='white' />
-                                    <Text style={{ color: 'white', marginTop: 5, fontSize: 10 }}>Navigation</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: '#2185d0', borderRadius: 10, padding: 15, marginLeft: 5, marginRight: 5 }]} onPress={() => this.startCall()}>
-                                    <Icon name="phone" type='font-awesome' color='white' />
-                                    <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Call</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: this.leadIsSaved() ? ('grey') : ('#2185d0'), borderRadius: 10, padding: 15, marginLeft: 5 }]}
-                                    onPress={this.leadIsSaved() ? () => this.removeSavedLead() : () => this.openDetails()
-                                    }>
-                                    <Icon name={this.leadIsSaved() ? ('check') : ('plus')} type='font-awesome' color='white' />
-                                    <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Save{this.leadIsSaved() && (<>d</>)}</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <Text style={{ color: 'grey', fontSize: 15, textAlign: 'center', marginBottom: 10 }}>Built by <Text onPress={() => Linking.openURL('http://www.orbusmarketing.com')} style={{ color: '#2185d0', fontSize: 15, padding: 0, margin: 0 }}>T65 Locator</Text></Text>
-                        </View>
-
+                        <LeadPopUp
+                            activeIndex={this.state.activeIndex}
+                            leadIsSaved={this.leadIsSaved}
+                            monthsToAge65={this.monthsToAge65}
+                            openDetails={this.openDetails}
+                            removeSavedLead={this.removeSavedLead}
+                            saveleadinteraction={this.saveleadinteraction}
+                            activeLead={this.state.activeLead}
+                        />
                     </ActionSheet>
                     <ActionSheet keyboardShouldPersistTaps='always' ref={this.saveLeadSheetRef} bounceOnOpen={true} onClose={() => this.setState({ savingLead: false, activeLead: undefined })}>
-                        <View style={{ borderTopStartRadius: 0, borderTopRightRadius: 0, backgroundColor: 'white', shadowColor: 'black', shadowOpacity: 0.15, shadowRadius: 5, shadowOffset: { width: 5, height: 50 } }}>
 
-                            <View style={[{ flexDirection: 'row', padding: 20, }]}>
-                                <View style={{ flexDirection: 'column' }}>
-                                    <Icon name="user" type='font-awesome' color='white' backgroundColor='#2185d0' style={{ padding: 10, borderRadius: 10 }} />
-                                </View>
-                                <View style={{ flexDirection: 'column', marginLeft: 10 }}>
-                                    <Text style={styles.titleText}>{this.state.activeLead?.firstname} {this.state.activeLead?.lastname}</Text>
-                                    <Text style={{ fontSize: 16, color: 'gray', marginTop: 5 }}>{this.state.activeLead?.address}</Text>
-
-                                    <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.zipcode} {this.state.activeLead?.county}</Text>
-                                </View>
-                            </View>
-
-                            <Divider />
-
-                            <View style={{ padding: 10 }}>
-                                <Text style={{ fontSize: 18, fontWeight: '600', margin: 10 }}>Add notes to remind yourself of this lead</Text>
-                                <Input value={this.state.activeLeadNotes} onChange={(e) => this.setState({ activeLeadNotes: e.nativeEvent.text })}
-                                    style={{ borderWidth: 0 }}
-                                    inputContainerStyle={{ borderBottomWidth: 0 }}
-                                    inputStyle={{ margin: 0, padding: 0, height: 150, borderWidth: 0 }}
-                                    numberOfLines={10} multiline={true} placeholder='Add your notes here'></Input>
-                            </View>
-
-                            <KeyboardAvoidingView behavior='padding' keyboardVerticalOffset={220} style={[{}]}>
-                                <Divider />
-                                <View style={{ flexDirection: 'row', paddingBottom: 30, paddingLeft: 20, paddingRight: 20, paddingTop: 10 }}>
-                                    <TouchableOpacity style={[{ flex: 1, flexDirection: 'column' }]} onPress={() => this.cancelSaveDetails()}>
-                                        <Text style={{ color: 'grey', marginTop: 5, fontSize: 16 }}>Cancel</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'flex-end' }]} onPress={() => this.saveLead()}>
-                                        <Text style={{ color: '#2185d0', marginTop: 5, fontSize: 16 }}>Save</Text>
-                                    </TouchableOpacity>
-
-
-                                </View>
-                            </KeyboardAvoidingView>
-                        </View>
                     </ActionSheet>
                 </View>);
         }
@@ -1033,125 +939,31 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                             </View>
                         </View>
                     )}
-                    <>
 
-                        <FlatList keyboardShouldPersistTaps='always'
-                            data={this.state.leads.map(x => ({ lead: x }))}
-                            keyExtractor={item => item.lead.id!.toString()}
-                            renderItem={({ item, index }: { item: { lead: Lead }, index: number }) => {
-                                return (
-                                    <ListItem key={index} bottomDivider onPress={() => this.showLeadData(item.lead, index)} >
-                                        <ListItem.Content>
-                                            <ListItem.Title style={{ fontWeight: '600', color: this.getPinColorForLead(item.lead) }}>
-                                                {item.lead.firstname} {item.lead.lastname}
-                                            </ListItem.Title>
-                                            <ListItem.Subtitle style={{ color: 'grey' }}>{item.lead.address}, {item.lead.city}</ListItem.Subtitle>
-                                        </ListItem.Content>
-                                        <ListItem.Subtitle style={{ textAlign: 'center' }}>
-                                            <Text>
-                                                {this.monthsToAge65(new Date(item.lead.dobdate || '')) + "\n"}
-                                            </Text>
-                                            <Text style={{ color: 'grey' }}>
-                                                {Math.round(item.lead.distance * 10) / 10 + ' mi. away'}
-                                            </Text>
-                                        </ListItem.Subtitle>
-                                    </ListItem>
-                                );
-                            }}
-                        />
-
-                        <ActionSheet ref={this.sheetRef} bounceOnOpen={true} onClose={() => this.closeLeadData()}>
-                            <View style={{
-                                borderTopStartRadius: 0, borderTopRightRadius: 0, padding: 20, backgroundColor: 'white',
-                                shadowColor: 'black', shadowOpacity: 0.15, shadowRadius: 5, shadowOffset: { width: 5, height: 50 }
-                            }}>
-                                <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
-                                    <View style={[{ flex: 4, flexDirection: 'column' }]}>
-                                        <Text style={styles.titleText}>{this.state.activeLead?.firstname} {this.state.activeLead?.lastname}</Text>
-                                        <Text style={{ fontSize: 16, color: 'gray', marginTop: 1 }}>{(Math.round((this.state.activeLead?.distance || 0) * 10) / 10)} miles away</Text>
-                                        <Text style={{ fontSize: 18, fontWeight: '600', marginTop: 10 }}>Address</Text>
-                                        <Text style={{ fontSize: 16, color: 'gray', marginTop: 5 }}>{this.state.activeLead?.address}</Text>
-                                        <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.city}</Text>
-                                        <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.zipcode} {this.state.activeLead?.county}</Text>
-                                    </View>
-                                    <View style={[{ flex: 1, flexDirection: 'column', borderWidth: 1, borderColor: '#2185d0', borderRadius: 10, padding: 10 }]}>
-                                        <Text style={{ textAlign: 'center', color: '#2185d0', fontSize: 13 }}>{this.monthsToAge65(new Date(this.state.activeLead?.dobdate || ''))}</Text>
-                                    </View>
-                                </View>
-
-                                {(this.state.activeLead?.leadinteraction != null && this.state.activeLead?.leadinteraction.length > 0 && this.state.activeLead.leadinteraction[0]?.notes != null) && (
-                                    <View>
-                                        <Text style={{ fontSize: 18, fontWeight: '600', marginTop: 10 }}>Notes</Text>
-                                        <Text style={{ fontSize: 16, color: 'grey', marginTop: 5 }}>{this.state.activeLead.leadinteraction[0].notes}</Text>
-                                    </View>
-                                )}
-
-                                <View style={[{ flexDirection: 'row', alignItems: 'center', marginTop: 20, marginBottom: 20 }]}>
-                                    <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: '#2185d0', borderRadius: 10, padding: 15, marginRight: 5 }]} onPress={() => this.startNavigation(this.state.activeLead!.address + ' ' +
-                                        this.state.activeLead!.city + ' ' +
-                                        this.state.activeLead!.county + ' ' +
-                                        this.state.activeLead!.state, this.state.activeLead!, this.state.activeIndex!
-                                    )}>
-                                        <Icon name="car" type='font-awesome' color='white' />
-                                        <Text style={{ color: 'white', marginTop: 5, fontSize: 10 }}>Navigation</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: '#2185d0', borderRadius: 10, padding: 15, marginLeft: 5, marginRight: 5 }]} onPress={() => this.startCall()}>
-                                        <Icon name="phone" type='font-awesome' color='white' />
-                                        <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Call</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: this.leadIsSaved() ? ('grey') : ('#2185d0'), borderRadius: 10, padding: 15, marginLeft: 5 }]}
-                                        onPress={this.leadIsSaved() ? () => this.removeSavedLead() : () => this.openDetails()
-                                        }>
-                                        <Icon name={this.leadIsSaved() ? ('check') : ('plus')} type='font-awesome' color='white' />
-                                        <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Save{this.leadIsSaved() && (<>d</>)}</Text>
-                                    </TouchableOpacity>
-                                </View>
-                                <Text style={{ color: 'grey', fontSize: 15, textAlign: 'center', marginBottom: 10 }}>Built by <Text onPress={() => Linking.openURL('http://www.orbusmarketing.com')} style={{ color: '#2185d0', fontSize: 15, padding: 0, margin: 0 }}>T65 Locator</Text></Text>
-                            </View>
-
-                        </ActionSheet>
-                        <ActionSheet keyboardShouldPersistTaps='always' ref={this.saveLeadSheetRef} bounceOnOpen={true} onClose={() => this.setState({ savingLead: false, activeLead: undefined })}>
-                            <View style={{ borderTopStartRadius: 0, borderTopRightRadius: 0, backgroundColor: 'white', shadowColor: 'black', shadowOpacity: 0.15, shadowRadius: 5, shadowOffset: { width: 5, height: 50 } }}>
-
-                                <View style={[{ flexDirection: 'row', padding: 20, }]}>
-                                    <View style={{ flexDirection: 'column' }}>
-                                        <Icon name="user" type='font-awesome' color='white' backgroundColor='#2185d0' style={{ padding: 10, borderRadius: 10 }} />
-                                    </View>
-                                    <View style={{ flexDirection: 'column', marginLeft: 10 }}>
-                                        <Text style={styles.titleText}>{this.state.activeLead?.firstname} {this.state.activeLead?.lastname}</Text>
-                                        <Text style={{ fontSize: 16, color: 'gray', marginTop: 5 }}>{this.state.activeLead?.address}</Text>
-
-                                        <Text style={{ fontSize: 16, color: 'gray' }}>{this.state.activeLead?.zipcode} {this.state.activeLead?.county}</Text>
-                                    </View>
-                                </View>
-
-                                <Divider />
-
-                                <View style={{ padding: 10 }}>
-                                    <Text style={{ fontSize: 18, fontWeight: '600', margin: 10 }}>Add notes to remind yourself of this lead</Text>
-                                    <Input value={this.state.activeLeadNotes} onChange={(e) => this.setState({ activeLeadNotes: e.nativeEvent.text })}
-                                        style={{ borderWidth: 0 }}
-                                        inputContainerStyle={{ borderBottomWidth: 0 }}
-                                        inputStyle={{ margin: 0, padding: 0, height: 200, borderWidth: 0 }}
-                                        numberOfLines={10} multiline={true} placeholder='Add your notes here'></Input>
-                                </View>
-
-                                <KeyboardAvoidingView behavior='position' keyboardVerticalOffset={120} style={[{}]}>
-                                    <Divider />
-                                    <View style={{ flexDirection: 'row', paddingBottom: 30, paddingLeft: 20, paddingRight: 20, paddingTop: 10 }}>
-                                        <TouchableOpacity style={[{ flex: 1, flexDirection: 'column' }]} onPress={() => this.cancelSaveDetails()}>
-                                            <Text style={{ color: 'grey', marginTop: 5, fontSize: 16 }}>Cancel</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'flex-end' }]} onPress={() => this.saveLead()}>
-                                            <Text style={{ color: '#2185d0', marginTop: 5, fontSize: 16 }}>Save</Text>
-                                        </TouchableOpacity>
-
-
-                                    </View>
-                                </KeyboardAvoidingView>
-                            </View>
-                        </ActionSheet>
-                    </>
+                    <FlatList keyboardShouldPersistTaps='always'
+                        data={this.state.leads.map(x => ({ lead: x }))}
+                        keyExtractor={item => item.lead.id!.toString()}
+                        renderItem={({ item, index }: { item: { lead: Lead }, index: number }) => {
+                            return (
+                                <ListItem key={index} bottomDivider onPress={() => this.showLeadData(item.lead, index)} >
+                                    <ListItem.Content>
+                                        <ListItem.Title style={{ fontWeight: '600', color: this.getPinColorForLead(item.lead) }}>
+                                            {item.lead.firstname} {item.lead.lastname}
+                                        </ListItem.Title>
+                                        <ListItem.Subtitle style={{ color: 'grey' }}>{item.lead.address}, {item.lead.city}</ListItem.Subtitle>
+                                    </ListItem.Content>
+                                    <ListItem.Subtitle style={{ textAlign: 'center' }}>
+                                        <Text>
+                                            {this.monthsToAge65(new Date(item.lead.dobdate || '')) + "\n"}
+                                        </Text>
+                                        <Text style={{ color: 'grey' }}>
+                                            {Math.round(item.lead.distance * 10) / 10 + ' mi. away'}
+                                        </Text>
+                                    </ListItem.Subtitle>
+                                </ListItem>
+                            );
+                        }}
+                    />
                 </>
             )
         }
