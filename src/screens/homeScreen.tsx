@@ -13,6 +13,7 @@ import Geolocation from 'react-native-geolocation-service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Lead } from '../lib/types'
 import { LeadPopUp } from '../components/general/leadPopup';
+import { LeadPopUpSave } from '../components/general/leadPopupSave';
 
 type Location = {
     accuracy?: number,
@@ -738,7 +739,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
         this.saveLeadSheetRef.current?.setModalVisible(false);
 
-        this.setState({ savingLead: false, activeLeadNotes: '' }, () => {
+        this.setState({ savingLead: false }, () => {
 
             const self = this;
 
@@ -914,14 +915,18 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                             activeIndex={this.state.activeIndex}
                             leadIsSaved={this.leadIsSaved}
                             monthsToAge65={this.monthsToAge65}
-                            openDetails={this.openDetails}
-                            removeSavedLead={this.removeSavedLead}
+                            openDetails={() => this.openDetails()}
+                            removeSavedLead={() => this.removeSavedLead()}
                             saveleadinteraction={this.saveleadinteraction}
                             activeLead={this.state.activeLead}
                         />
                     </ActionSheet>
                     <ActionSheet keyboardShouldPersistTaps='always' ref={this.saveLeadSheetRef} bounceOnOpen={true} onClose={() => this.setState({ savingLead: false, activeLead: undefined })}>
-
+                        <LeadPopUpSave
+                            cancelSaveDetails={() => this.cancelSaveDetails()}
+                            saveLead={(text:string) => this.saveLead(text)}
+                            activeLead={this.state.activeLead}
+                        />
                     </ActionSheet>
                 </View>);
         }
@@ -988,6 +993,24 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                             );
                         }}
                     />
+                    <ActionSheet ref={this.sheetRef} bounceOnOpen={true} onClose={() => this.closeLeadData()}>
+                        <LeadPopUp
+                            activeIndex={this.state.activeIndex}
+                            leadIsSaved={this.leadIsSaved}
+                            monthsToAge65={this.monthsToAge65}
+                            openDetails={() => this.openDetails()}
+                            removeSavedLead={() => this.removeSavedLead()}
+                            saveleadinteraction={this.saveleadinteraction}
+                            activeLead={this.state.activeLead}
+                        />
+                    </ActionSheet>
+                    <ActionSheet keyboardShouldPersistTaps='always' ref={this.saveLeadSheetRef} bounceOnOpen={true} onClose={() => this.setState({ savingLead: false, activeLead: undefined })}>
+                        <LeadPopUpSave
+                            cancelSaveDetails={() => this.cancelSaveDetails()}
+                            saveLead={(text:string) => this.saveLead(text)}
+                            activeLead={this.state.activeLead}
+                        />
+                    </ActionSheet>
                 </>
             )
         }

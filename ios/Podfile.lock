@@ -577,7 +577,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 433a691aee158533a6a6ee9c86cb4a1684fa2853
   React-jsinspector: d9c8eb0b53f0da206fed56612b289fec84991157
   React-logger: e522e76fa3e9ec3e7d7115b49485cc065cf4ae06
-  react-native-adapty: e79f7f5bfe8649b04b04fdb37cb1e84ced854a3d
+  react-native-adapty: 9c412af073ff9d58bef1c75660ddba0ac2e93d14
   react-native-geolocation: c956aeb136625c23e0dce0467664af2c437888c9
   react-native-geolocation-service: 7c9436da6dfdecd9526c62eac62ea2bc3f0cc8ea
   react-native-maps: a421fe6aeb74279597c4ea9598f25796108e2d89
@@ -606,4 +606,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 88356a8b75a780861bfe17e51dd4f4cded48a580
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.10.1
