@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView, Text, Linking, TouchableOpacity, KeyboardAvoidingView, ActivityIndicator, AppState, FlatList, Alert } from 'react-native';
+import { StyleSheet, View, ScrollView, Text, Linking, TouchableOpacity, KeyboardAvoidingView, ActivityIndicator, AppState, FlatList, Alert, Platform } from 'react-native';
 import { ButtonGroup, ListItem, Icon, Input, Divider, Button } from 'react-native-elements';
 import GLOBALS from '../globals';
 import { StackNavigationProp, createStackNavigator } from '@react-navigation/stack';
@@ -601,43 +601,77 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
 
 
-            //const markerIds: string[] = this.state.leads.map((lead: Lead) => {
 
-            //         return lead.id!.toString();
-            // })
 
-            /*
-            const coordinates: LatLng[] = this.state.leads.map((lead: Lead) => {
+            
+                        
 
-                return { latitude: lead.latitude, longitude: lead.longitude };
-            })
-            */
 
-            if (this.state.activeView == 0)
+            if (this.state.activeView == 0) {
+                
+
+                //console.log('fitToCoordinates')
 
                 /*
-                    this.mapRef.current.fitToCoordinates(coordinates, {
+                    
+*/
+                if (Platform.OS == 'ios') {
+
+                    /*
+                    const markerIds: string[] = this.state.leads.map((lead: Lead) => {
+
+                        return lead.id!.toString();
+                    })
+                    */
+
+                    //this.mapRef.fitToSuppliedMarkers(markerIds);
+
+                    const coordinates: LatLng[] = this.state.leads.map((lead: Lead) => {
+            
+                        return { latitude: lead.latitude, longitude: lead.longitude };
+                    })
+
+                    this.mapRef.fitToCoordinates(coordinates, {
                         edgePadding: {
                             bottom: 50,
                             left: 50,
                             right: 50,
                             top: 50,
                         },
+                        animated:true
                     })
-                    */
+                }
+                
+                else {
+
+                    setTimeout(() => {
+                        
+                        this.mapRef.fitToElements({
+                            edgePadding: {
+                                bottom: 50,
+                                left: 50,
+                                right: 50,
+                                top: 50,
+                            },
+                        });
+
+                    }, (500));
+
+                    
+                }
+
+
+
+
 
                 //console.log(markerIds[0])
-                //console.log(this.mapRef.current.getCamera())
-                //this.mapRef.current.fitToSuppliedMarkers(markerIds);
+                //console.log(this.mapRef.getCamera())
+                //this.mapRef.fitToSuppliedMarkers(markerIds);
 
-                this.mapRef.current.fitToElements({
-                    edgePadding: {
-                        bottom: 50,
-                        left: 50,
-                        right: 50,
-                        top: 50,
-                    },
-                });
+                /*
+                
+                */
+            }
         }
     }
 
@@ -703,14 +737,14 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         })
 
         if (this.state.activeView == 0) {
-            const camera: Camera = await this.mapRef.current.getCamera();
+            const camera: Camera = await this.mapRef.getCamera();
 
             camera.center = {
                 latitude: lead.latitude,
                 longitude: lead.longitude,
             };
 
-            this.mapRef.current.animateCamera(camera);
+            this.mapRef.animateCamera(camera);
         }
     }
 
@@ -897,7 +931,10 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                     months={this.state.filterMonths} />
                             </Popover>
 
-                            <MapView loadingEnabled ref={this.mapRef} showsMyLocationButton={true} onUserLocationChange={(e) => this.userLocationChanged(e)} initialRegion={{ latitude: this.state.currentLocation.latitude, longitude: this.state.currentLocation.longitude, latitudeDelta: 0.5, longitudeDelta: 0.5 }} style={StyleSheet.absoluteFill} showsUserLocation={true}>
+                            <MapView loadingEnabled ref={(ref) => { this.mapRef = ref; }}
+
+                
+                                showsMyLocationButton={true} onUserLocationChange={(e) => this.userLocationChanged(e)} initialRegion={{ latitude: this.state.currentLocation.latitude, longitude: this.state.currentLocation.longitude, latitudeDelta: 0.5, longitudeDelta: 0.5 }} style={StyleSheet.absoluteFill} showsUserLocation={true}>
                                 {this.state.leads.map((lead: Lead, index: any) => (
                                     <Marker
                                         draggable={false}
@@ -905,6 +942,8 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                                         pinColor={this.getPinColorForLead(lead)}
                                         onPress={() => this.showLeadData(lead, index)}
                                         coordinate={lead.marker!.coordinate}
+
+
                                     />
                                 ))}
                             </MapView>
@@ -924,7 +963,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                     <ActionSheet keyboardShouldPersistTaps='always' ref={this.saveLeadSheetRef} bounceOnOpen={true} onClose={() => this.setState({ savingLead: false, activeLead: undefined })}>
                         <LeadPopUpSave
                             cancelSaveDetails={() => this.cancelSaveDetails()}
-                            saveLead={(text:string) => this.saveLead(text)}
+                            saveLead={(text: string) => this.saveLead(text)}
                             activeLead={this.state.activeLead}
                         />
                     </ActionSheet>
@@ -1007,7 +1046,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                     <ActionSheet keyboardShouldPersistTaps='always' ref={this.saveLeadSheetRef} bounceOnOpen={true} onClose={() => this.setState({ savingLead: false, activeLead: undefined })}>
                         <LeadPopUpSave
                             cancelSaveDetails={() => this.cancelSaveDetails()}
-                            saveLead={(text:string) => this.saveLead(text)}
+                            saveLead={(text: string) => this.saveLead(text)}
                             activeLead={this.state.activeLead}
                         />
                     </ActionSheet>
