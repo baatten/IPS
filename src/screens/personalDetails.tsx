@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Animated,ScrollView } from 'react-native';
+import { View, Text, Animated,ScrollView, Alert } from 'react-native';
 import { Button, Card, Input, Slider, ButtonGroup } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -79,15 +79,15 @@ export class PersonalDetailsScreen extends React.Component<settingsProps, settin
 
         return (
             <View>
-                <Input label='Name' placeholder="Name" value={this.state.name} errorStyle={{ color: 'red' }} />
-                <Input label='Address' placeholder="Address" value={this.state.address} errorStyle={{ color: 'red' }} />
-                <Input label='City' placeholder="City" value={this.state.city} errorStyle={{ color: 'red' }} />
+                <Input autoCompleteType={undefined} label='Name' placeholder="Name" value={this.state.name} errorStyle={{ color: 'red' }} />
+                <Input autoCompleteType={undefined} label='Address' placeholder="Address" value={this.state.address} errorStyle={{ color: 'red' }} />
+                <Input autoCompleteType={undefined} label='City' placeholder="City" value={this.state.city} errorStyle={{ color: 'red' }} />
                 <View style={[{ flexDirection: 'row', alignItems: 'center' }]}>
                     <View style={[{ flex: 1, flexDirection: 'column' }]}>
-                        <Input label='Zip' placeholder="Zip" value={this.state.zipCode} errorStyle={{ color: 'red' }} />
+                        <Input autoCompleteType={undefined} label='Zip' placeholder="Zip" value={this.state.zipCode} errorStyle={{ color: 'red' }} />
                     </View>
                     <View style={[{ flex: 1, flexDirection: 'column' }]}>
-                        <Input label='State' placeholder="State" value={this.state.state} errorStyle={{ color: 'red' }} />
+                        <Input autoCompleteType={undefined} label='State' placeholder="State" value={this.state.state} errorStyle={{ color: 'red' }} />
                     </View>
                 </View>
             </View>
@@ -103,7 +103,7 @@ export function PersonalDetailsStackScreen() {
                 headerTintColor: '#fff',
                 headerStyle: { backgroundColor: '#2185d0' },
                 headerRight: () => (
-                    <Button title='Save' onPress={() => alert('This is a button!')} style={{ paddingRight: 5 }} type='clear' titleStyle={{ color: 'white' }} />
+                    <Button title='Save' onPress={() => Alert.alert('This is a button!')} style={{ paddingRight: 5 }} type='clear' titleStyle={{ color: 'white' }} />
                 )
             }} name="Settings" component={PersonalDetailsScreen} />
         </PersonalDetailsStack.Navigator>

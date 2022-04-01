@@ -191,22 +191,22 @@ export default class SignInScreen extends React.Component<any, SignInScreenState
                             <Text style={{ color: 'white', fontSize: 16, fontWeight: '300', textAlign: "center", paddingBottom: 25, lineHeight: 24 }}>We pride ourselves on our thorough and friendly support. We work in the trenches with agents like you to help make your jobs easier and more financially rewarding.</Text>
                             <Text style={{ color: 'white', fontSize: 20, fontWeight: '500', textAlign: "center", paddingBottom: 15 }}>Please sign in:</Text>
 
-                            <Input inputStyle={{ padding: 10 }}
+                            <Input autoCompleteType={undefined} inputStyle={{ padding: 10 }}
                                 inputContainerStyle={{ borderBottomWidth: 0, }}
                                 containerStyle={{ backgroundColor: 'white', borderTopLeftRadius: 10, borderTopRightRadius: 10, height: 48, marginBottom: 1 }}
                                 placeholder="E-mail"
-                                leftIcon={<Icon name='user' type='font-awesome' />}
+                                leftIcon={<Icon tvParallaxProperties={undefined} name='user' type='font-awesome' />}
                                 leftIconContainerStyle={{ margin: 5 }}
                                 value={this.state.emailAddress}
                                 onChangeText={(text) => this.setState({ emailAddress: text })}
                                 keyboardType='email-address'
                                 autoCapitalize='none'
                             />
-                            <Input inputStyle={{ padding: 10 }}
+                            <Input autoCompleteType={undefined} inputStyle={{ padding: 10 }}
                                 inputContainerStyle={{ borderBottomWidth: 0, }}
                                 containerStyle={{ backgroundColor: 'white', borderBottomLeftRadius: 10, borderBottomRightRadius: 10, height: 48, marginBottom: 5 }}
                                 placeholder="Password"
-                                leftIcon={<Icon name='lock' type='font-awesome' />}
+                                leftIcon={<Icon tvParallaxProperties={undefined} name='lock' type='font-awesome' />}
                                 leftIconContainerStyle={{ margin: 5 }}
                                 value={this.state.password}
                                 onChangeText={(text => this.setState({ password: text }))}
@@ -233,10 +233,10 @@ export default class SignInScreen extends React.Component<any, SignInScreenState
                    <ScrollView style={{ backgroundColor: '#1D7DD7', height: '100%', flex: 1, alignSelf: 'stretch' }} keyboardShouldPersistTaps='always'>
                     <View style={{ backgroundColor: '#1D7DD7', flex: 1}}>
 
-                        <Icon color='rgba(255,255,255,0.15)' onPress={() => this.closeModal()} containerStyle={{ alignSelf: 'flex-end', marginTop: 50, marginRight: 25, zIndex: 99 }} style={{}} name="close" iconStyle={{ color: 'white', alignSelf: 'center', marginLeft: 2, marginTop: 1, zIndex: 999 }} size={18} reverse />
+                        <Icon tvParallaxProperties={undefined} color='rgba(255,255,255,0.15)' onPress={() => this.closeModal()} containerStyle={{ alignSelf: 'flex-end', marginTop: 50, marginRight: 25, zIndex: 99 }} style={{}} name="close" iconStyle={{ color: 'white', alignSelf: 'center', marginLeft: 2, marginTop: 1, zIndex: 999 }} size={18} reverse />
 
                         <KeyboardAvoidingView behavior='position' keyboardVerticalOffset={50} style={{ marginLeft: 25, marginRight: 25, flex: 1, flexDirection: 'column', justifyContent: 'center' }}>
-                            <Icon color='rgba(255,255,255,0.15)' containerStyle={{ alignSelf: 'center', margin: 20 }} style={{}} name="lock" iconStyle={{ color: 'white', alignSelf: 'center' }} size={70} reverse />
+                            <Icon tvParallaxProperties={undefined} color='rgba(255,255,255,0.15)' containerStyle={{ alignSelf: 'center', margin: 20 }} style={{}} name="lock" iconStyle={{ color: 'white', alignSelf: 'center' }} size={70} reverse />
                             <Text style={{ fontSize: 24, fontWeight: '700', textAlign: 'center', color: 'white', marginBottom: 10 }}>Recover password</Text>
                             {this.state.passwordWasResat ? (
                                 <>
@@ -251,11 +251,11 @@ export default class SignInScreen extends React.Component<any, SignInScreenState
                                 !this.state.didSendEmail ? (
                                     <>
                                         <Text style={{ fontSize: 16, fontWeight: '400', textAlign: 'center', color: 'white', marginBottom: 20 }}>We can always help you recover your password by your username.</Text>
-                                        <Input autoFocus={true} inputStyle={{ padding: 10 }}
+                                        <Input autoCompleteType={undefined} autoFocus={true} inputStyle={{ padding: 10 }}
                                             inputContainerStyle={{ borderBottomWidth: 0 }}
                                             containerStyle={{ backgroundColor: 'white', borderRadius: 10, height: 48, marginBottom: 15 }}
                                             placeholder="Enter e-mail address"
-                                            leftIcon={<Icon color='rgba(0,0,0,0.50)' name='user' type='font-awesome' />}
+                                            leftIcon={<Icon tvParallaxProperties={undefined} color='rgba(0,0,0,0.50)' name='user' type='font-awesome' />}
                                             leftIconContainerStyle={{ margin: 5 }}
                                             keyboardType='email-address'
                                             autoCapitalize='none'
@@ -273,11 +273,11 @@ export default class SignInScreen extends React.Component<any, SignInScreenState
                                 ) : (
                                     <>
                                         <Text style={{ fontSize: 16, fontWeight: '400', textAlign: 'center', color: 'white', marginBottom: 20 }}>A security code has been sent to your email. Enter the code here.</Text>
-                                        <Input autoFocus={true} inputStyle={{ padding: 10 }}
+                                        <Input autoCompleteType={undefined} autoFocus={true} inputStyle={{ padding: 10 }}
                                             inputContainerStyle={{ borderBottomWidth: 0 }}
                                             containerStyle={{ backgroundColor: 'white', borderRadius: 10, height: 48, marginBottom: 15 }}
                                             placeholder="Enter the security code"
-                                            leftIcon={<Icon color='rgba(0,0,0,0.50)' name='lock' type='font-awesome' />}
+                                            leftIcon={<Icon tvParallaxProperties={undefined} color='rgba(0,0,0,0.50)' name='lock' type='font-awesome' />}
                                             leftIconContainerStyle={{ margin: 5 }}
                                             keyboardType='numeric'
                                             value={this.state.securityCode}

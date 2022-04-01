@@ -27,7 +27,7 @@ export class LeadPopUpSave extends React.Component<LeadPopUpProps, LeadPopUpStat
             <View style={{ borderTopStartRadius: 0, borderTopRightRadius: 0, backgroundColor: 'white', shadowColor: 'black', shadowOpacity: 0.15, shadowRadius: 5, shadowOffset: { width: 5, height: 50 } }}>
                 <View style={[{ flexDirection: 'row', padding: 20, }]}>
                     <View style={{ flexDirection: 'column' }}>
-                        <Icon name="user" type='font-awesome' color='white' backgroundColor='#2185d0' style={{ padding: 10, borderRadius: 10 }} />
+                        <Icon tvParallaxProperties={undefined} name="user" type='font-awesome' color='white' backgroundColor='#2185d0' style={{ padding: 10, borderRadius: 10 }} />
                     </View>
                     <View style={{ flexDirection: 'column', marginLeft: 10 }}>
                         <Text style={styles.titleText}>{this.props.activeLead?.firstname} {this.props.activeLead?.lastname}</Text>
@@ -41,7 +41,7 @@ export class LeadPopUpSave extends React.Component<LeadPopUpProps, LeadPopUpStat
 
                 <View style={{ padding: 10 }}>
                     <Text style={{ fontSize: 18, fontWeight: '600', margin: 10 }}>Add notes to remind yourself of this lead</Text>
-                    <Input value={this.state.activeLeadNotes} onChange={(e) => this.setState({ activeLeadNotes: e.nativeEvent.text })}
+                    <Input autoCompleteType={undefined} value={this.state.activeLeadNotes} onChange={(e) => this.setState({ activeLeadNotes: e.nativeEvent.text })}
                         style={{ borderWidth: 0 }}
                         inputContainerStyle={{ borderBottomWidth: 0 }}
                         inputStyle={{ margin: 0, padding: 0, height: 150, borderWidth: 0 }}

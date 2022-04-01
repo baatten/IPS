@@ -6,8 +6,8 @@ import SplashScreen from './src/screens/splashScreen'
 import SignInScreen from './src/screens/signInScreen'
 import DisabledLocation from './src/screens/DisabledLocation';
 import ActionSheet from "react-native-actions-sheet";
-import { request, check, PERMISSIONS, RESULTS } from 'react-native-permissions';
-import { AppState, View, Text, Linking, Modal, TouchableOpacity, ActivityIndicator, StyleSheet, Platform, Alert, StatusBar, EventSubscription } from 'react-native'
+import { request, check, PERMISSIONS } from 'react-native-permissions';
+import { AppState, View, Text, Linking, Modal, TouchableOpacity, ActivityIndicator, StyleSheet, Platform, Alert, StatusBar } from 'react-native'
 import { Button, CheckBox, Icon as SpecialIcon } from 'react-native-elements'
 import { Tabs } from './src/components/utils/tabs'
 import { NavigationContainer } from '@react-navigation/native';
@@ -20,7 +20,6 @@ import { InAppBrowser } from 'react-native-inappbrowser-reborn'
 import { activateAdapty, adapty, AdaptyProduct } from 'react-native-adapty';
 import { version } from './app.json'
 import { ScrollView } from 'react-native-gesture-handler';
-
 
 interface userModel {
 
@@ -185,7 +184,7 @@ export default class App extends React.Component<AppProps, IPSState> {
         if (info?.accessLevels!['premium']?.isActive) {
           // grant access to premium features
 
-          console.log('test', info.accessLevels)
+          //console.log('test', info.accessLevels)
         }
         else {
 
@@ -283,7 +282,7 @@ export default class App extends React.Component<AppProps, IPSState> {
 
           const responseData: userModel = await res.json();
 
-          console.log('user id', responseData.userId)
+          //console.log('user id', responseData.userId)
           //console.log('user object', responseData)
 
           if (responseData.done) {
@@ -295,8 +294,6 @@ export default class App extends React.Component<AppProps, IPSState> {
             await AsyncStorage.setItem('password', password);
 
             const userIdString = responseData.userId.toString();
-
-
 
             if (userIdString !== null && userIdString !== '') {
 
@@ -324,9 +321,6 @@ export default class App extends React.Component<AppProps, IPSState> {
                   lastName: responseData.surname,
                   email: responseData.email
                 });
-
-
-
 
               } catch (error: any) {
                 console.log('Morten testing', error)

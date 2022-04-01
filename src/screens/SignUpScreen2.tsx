@@ -355,23 +355,23 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                         <View>
                             <View style={[{ borderColor: 'orange', flexDirection: 'row', alignItems: 'center' }]}>
                                 <View style={[{ borderColor: 'orange', flex: 1, flexDirection: 'column', justifyContent: 'flex-start' }]}>
-                                    <Input errorMessage={errors.name} onChangeText={handleChange('name')} label='Name' placeholder="Name"
+                                    <Input autoCompleteType={undefined} errorMessage={errors.name} onChangeText={handleChange('name')} label='Name' placeholder="Name"
                                         value={values.name} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }}
                                         inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 15, borderWidth: 1, color: '#4b4b4b', borderColor: '#DDDEE1' }}
                                         inputContainerStyle={{ borderBottomWidth: 0 }} />
                                 </View>
                                 <View style={[{ flex: 1, flexDirection: 'column' }]}>
-                                    <Input errorMessage={errors.surname} onChangeText={handleChange('surname')} label='Last Name' placeholder="Last Name"
+                                    <Input autoCompleteType={undefined} errorMessage={errors.surname} onChangeText={handleChange('surname')} label='Last Name' placeholder="Last Name"
                                         value={values.surname} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }}
                                         inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }}
                                         inputContainerStyle={{ borderBottomWidth: 0, }} />
                                 </View>
                             </View>
-                            <Input errorMessage={errors.email} onEndEditing={() => this.checkIfEmailIsUsed(values.email)}
+                            <Input autoCompleteType={undefined} errorMessage={errors.email} onEndEditing={() => this.checkIfEmailIsUsed(values.email)}
                                 onChangeText={handleChange('email')} label='E-mail' placeholder="Enter your e-mail" value={values.email} errorStyle={{ color: 'red' }} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }}
                                 inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }}
                                 inputContainerStyle={{ borderBottomWidth: 0, }} keyboardType='email-address' autoCapitalize='none' />
-                            <Input errorMessage={errors.password} onChangeText={handleChange('password')} label='Password'
+                            <Input autoCompleteType={undefined} errorMessage={errors.password} onChangeText={handleChange('password')} label='Password'
                                 placeholder="Enter your password" value={values.password} errorStyle={{ color: 'red' }} secureTextEntry labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }}
                                 inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }}
                                 inputContainerStyle={{ borderBottomWidth: 0, }} />

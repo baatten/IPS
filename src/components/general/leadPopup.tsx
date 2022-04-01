@@ -71,17 +71,17 @@ export class LeadPopUp extends React.Component<LeadPopUpProps, LeadPopUpState> {
                         this.props.activeLead!.county + ' ' +
                         this.props.activeLead!.state, this.props.activeLead!, this.props.activeIndex!
                     )}>
-                        <Icon name="car" type='font-awesome' color='white' />
+                        <Icon tvParallaxProperties={undefined} name="car" type='font-awesome' color='white' />
                         <Text style={{ color: 'white', marginTop: 5, fontSize: 10 }}>Navigation</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: '#2185d0', borderRadius: 10, padding: 15, marginLeft: 5, marginRight: 5 }]} onPress={() => this.startCall()}>
-                        <Icon name="phone" type='font-awesome' color='white' />
+                        <Icon tvParallaxProperties={undefined} name="phone" type='font-awesome' color='white' />
                         <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Call</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: this.props.leadIsSaved() ? ('grey') : ('#2185d0'), borderRadius: 10, padding: 15, marginLeft: 5 }]}
                         onPress={this.props.leadIsSaved() ? () => this.props.removeSavedLead() : () => this.props.openDetails()
                         }>
-                        <Icon name={this.props.leadIsSaved() ? ('check') : ('plus')} type='font-awesome' color='white' />
+                        <Icon tvParallaxProperties={undefined} name={this.props.leadIsSaved() ? ('check') : ('plus')} type='font-awesome' color='white' />
                         <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Save{this.props.leadIsSaved() && (<>d</>)}</Text>
                     </TouchableOpacity>
                 </View>

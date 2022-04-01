@@ -231,8 +231,6 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
 
     monthsToAge65(date: Date) {
 
-        console.log('test mnirteberg', date)
-
         const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
         return 'Turns 65 ' + monthNames[date.getMonth()] + ' ' + date.getFullYear();
@@ -306,7 +304,7 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
                         keyExtractor={item => item.lead.id!.toString()}
                         renderItem={({ item, index }: { item: { lead: Lead }, index: number }) => {
                             return (
-                                <ListItem key={index} bottomDivider onPress={() => this.showLeadData(item.lead, index)} >
+                                <ListItem hasTVPreferredFocus={undefined} tvParallaxProperties={undefined} key={index} bottomDivider onPress={() => this.showLeadData(item.lead, index)} >
                                     <ListItem.Content>
                                         <ListItem.Title style={{
                                             fontWeight: '600', color: this.getPinColorForLead(item.lead)
@@ -348,16 +346,16 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
                                     this.state.activeLead!.county + ' ' +
                                     this.state.activeLead!.state, this.state.activeLead!, this.state.activeIndex!
                                 )}>
-                                    <Icon name="car" type='font-awesome' color='white' />
+                                    <Icon tvParallaxProperties={undefined} name="car" type='font-awesome' color='white' />
                                     <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Navigation</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: '#2185d0', borderRadius: 10, padding: 15, marginLeft: 5, marginRight: 5 }]} onPress={() => this.startCall()}>
-                                    <Icon name="phone" type='font-awesome' color='white' />
+                                    <Icon tvParallaxProperties={undefined} name="phone" type='font-awesome' color='white' />
                                     <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Call</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={[{ flex: 1, flexDirection: 'column', alignItems: 'center', backgroundColor: '#FF4949', borderRadius: 10, padding: 15, marginLeft: 5, marginRight: 5 }]}
                                     onPress={() => this.removeSavedLead()}>
-                                    <Icon name='close' type='font-awesome' color='white' />
+                                    <Icon tvParallaxProperties={undefined} name='close' type='font-awesome' color='white' />
                                     <Text style={{ color: 'white', marginTop: 5, fontSize: 12 }}>Remove</Text>
                                 </TouchableOpacity>
                             </View>

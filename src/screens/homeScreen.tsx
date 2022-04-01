@@ -1,14 +1,12 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView, Text, Linking, TouchableOpacity, KeyboardAvoidingView, ActivityIndicator, AppState, FlatList, Alert, Platform } from 'react-native';
-import { ButtonGroup, ListItem, Icon, Input, Divider, Button } from 'react-native-elements';
+import { StyleSheet, View, ScrollView, Text, TouchableOpacity, ActivityIndicator, AppState, FlatList, Alert, Platform } from 'react-native';
+import { ButtonGroup, ListItem, Icon, Input, Button } from 'react-native-elements';
 import GLOBALS from '../globals';
 import { StackNavigationProp, createStackNavigator } from '@react-navigation/stack';
-import MapView, { Marker, EventUserLocation, LatLng } from 'react-native-maps';
+import MapView, { Marker, EventUserLocation, LatLng, MapEvent } from 'react-native-maps';
 import ActionSheet from "react-native-actions-sheet";
 import type { Camera } from 'react-native-maps';
 import Popover, { PopoverPlacement } from 'react-native-popover-view';
-//import * as Location from 'expo-location'
-//import Geolocation from '@react-native-community/geolocation';
 import Geolocation from 'react-native-geolocation-service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Lead } from '../lib/types'
@@ -113,24 +111,24 @@ class FilterDropDown extends React.Component<FilterDropDownProps, FilterDropDown
 
         return (
             <ScrollView keyboardShouldPersistTaps='always' style={{ maxHeight: 600 }}>
-                <ListItem key={8} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.useCustomLocation(false)}>
+                <ListItem hasTVPreferredFocus={undefined} tvParallaxProperties={undefined} key={8} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.useCustomLocation(false)}>
                     <ListItem.Title>Use My Location</ListItem.Title>
                     {!this.state.useCustomLocation && (
                         <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' checked={!this.state.useCustomLocation} />
                     )}
                 </ListItem>
-                <ListItem key={9} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.useCustomLocation(true)}>
+                <ListItem hasTVPreferredFocus={undefined} tvParallaxProperties={undefined} key={9} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.useCustomLocation(true)}>
                     <ListItem.Title>Use Zipcode</ListItem.Title>
                     {this.state.useCustomLocation && (
                         <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' checked={this.state.useCustomLocation} />
                     )}
                 </ListItem>
                 {this.state.useCustomLocation && (
-                    <ListItem key={10} bottomDivider containerStyle={{ padding: 3 }}>
+                    <ListItem hasTVPreferredFocus={undefined} tvParallaxProperties={undefined} key={10} bottomDivider containerStyle={{ padding: 3 }}>
                         <ListItem.Content>
                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <View style={{ flex: 3 }}>
-                                    <Input inputStyle={{ padding: 0 }}
+                                    <Input autoCompleteType={undefined} inputStyle={{ padding: 0 }}
                                         inputContainerStyle={{ borderBottomWidth: 0, backgroundColor: 'white' }}
                                         containerStyle={{ backgroundColor: 'white', borderBottomLeftRadius: 10, borderBottomRightRadius: 10, height: 40 }}
                                         placeholder="zip code"
@@ -160,44 +158,44 @@ class FilterDropDown extends React.Component<FilterDropDownProps, FilterDropDown
 
 
                 <>
-                    <ListItem containerStyle={{ backgroundColor: '#eee' }} style={{ height: 5, backgroundColor: 'transparent' }}></ListItem>
+                    <ListItem hasTVPreferredFocus={undefined} tvParallaxProperties={undefined} containerStyle={{ backgroundColor: '#eee' }} style={{ height: 5, backgroundColor: 'transparent' }}></ListItem>
 
-                    <ListItem key={0} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(1)}>
+                    <ListItem hasTVPreferredFocus={undefined} tvParallaxProperties={undefined} key={0} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(1)}>
                         <ListItem.Title>1 mile radius</ListItem.Title>
                         <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 1} />
                     </ListItem>
-                    <ListItem key={1} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(3)}>
+                    <ListItem hasTVPreferredFocus={undefined} tvParallaxProperties={undefined} key={1} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(3)}>
                         <ListItem.Title>3 miles radius</ListItem.Title>
                         <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 3} />
                     </ListItem>
-                    <ListItem key={2} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(5)}>
+                    <ListItem hasTVPreferredFocus={undefined} tvParallaxProperties={undefined} key={2} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(5)}>
                         <ListItem.Title>5 miles radius</ListItem.Title>
                         <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 5} />
                     </ListItem>
-                    <ListItem key={3} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(10)}>
+                    <ListItem hasTVPreferredFocus={undefined} tvParallaxProperties={undefined} key={3} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(10)}>
                         <ListItem.Title>10 miles radius</ListItem.Title>
                         <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 10} />
                     </ListItem>
-                    <ListItem key={4} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(25)}>
+                    <ListItem hasTVPreferredFocus={undefined} tvParallaxProperties={undefined} key={4} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(25)}>
                         <ListItem.Title>25 miles radius</ListItem.Title>
                         <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 25} />
                     </ListItem>
-                    <ListItem key={5} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(50)}>
+                    <ListItem hasTVPreferredFocus={undefined} tvParallaxProperties={undefined} key={5} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateRadius(50)}>
                         <ListItem.Title>50 miles radius</ListItem.Title>
                         <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.radius == 50} />
                     </ListItem>
                 </>
 
 
-                <ListItem containerStyle={{ backgroundColor: '#eee' }} style={{ height: 5, backgroundColor: 'transparent' }}></ListItem>
+                <ListItem hasTVPreferredFocus={undefined} tvParallaxProperties={undefined} containerStyle={{ backgroundColor: '#eee' }} style={{ height: 5, backgroundColor: 'transparent' }}></ListItem>
 
-                <ListItem key={6} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.props.updateSorting('distance')}>
+                <ListItem hasTVPreferredFocus={undefined} tvParallaxProperties={undefined} key={6} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.props.updateSorting('distance')}>
                     <ListItem.Title>Sort By Distance</ListItem.Title>
                     {this.props.sortingType == 'distance' && (
                         <ListItem.CheckBox size={18} checkedIcon='chevron-up' uncheckedIcon='chevron-down' checked={this.props.sortingDirection == 1} />
                     )}
                 </ListItem>
-                <ListItem key={7} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.props.updateSorting('birthday')}>
+                <ListItem hasTVPreferredFocus={undefined} tvParallaxProperties={undefined} key={7} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.props.updateSorting('birthday')}>
                     <ListItem.Title>Sort By Birthday</ListItem.Title>
                     {this.props.sortingType == 'birthday' && (
                         <ListItem.CheckBox size={18} checkedIcon='chevron-up' uncheckedIcon='chevron-down' checked={this.props.sortingDirection == 1} />
@@ -230,39 +228,39 @@ class DateDropDown extends React.Component<DateDropDownProps, DateDropDownState>
 
         return (
             <ScrollView style={{ maxHeight: 500 }}>
-                <ListItem key={8} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(1)}>
+                <ListItem hasTVPreferredFocus={undefined} tvParallaxProperties={undefined} key={8} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(1)}>
                     <ListItem.Title>1 month</ListItem.Title>
                     <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.months == 1} />
                 </ListItem>
-                <ListItem key={9} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(2)}>
+                <ListItem hasTVPreferredFocus={undefined} tvParallaxProperties={undefined} key={9} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(2)}>
                     <ListItem.Title>2 months</ListItem.Title>
                     <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.months == 2} />
                 </ListItem>
-                <ListItem key={10} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(3)}>
+                <ListItem hasTVPreferredFocus={undefined} tvParallaxProperties={undefined} key={10} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(3)}>
                     <ListItem.Title>3 months</ListItem.Title>
                     <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.months == 3} />
                 </ListItem>
-                <ListItem key={11} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(4)}>
+                <ListItem hasTVPreferredFocus={undefined} tvParallaxProperties={undefined} key={11} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(4)}>
                     <ListItem.Title>4 months</ListItem.Title>
                     <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.months == 4} />
                 </ListItem>
-                <ListItem key={12} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(5)}>
+                <ListItem hasTVPreferredFocus={undefined} tvParallaxProperties={undefined} key={12} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(5)}>
                     <ListItem.Title>5 months</ListItem.Title>
                     <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.months == 5} />
                 </ListItem>
-                <ListItem key={13} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(6)}>
+                <ListItem hasTVPreferredFocus={undefined} tvParallaxProperties={undefined} key={13} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(6)}>
                     <ListItem.Title>6 months</ListItem.Title>
                     <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.months == 6 || this.state.months == 0} />
                 </ListItem>
-                <ListItem key={14} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(7)}>
+                <ListItem hasTVPreferredFocus={undefined} tvParallaxProperties={undefined} key={14} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(7)}>
                     <ListItem.Title>7 months</ListItem.Title>
                     <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.months == 7} />
                 </ListItem>
-                <ListItem key={15} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(8)}>
+                <ListItem hasTVPreferredFocus={undefined} tvParallaxProperties={undefined} key={15} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(8)}>
                     <ListItem.Title>8 months</ListItem.Title>
                     <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.months == 8} />
                 </ListItem>
-                <ListItem key={16} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(9)}>
+                <ListItem hasTVPreferredFocus={undefined} tvParallaxProperties={undefined} key={16} bottomDivider containerStyle={{ padding: 12 }} onPress={() => this.updateMonth(9)}>
                     <ListItem.Title>9 months</ListItem.Title>
                     <ListItem.CheckBox size={18} checkedIcon='check' uncheckedIcon='check' uncheckedColor='white' checked={this.state.months == 9} />
                 </ListItem>
@@ -360,7 +358,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         Geolocation.getCurrentPosition(
             (response) => {
 
-                console.log(response)
+                //console.log(response)
                 //success
                 this.setState({ filterDistance: radius }, () => {
 
@@ -389,12 +387,13 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
             headerTitleAlign: 'center',
             headerTintColor: '#fff',
             headerStyle: { backgroundColor: '#2185d0' },
-            headerRight: () => <TouchableOpacity ref={this.filterPopover} onPressIn={() => this.setState({ showRadiusFilter: true })} style={{ marginRight: 10, backgroundColor: 'transparent' }} >
-                <Icon name='map-marked-alt' color='white' size={22} type='font-awesome-5' style={{ color: 'white' }} />
-            </TouchableOpacity>,
+            headerRight: () =>
+                <TouchableOpacity ref={this.filterPopover} onPressIn={() => this.setState({ showRadiusFilter: true })} style={{ marginRight: 10, backgroundColor: 'transparent' }} >
+                    <Icon tvParallaxProperties={undefined} name='map-marked-alt' color='white' size={22} type='font-awesome-5' style={{ color: 'white' }} />
+                </TouchableOpacity>,
             headerLeft: () =>
                 <TouchableOpacity ref={this.datePopover} onPressIn={() => this.setState({ showDateFilter: true })} style={{ marginLeft: 10, backgroundColor: 'transparent' }} >
-                    <Icon name='calendar-week' color='white' size={22} type='font-awesome-5' style={{ color: 'white' }} />
+                    <Icon tvParallaxProperties={undefined} name='calendar-week' color='white' size={22} type='font-awesome-5' style={{ color: 'white' }} />
                 </TouchableOpacity>
         })
 
@@ -603,12 +602,12 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
 
 
-            
-                        
+
+
 
 
             if (this.state.activeView == 0) {
-                
+
 
                 //console.log('fitToCoordinates')
 
@@ -627,7 +626,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                     //this.mapRef.fitToSuppliedMarkers(markerIds);
 
                     const coordinates: LatLng[] = this.state.leads.map((lead: Lead) => {
-            
+
                         return { latitude: lead.latitude, longitude: lead.longitude };
                     })
 
@@ -638,14 +637,14 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                             right: 50,
                             top: 50,
                         },
-                        animated:true
+                        animated: true
                     })
                 }
-                
+
                 else {
 
                     setTimeout(() => {
-                        
+
                         this.mapRef.fitToElements({
                             edgePadding: {
                                 bottom: 50,
@@ -657,7 +656,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
                     }, (500));
 
-                    
+
                 }
 
 
@@ -716,7 +715,6 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                 }
 
             } else {
-
 
                 console.log('something happened', res)
             }
@@ -822,7 +820,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
         updateLead = lead;
 
-        this.setState({ leads: leads, isLoading: false, activeLead: undefined, activeIndex: undefined, activeLeadNotes: undefined });
+        this.setState({ leads: leads, isLoading: false, activeLead: undefined, activeIndex: undefined });
     }
 
     monthsToAge65(date: Date): string {
@@ -909,7 +907,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                     )}
                     {this.state.currentLocation != undefined && (
                         <View style={StyleSheet.absoluteFillObject}>
-                            <Popover arrowStyle={{ backgroundColor: 'transparent' }} onRequestClose={() => this.setState({ showRadiusFilter: false })} from={this.filterPopover} isVisible={this.state.showRadiusFilter} popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}>
+                            <Popover arrowSize={{width:0,height:0}} onRequestClose={() => this.setState({ showRadiusFilter: false })} from={this.filterPopover} isVisible={this.state.showRadiusFilter} popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}>
                                 <FilterDropDown
                                     updateSorting={(sortingType: string) => this.updateLeadSorting(sortingType)}
                                     sortingType={this.state.leadSortingType}
@@ -924,26 +922,23 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
                             </Popover>
 
-                            <Popover arrowStyle={{ backgroundColor: 'transparent' }} onRequestClose={() => this.setState({ showDateFilter: false })} from={this.datePopover} isVisible={this.state.showDateFilter} popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}>
+                            <Popover arrowSize={{width:0,height:0}} onRequestClose={() => this.setState({ showDateFilter: false })} from={this.datePopover} isVisible={this.state.showDateFilter} popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}>
                                 <DateDropDown
 
                                     updateMonth={(month) => this.changeFilterMonth(month)}
                                     months={this.state.filterMonths} />
                             </Popover>
 
-                            <MapView loadingEnabled ref={(ref) => { this.mapRef = ref; }}
-
-                
+                            <MapView toolbarEnabled={false} loadingEnabled ref={(ref) => { this.mapRef = ref; }}
                                 showsMyLocationButton={true} onUserLocationChange={(e) => this.userLocationChanged(e)} initialRegion={{ latitude: this.state.currentLocation.latitude, longitude: this.state.currentLocation.longitude, latitudeDelta: 0.5, longitudeDelta: 0.5 }} style={StyleSheet.absoluteFill} showsUserLocation={true}>
+                                
                                 {this.state.leads.map((lead: Lead, index: any) => (
                                     <Marker
                                         draggable={false}
-                                        key={index}
+                                        key={index + Math.random()}
                                         pinColor={this.getPinColorForLead(lead)}
                                         onPress={() => this.showLeadData(lead, index)}
                                         coordinate={lead.marker!.coordinate}
-
-
                                     />
                                 ))}
                             </MapView>
@@ -972,7 +967,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
         else {
             return (
                 <>
-                    <Popover arrowShift={0} onRequestClose={() => this.setState({ showRadiusFilter: false })} from={this.filterPopover} isVisible={this.state.showRadiusFilter} popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}>
+                    <Popover arrowSize={{width:0,height:0}} arrowShift={0} onRequestClose={() => this.setState({ showRadiusFilter: false })} from={this.filterPopover} isVisible={this.state.showRadiusFilter} popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}>
                         <FilterDropDown
                             updateSorting={(sortingType: string) => this.updateLeadSorting(sortingType)}
                             sortingType={this.state.leadSortingType}
@@ -988,7 +983,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
 
                     </Popover>
 
-                    <Popover arrowShift={0} onRequestClose={() => this.setState({ showDateFilter: false })} from={this.datePopover} isVisible={this.state.showDateFilter} popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}>
+                    <Popover arrowSize={{width:0,height:0}} arrowShift={0} onRequestClose={() => this.setState({ showDateFilter: false })} from={this.datePopover} isVisible={this.state.showDateFilter} popoverStyle={{ borderRadius: 10 }} backgroundStyle={{ backgroundColor: 'transparent' }} placement={PopoverPlacement.BOTTOM}>
                         <DateDropDown
                             months={this.state.filterMonths}
                             updateMonth={(month) => this.changeFilterMonth(month)}
@@ -1013,7 +1008,7 @@ export class HomeScreen extends React.Component<HomeProps, HomeState> {
                         keyExtractor={item => item.lead.id!.toString()}
                         renderItem={({ item, index }: { item: { lead: Lead }, index: number }) => {
                             return (
-                                <ListItem key={index} bottomDivider onPress={() => this.showLeadData(item.lead, index)} >
+                                <ListItem hasTVPreferredFocus={undefined} tvParallaxProperties={undefined} key={index} bottomDivider onPress={() => this.showLeadData(item.lead, index)} >
                                     <ListItem.Content>
                                         <ListItem.Title style={{ fontWeight: '600', color: this.getPinColorForLead(item.lead) }}>
                                             {item.lead.firstname} {item.lead.lastname}
