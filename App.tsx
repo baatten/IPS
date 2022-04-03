@@ -449,7 +449,7 @@ export default class App extends React.Component<AppProps, IPSState> {
       case 'LOAD_HOME':
         arr.push(
           <Stack.Navigator screenOptions={{ headerShown: false, animationTypeForReplace: this.state.user == null ? 'pop' : 'push' }}>
-            <Stack.Screen name="Home" component={Tabs} />
+            <Stack.Screen name="Home2" component={Tabs} />
           </Stack.Navigator>
         );
         break;
@@ -513,7 +513,7 @@ export default class App extends React.Component<AppProps, IPSState> {
             <View style={{ backgroundColor: '#f7fafb', padding: 20, justifyContent: 'center' }}>
               <View style={{}}>
                 <Text style={{ fontWeight: '700', fontSize: 28, alignSelf: 'center', color: '#2185d0' }}>T65 Locator</Text>
-                <Text style={{  color: '#606060', fontSize: 16, marginTop: 10, marginBottom: 25, alignSelf: 'center', textAlign: 'center' }}>Please choose a subscription to continue using T65.</Text>
+                <Text style={{ color: '#606060', fontSize: 16, marginTop: 10, marginBottom: 25, alignSelf: 'center', textAlign: 'center' }}>Please choose a subscription to continue using T65.</Text>
 
               </View>
               {this.state.subscriptions != null && this.state.subscriptions.length > 1 ? (
@@ -521,7 +521,7 @@ export default class App extends React.Component<AppProps, IPSState> {
                   <TouchableOpacity key={product.vendorProductId} activeOpacity={1} onPress={() => this.setState({ activeSubscription: product })}>
                     <View style={(this.state.activeSubscription?.localizedTitle == product.localizedTitle) ? (this.styles.subscriptionSelected) : (this.styles.subscription)}>
                       <View style={[{ flex: 1, flexDirection: 'column', marginRight: 15, borderRadius: 10, justifyContent: 'center', borderWidth: 1, borderColor: this.state.activeSubscription?.localizedTitle == product.localizedTitle ? 'white' : '#2185d0' }]}>
-                        <SpecialIcon name='calendar-week' type='font-awesome-5' color={this.state.activeSubscription?.localizedTitle == product.localizedTitle ? 'white' : '#2185d0'} />
+                        <SpecialIcon tvParallaxProperties={undefined} name='calendar-week' type='font-awesome-5' color={this.state.activeSubscription?.localizedTitle == product.localizedTitle ? 'white' : '#2185d0'} />
                       </View>
                       <View style={[{ flex: 3, flexDirection: 'column' }]}>
                         <Text style={{ color: this.state.activeSubscription?.localizedTitle == product.localizedTitle ? 'white' : '#2185d0', fontSize: 17, fontWeight: '600', marginBottom: 2 }}>{product.localizedTitle}</Text>

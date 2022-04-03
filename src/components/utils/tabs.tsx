@@ -16,7 +16,7 @@ export class Tabs extends React.Component {
     render() {
 
         return (
-            <Tab.Navigator initialRouteName="Home" screenOptions={({ route }) => ({
+            <Tab.Navigator screenOptions={({ route }) => ({
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName;
 
@@ -31,11 +31,10 @@ export class Tabs extends React.Component {
                     // You can return any component that you like here!
                     return <Icon name={iconName} size={size} color={color} style={{ padding: 0, margin: -15 }} />;
                 },
-            })}
-                tabBarOptions={{ activeTintColor: '#2185d0', inactiveTintColor: 'gray' }}>
-                <Tab.Screen name="Home" component={HomeStackScreen} />
-                <Tab.Screen name="Saved Leads" component={SavedLeadsStackScreen} />
-                <Tab.Screen name="Account" component={SettingsStackScreen} />
+            })}>
+                <Tab.Screen name="Home" component={HomeStackScreen} options={{ headerShown: false }} />
+                <Tab.Screen name="Saved Leads" component={SavedLeadsStackScreen} options={{ headerShown: false }} />
+                <Tab.Screen name="Account" component={SettingsStackScreen} options={{ headerShown: false }} />
             </Tab.Navigator>
         );
     }

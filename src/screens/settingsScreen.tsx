@@ -51,6 +51,7 @@ export class SettingsScreen extends React.Component<SettingsProps, settingsState
 
         this.props.navigation.setOptions({
             headerShown: true,
+            title:'Account',
             headerTintColor: '#fff',
             headerTitleAlign:'center',
             headerStyle: { backgroundColor: '#2185d0' },
@@ -264,11 +265,11 @@ export class SettingsScreen extends React.Component<SettingsProps, settingsState
                             <View style={[{ margin: 0, marginTop: -15, borderColor: 'orange', flexDirection: 'row', alignItems: 'center', padding: 10, paddingBottom: 20 }]}>
                                 <View style={[{ flex: 1, flexDirection: 'column', marginRight: 7 }]}>
 
-                                    <Button onPress={() => this.setModalVisible(true)} buttonStyle={{ backgroundColor: 'gray', padding: 15, borderRadius: 10 }} titleStyle={{ color: 'white', fontSize: 16 }} title='Update Password' />
+                                    <Button onPress={() => this.setModalVisible(true)} buttonStyle={{ backgroundColor: 'gray', paddingHorizontal: 15,paddingVertical:12, borderRadius: 12 }} titleStyle={{ color: 'white', fontSize: 16 }} title='Update Password' />
                                 </View>
                                 <View style={[{ flex: 1, flexDirection: 'column', marginLeft: 7 }]}>
 
-                                    <Button loading={this.state.isLoading} onPress={() => this.form.handleSubmit()} buttonStyle={{ backgroundColor: '#2185d0', padding: 15, borderRadius: 10 }} titleStyle={{ color: 'white', fontSize: 16 }} title='Save Profile' />
+                                    <Button loading={this.state.isLoading} onPress={() => this.form.handleSubmit()} buttonStyle={{ backgroundColor: '#2185d0',  paddingHorizontal: 12,paddingVertical:12, borderRadius: 10 }} titleStyle={{ color: 'white', fontSize: 16 }} title='Save Profile' />
                                 </View>
                             </View>
 
@@ -276,7 +277,7 @@ export class SettingsScreen extends React.Component<SettingsProps, settingsState
 
                         <Modal animationType="slide" presentationStyle='formSheet' visible={this.state.modalVisible} >
                             <View>
-                                <View style={[{ paddingBottom: 10, paddingTop: 10, paddingLeft: 0, paddingRight: 0, flexDirection: 'row', alignItems: 'center', backgroundColor: '#2185d0', alignContent: 'center' }]}>
+                                <View style={[{  flexDirection: 'row', alignItems: 'center', backgroundColor: '#2185d0', alignContent: 'center' }]}>
                                     <View style={{ flex: 1, flexDirection: 'column' }}>
                                         <Button type='clear' titleStyle={{ color: 'white' }} title='Cancel' onPress={() => { this.setModalVisible(!this.state.modalVisible); }} />
                                     </View>
@@ -327,7 +328,7 @@ export class SettingsScreen extends React.Component<SettingsProps, settingsState
 export function SettingsStackScreen() {
     return (
         <SettingsStack.Navigator>
-            <SettingsStack.Screen name="Account" component={SettingsScreen} />
+            <SettingsStack.Screen name="AccountScreen" component={SettingsScreen} />
         </SettingsStack.Navigator>
     );
 }

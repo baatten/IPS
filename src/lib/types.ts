@@ -29,3 +29,13 @@ export type LeadInteraction = {
     notes?: string
     saved: boolean
 }
+
+export type Location = {
+    accuracy?: number,
+    altitude?: number,
+    altitudeAccuracy?: number,
+    latitude: number,
+    longitude: number
+    speed?: number,
+    timestamp?: string,
+} | null

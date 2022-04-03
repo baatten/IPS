@@ -44,6 +44,7 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
 
         this.props.navigation.setOptions({
             headerShown: true,
+            title:'Saved Leads',
             headerTitle: 'Saved Leads',
             headerTintColor: '#fff',
             headerTitleAlign:'center',
@@ -409,7 +410,7 @@ export class SavedLeadsScreen extends React.Component<SaveLeadProps, SaveLeadSta
 export function SavedLeadsStackScreen() {
     return (
         <SaveLeadsStack.Navigator>
-            <SaveLeadsStack.Screen name="Saved Leads" component={SavedLeadsScreen} />
+            <SaveLeadsStack.Screen name="SavedLeadsScreen" component={SavedLeadsScreen} />
         </SaveLeadsStack.Navigator>
     );
 }
