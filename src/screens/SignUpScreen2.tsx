@@ -526,7 +526,7 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
         ]
 
         return (
-            <KeyboardAvoidingView style={{ paddingLeft: 15, paddingRight: 15, backgroundColor: '#f7fafb', flex: 1, flexDirection: 'column', justifyContent: 'center', }} behavior={Platform.OS == 'android' ? "padding" : 'position'} enabled keyboardVerticalOffset={Platform.OS =='android'? -200:0}>
+            <KeyboardAvoidingView style={{ paddingLeft: 15, paddingRight: 15, backgroundColor: '#f7fafb', flex: 1, flexDirection: 'column', justifyContent: 'center', }} behavior={Platform.OS == 'android' ? "padding" : 'height'} enabled>
                 <StatusBar barStyle='dark-content' />
                 <View style={(this.state.currentStep == 1) && ({ marginTop: -80 })}>
                     <Text style={{ color: 'rgba(0,0,0,0.7)', fontSize: 30, fontWeight: '700', textAlign: "center", paddingTop: 50 }}>T65 Locator</Text>
