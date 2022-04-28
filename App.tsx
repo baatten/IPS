@@ -16,7 +16,6 @@ import { LoginReducer, initialState, LoginState } from './src/components/utils/r
 import { stateConditionString } from './src/components/utils/stateCondition';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SignUpScreen } from './src/screens/SignUpScreen2'
-import { InAppBrowser } from 'react-native-inappbrowser-reborn'
 import { activateAdapty, adapty, AdaptyProduct } from 'react-native-adapty';
 import { version } from './app.json'
 import { ScrollView } from 'react-native-gesture-handler';
@@ -213,51 +212,51 @@ export default class App extends React.Component<AppProps, IPSState> {
       }
     }
   }
-
-  openLink = async (url: string) => {
-    try {
-
-      if (await InAppBrowser.isAvailable()) {
-        const result = await InAppBrowser.open(url, {
-          // iOS Properties
-          dismissButtonStyle: 'close',
-          preferredBarTintColor: '#2185d0',
-          preferredControlTintColor: 'white',
-          readerMode: false,
-          animated: true,
-          modalPresentationStyle: 'fullScreen',
-          modalTransitionStyle: 'coverVertical',
-          modalEnabled: true,
-          enableBarCollapsing: false,
-          // Android Properties
-          showTitle: true,
-          toolbarColor: 'grey',
-          secondaryToolbarColor: 'black',
-          navigationBarColor: 'black',
-          navigationBarDividerColor: 'white',
-          enableUrlBarHiding: true,
-          enableDefaultShare: true,
-          forceCloseOnRedirection: false,
-          // Specify full animation resource identifier(package:anim/name)
-          // or only resource name(in case of animation bundled with app).
-          animations: {
-            startEnter: 'slide_in_right',
-            startExit: 'slide_out_left',
-            endEnter: 'slide_in_left',
-            endExit: 'slide_out_right'
-          },
-          headers: {
-            'my-custom-header': 'my custom header value'
-          }
-        })
-        //Alert.alert(JSON.stringify(result))
+  /*
+    openLink = async (url: string) => {
+      try {
+  
+        if (await InAppBrowser.isAvailable()) {
+          const result = await InAppBrowser.open(url, {
+            // iOS Properties
+            dismissButtonStyle: 'close',
+            preferredBarTintColor: '#2185d0',
+            preferredControlTintColor: 'white',
+            readerMode: false,
+            animated: true,
+            modalPresentationStyle: 'fullScreen',
+            modalTransitionStyle: 'coverVertical',
+            modalEnabled: true,
+            enableBarCollapsing: false,
+            // Android Properties
+            showTitle: true,
+            toolbarColor: 'grey',
+            secondaryToolbarColor: 'black',
+            navigationBarColor: 'black',
+            navigationBarDividerColor: 'white',
+            enableUrlBarHiding: true,
+            enableDefaultShare: true,
+            forceCloseOnRedirection: false,
+            // Specify full animation resource identifier(package:anim/name)
+            // or only resource name(in case of animation bundled with app).
+            animations: {
+              startEnter: 'slide_in_right',
+              startExit: 'slide_out_left',
+              endEnter: 'slide_in_left',
+              endExit: 'slide_out_right'
+            },
+            headers: {
+              'my-custom-header': 'my custom header value'
+            }
+          })
+          //Alert.alert(JSON.stringify(result))
+        }
+        else Linking.openURL(url)
+      } catch (error) {
+        //Alert.alert(error.message)
       }
-      else Linking.openURL(url)
-    } catch (error) {
-      //Alert.alert(error.message)
     }
-  }
-
+  */
   signIn = async (emailAddress: string, password: string) => {
 
     if (emailAddress != null && password != null && await this.checkPermissions()) {
@@ -541,7 +540,7 @@ export default class App extends React.Component<AppProps, IPSState> {
 
                 <View style={[{ flexDirection: 'row', marginTop: 6 }]}>
                   <Text style={{ lineHeight: 20 }}>I accept the</Text>
-                  <Text onPress={() => this.openLink('https://api.t-65locator.com/TermsofService.pdf')} style={{ marginLeft: 2, marginTop: 2, color: '#2185d0' }}>T65 locator terms of service</Text>
+                  <Text onPress={() => Linking.openURL('https://api.t-65locator.com/TermsofService.pdf')} style={{ marginLeft: 2, marginTop: 2, color: '#2185d0' }}>T65 locator terms of service</Text>
                 </View>
               </View>
               <Button loading={this.state.subscribeLoading} onPress={() => this.subScribe(this.state.activeSubscription!)} disabled={!this.state.conditionAccepted || this.state.activeSubscription == undefined} title='Buy subscription' containerStyle={{ marginTop: 25 }} buttonStyle={{ paddingVertical: 15, borderRadius: 15 }} titleStyle={{ fontWeight: '600' }} />
