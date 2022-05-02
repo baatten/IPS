@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { HomeStackScreen } from '../../../src/screens/homeScreen'
 import { SettingsStackScreen } from '../../../src/screens/settingsScreen'
 import { SavedLeadsStackScreen } from '../../../src/screens/savedLeads'
+import { Platform } from 'react-native';
 
 const Tab = createBottomTabNavigator();
 
@@ -29,8 +30,9 @@ export class Tabs extends React.Component {
                     } else { iconName = '' }
 
                     // You can return any component that you like here!
-                    return <Icon name={iconName} size={size} color={color} style={{ padding: 0, margin: -15 }} />;
+                    return <Icon name={iconName} size={size} color={color} style={{}} />;
                 },
+                tabBarLabelStyle: Platform.OS == 'android' ? { marginBottom: 4, marginTop:-4 } : {fontSize:12, marginTop:-2}
             })}>
                 <Tab.Screen name="Home" component={HomeStackScreen} options={{ headerShown: false }} />
                 <Tab.Screen name="Saved Leads" component={SavedLeadsStackScreen} options={{ headerShown: false }} />

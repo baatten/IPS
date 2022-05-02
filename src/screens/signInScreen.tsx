@@ -185,7 +185,7 @@ export default class SignInScreen extends React.Component<any, SignInScreenState
         return (
             <View style={{ flex: 1 }}>
                 <ImageBackground source={require('../../assets/splash.png')} style={{ flex: 1, alignSelf: 'stretch' }}>
-                    <KeyboardAvoidingView style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', }} behavior={Platform.OS === "ios" ? "padding" : "height"} keyboardVerticalOffset={Platform.OS === "ios" ? 0 : -400} enabled >
+                    <KeyboardAvoidingView style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', }} behavior={Platform.OS === "ios" ? "padding" : "height"} keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0} enabled >
                         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                             <View style={{ padding: 25 }}>
                                 <Text style={{ color: 'white', fontSize: 30, fontWeight: '700', textAlign: "center", paddingBottom: 10 }}>T65 Locator</Text>

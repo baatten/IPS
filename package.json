@@ -23,7 +23,7 @@
     "react-native-elements": "^3.4.2",
     "react-native-geolocation-service": "*",
     "react-native-gesture-handler": "^2.2.0",
-    "react-native-maps": "0.31.0",
+    "react-native-maps": "0.31.1",
     "react-native-open-maps": "^0.4.0",
     "react-native-permissions": "^3.3.1",
     "react-native-popover-view": "^5.0.1",
