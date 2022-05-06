@@ -32,6 +32,7 @@ export class Tabs extends React.Component {
                     // You can return any component that you like here!
                     return <Icon name={iconName} size={size} color={color} style={{}} />;
                 },
+                tabBarActiveTintColor: '#2185d0',
                 tabBarLabelStyle: Platform.OS == 'android' ? { marginBottom: 4, marginTop:-4 } : {fontSize:12, marginTop:-2}
             })}>
                 <Tab.Screen name="Home" component={HomeStackScreen} options={{ headerShown: false }} />
