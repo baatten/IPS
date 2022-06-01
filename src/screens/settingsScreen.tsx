@@ -7,8 +7,6 @@ import { AppContext } from '../components/utils/appContext';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
-const SettingsStack = createStackNavigator();
-
 type settingsState = {
     user: User
     isLoading: boolean,
@@ -34,7 +32,7 @@ type SettingsProps = {
 
 export class SettingsScreen extends React.Component<SettingsProps, settingsState> {
 
-    static contextType = AppContext;
+    declare context: React.ContextType<typeof AppContext>
     form: any;
     PasswordForm: any;
 
@@ -51,12 +49,12 @@ export class SettingsScreen extends React.Component<SettingsProps, settingsState
 
         this.props.navigation.setOptions({
             headerShown: true,
-            title:'Account',
+            title:'Personal',
             headerTintColor: '#fff',
             headerTitleAlign:'center',
             headerStyle: { backgroundColor: '#2185d0' },
-            headerLeft: () => (
-                <Button title='Sign out' onPress={() => this.signout()} style={{ paddingLeft: 5 }} type='clear' titleStyle={{ color: 'white' }} />
+            headerRight: () => (
+                <Button title='Save' onPress={() => this.form.handleSubmit()} style={{ paddingLeft: 5 }} type='clear' titleStyle={{ color: 'white' }} />
             )
         })
 
@@ -262,73 +260,11 @@ export class SettingsScreen extends React.Component<SettingsProps, settingsState
                             <Input autoCompleteType={undefined} disabled errorMessage={errors.email} onChangeText={handleChange('email')} label='E-mail' placeholder="E-mail" value={values.email} errorStyle={{ color: 'red' }} labelStyle={{ fontSize: 12 }} inputStyle={{ borderWidth: 1, borderRadius: 5, padding: 5, marginTop: 2, paddingLeft: 12, borderColor: 'lightgray', color: '#4b4b4b' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
                             <Input autoCompleteType={undefined} errorMessage={errors.phone} onChangeText={handleChange('phone')} label='Phone' placeholder="Phone number" value={values.phone} errorStyle={{ color: 'red' }} labelStyle={{ fontSize: 12 }} inputStyle={{ borderWidth: 1, borderRadius: 5, padding: 5, marginTop: 2, paddingLeft: 12, borderColor: 'lightgray', color: '#4b4b4b' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
                             <Input autoCompleteType={undefined} errorMessage={errors.mobile} onChangeText={handleChange('mobile')} label='Mobile' placeholder="Mobile number" value={values.mobile} errorStyle={{ color: 'red' }} labelStyle={{ fontSize: 12 }} inputStyle={{ borderWidth: 1, borderRadius: 5, padding: 5, marginTop: 2, paddingLeft: 12, borderColor: 'lightgray', color: '#4b4b4b' }} inputContainerStyle={{ borderBottomWidth: 0, }} />
-                            <View style={[{ margin: 0, marginTop: -15, borderColor: 'orange', flexDirection: 'row', alignItems: 'center', padding: 10, paddingBottom: 20 }]}>
-                                <View style={[{ flex: 1, flexDirection: 'column', marginRight: 7 }]}>
-
-                                    <Button onPress={() => this.setModalVisible(true)} buttonStyle={{ backgroundColor: 'gray', paddingHorizontal: 15,paddingVertical:12, borderRadius: 12 }} titleStyle={{ color: 'white', fontSize: 16 }} title='Update Password' />
-                                </View>
-                                <View style={[{ flex: 1, flexDirection: 'column', marginLeft: 7 }]}>
-
-                                    <Button loading={this.state.isLoading} onPress={() => this.form.handleSubmit()} buttonStyle={{ backgroundColor: '#2185d0',  paddingHorizontal: 12,paddingVertical:12, borderRadius: 10 }} titleStyle={{ color: 'white', fontSize: 16 }} title='Save Profile' />
-                                </View>
-                            </View>
-
                         </Card>
-
-                        <Modal animationType="slide" presentationStyle='formSheet' visible={this.state.modalVisible} >
-                            <View>
-                                <View style={[{  flexDirection: 'row', alignItems: 'center', backgroundColor: '#2185d0', alignContent: 'center' }]}>
-                                    <View style={{ flex: 1, flexDirection: 'column' }}>
-                                        <Button type='clear' titleStyle={{ color: 'white' }} title='Cancel' onPress={() => { this.setModalVisible(!this.state.modalVisible); }} />
-                                    </View>
-                                    <View style={{ flex: 2, flexDirection: 'column' }}>
-                                        <Text style={{ alignSelf: 'center', fontWeight: '500', fontSize: 18, color: 'white' }}>Change password</Text>
-                                    </View>
-                                    <View style={{ flex: 1, flexDirection: 'column', alignContent: 'flex-end' }}>
-                                        <Button loading={this.state.isLoading} type='clear' titleStyle={{ color: 'white' }} buttonStyle={{ borderRadius: 10, padding: 15 }} title='Save' onPress={() => { this.PasswordForm.handleSubmit(); }} />
-                                    </View>
-                                </View>
-
-                                <Formik innerRef={p => (this.PasswordForm = p)}
-                                    initialValues={{ password: '', newPassword: '', newPassConfirm: '' }}
-                                    onSubmit={values => this.updateUserPassword(values.password, values.newPassword)}
-                                    validationSchema={Yup.object({
-                                        password: Yup.string()
-                                            .min(1, 'Minimum 1 characters')
-                                            .required('Required'),
-                                        newPassword: Yup.string()
-                                            .min(1, 'Minimum 1 characters')
-                                            .required('Required'),
-                                        newPassConfirm: Yup.string()
-                                            .min(1, 'Minimum 6 characters')
-                                            .required('Required')
-                                            .test('passwords-match', 'Passwords must match!', function (value) {
-                                                return this.parent.newPassword === value;
-                                            }),
-                                    })}>
-                                    {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
-                                        <Card containerStyle={{ padding: 15, margin: 0, borderWidth: 0 }}>
-                                            <Input autoCompleteType={undefined} secureTextEntry={true} autoCapitalize='none' errorMessage={errors.password} onChangeText={handleChange('password')} label='Current Password' placeholder="Enter Current Password" value={values.password} />
-                                            <Input autoCompleteType={undefined} secureTextEntry={true} autoCapitalize='none' errorMessage={errors.newPassword} onChangeText={handleChange('newPassword')} label='New Password' placeholder="Enter New Password" value={values.newPassword} />
-                                            <Input autoCompleteType={undefined} secureTextEntry={true} autoCapitalize='none' errorMessage={errors.newPassConfirm} onChangeText={handleChange('newPassConfirm')} label='Confirm New Password' placeholder="re-enter new password" value={values.newPassConfirm} />
-                                        </Card>
-                                    )}
-                                </Formik>
-
-                            </View>
-                        </Modal>
                     </View>
                 )}
             </Formik>
             </ScrollView>
         );
     }
-}
-
-export function SettingsStackScreen() {
-    return (
-        <SettingsStack.Navigator>
-            <SettingsStack.Screen name="AccountScreen" component={SettingsScreen} />
-        </SettingsStack.Navigator>
-    );
 }

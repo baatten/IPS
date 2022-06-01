@@ -1,4 +1,4 @@
-import type { KmlMarker, Camera } from 'react-native-maps';
+import type { KmlMarker } from 'react-native-maps';
 
 export type Lead = {
     id?: number

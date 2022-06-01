@@ -52,7 +52,7 @@ type settingsState = {
 
 export class SignUpScreen extends React.Component<Props, settingsState> {
 
-    static contextType = AppContext;
+    declare context: React.ContextType<typeof AppContext>
     formUser: any;
     formPersonal: any;
     formContacts: any;

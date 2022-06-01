@@ -23,7 +23,7 @@ type SignInScreenState = {
 
 export default class SignInScreen extends React.Component<any, SignInScreenState> {
 
-    static contextType = AppContext;
+    declare context: React.ContextType<typeof AppContext>
     sheetRef: any;
 
     constructor(props: any) {
