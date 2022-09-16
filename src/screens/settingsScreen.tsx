@@ -32,7 +32,8 @@ type SettingsProps = {
 
 export class SettingsScreen extends React.Component<SettingsProps, settingsState> {
 
-    declare context: React.ContextType<typeof AppContext>
+    //declare context: React.ContextType<typeof AppContext>
+    static contextType = AppContext;
     form: any;
     PasswordForm: any;
 

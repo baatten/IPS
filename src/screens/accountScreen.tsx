@@ -39,7 +39,8 @@ type SettingsProps = {
 export class AccountScreen extends React.Component<SettingsProps, settingsState> {
 
 
-    declare context: React.ContextType<typeof AppContext>
+    //declare context: React.ContextType<typeof AppContext>
+    static contextType = AppContext;
 
     form: any;
     PasswordForm: any;
@@ -205,8 +206,8 @@ export class AccountScreen extends React.Component<SettingsProps, settingsState>
                             <Text style={{ marginBottom: 25, fontSize: 16, lineHeight: 24, fontWeight: 'bold' }}>Do you wish to proceed with this permanent change?</Text>
 
                             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
-                                <Button style={{  flexDirection: 'column', marginRight: 10 }} buttonStyle={{ paddingVertical: 10, paddingHorizontal: 20, backgroundColor: '#909090', borderRadius: 10 }} title='Keep account' onPress={() => this.setState({ showDeleteAccount: false })} />
-                                <Button style={{  flexDirection: 'column' }} buttonStyle={{ paddingVertical: 10, paddingHorizontal: 20, backgroundColor: '#D73131', borderRadius: 10 }} title='Delete Account' onPress={() => this.deleteAccount()} />
+                                <Button style={{ flexDirection: 'column' }} buttonStyle={{ paddingVertical: 10, paddingHorizontal: 20, backgroundColor: '#909090', borderRadius: 10 }} title='Keep account' onPress={() => this.setState({ showDeleteAccount: false })} />
+                                <Button style={{ flexDirection: 'column' }} buttonStyle={{ marginLeft: 10, paddingVertical: 10, paddingHorizontal: 20, backgroundColor: '#D73131', borderRadius: 10 }} title='Delete Account' onPress={() => this.deleteAccount()} />
                             </View>
                         </SafeAreaView>
                     </ScrollView>

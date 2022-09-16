@@ -56,7 +56,7 @@ export class LeadPopUpSave extends React.Component<LeadPopUpProps, LeadPopUpStat
                             titleStyle={{ color: '#909090' }}
                         />
 
-                        <Button title='Save' onPress={() => this.props.saveLead(this.state.activeLeadNotes!)}
+                        <Button title='Save' onPress={() => this.props.saveLead(this.state.activeLeadNotes)}
 
                             buttonStyle={[{ backgroundColor: '#2185d0', paddingVertical: 10, paddingHorizontal: 15, borderRadius: 8 }]}
                         />

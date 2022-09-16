@@ -52,7 +52,8 @@ type settingsState = {
 
 export class SignUpScreen extends React.Component<Props, settingsState> {
 
-    declare context: React.ContextType<typeof AppContext>
+    //declare context: React.ContextType<typeof AppContext>
+    static contextType = AppContext;
     formUser: any;
     formPersonal: any;
     formContacts: any;
@@ -219,11 +220,14 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
     }
 
     validEmail(email: string): boolean {
+
         var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         return re.test(email);
     };
 
-    async checkIfEmailIsUsed(email: string): Promise<boolean> {
+    async checkIfEmailIsUsed(email: string) {
+
+        this.setState({ checkingEmail: true })
 
         if (email != null && email != '' && this.validEmail(email)) {
             try {
@@ -241,11 +245,11 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                         const emailCanBeUsed = data.emailIsreadyForUse;
 
                         if (emailCanBeUsed)
-                            this.setState({ emailIsfree: true, checkingEmail: false }, () => {
+                            this.setState({ emailIsfree: true }, () => {
                                 this.formUser.validateForm()
                             })
                         else
-                            this.setState({ emailIsfree: false, checkingEmail: true }, () => {
+                            this.setState({ emailIsfree: false }, () => {
                                 this.formUser.validateForm()
                             })
                     }
@@ -260,7 +264,8 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                 console.error('An unexpected error happened occurred:', error)
             }
         }
-        return true;
+
+        this.setState({ checkingEmail: false })
     }
 
     toggleType(index: number) {
@@ -292,6 +297,13 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
             else
                 this.setState({ nonFormValidateError: 'you must choose at lease one option.' })
         }
+    }
+
+    updateEmail(email:string) {
+
+        this.checkIfEmailIsUsed(email)
+
+        this.formUser.handleChange('email')(email);
     }
 
     render() {
@@ -332,7 +344,7 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                             .email()
                             .test('Email is unique',
                                 'The email you entered already has an account',
-                                email => !(this.state.checkingEmail && !this.state.emailIsfree)
+                                email => (this.state.emailIsfree)
                             ),
                         password: Yup.string()
                             .min(6, 'Min. 6 characters')
@@ -367,10 +379,16 @@ export class SignUpScreen extends React.Component<Props, settingsState> {
                                         inputContainerStyle={{ borderBottomWidth: 0, }} />
                                 </View>
                             </View>
-                            <Input autoCompleteType={undefined} errorMessage={errors.email} onEndEditing={() => this.checkIfEmailIsUsed(values.email)}
-                                onChangeText={handleChange('email')} label='E-mail' placeholder="Enter your e-mail" value={values.email} errorStyle={{ color: 'red' }} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }}
-                                inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }}
-                                inputContainerStyle={{ borderBottomWidth: 0, }} keyboardType='email-address' autoCapitalize='none' />
+                            <View>
+                                <Input autoCompleteType={undefined} errorMessage={errors.email} onEndEditing={() => this.checkIfEmailIsUsed(values.email)}
+                                    onChangeText={(text:string) => this.updateEmail(text)} label='E-mail' placeholder="Enter your e-mail" value={values.email} errorStyle={{ color: 'red' }} labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }}
+                                    inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }}
+                                    inputContainerStyle={{ borderBottomWidth: 0, }} keyboardType='email-address' autoCapitalize='none' />
+                                {this.state.checkingEmail && (
+                                    <ActivityIndicator animating style={{ top: 32, right: 20, position: 'absolute', zIndex: 3000000 }} />
+                                )}
+                            </View>
+
                             <Input autoCompleteType={undefined} errorMessage={errors.password} onChangeText={handleChange('password')} label='Password'
                                 placeholder="Enter your password" value={values.password} errorStyle={{ color: 'red' }} secureTextEntry labelStyle={{ color: 'rgba(0,0,0,0.6)', fontSize: 14 }}
                                 inputStyle={{ backgroundColor: 'white', borderRadius: 5, padding: 10, marginTop: 2, paddingLeft: 12, color: '#4b4b4b', borderWidth: 1, borderColor: '#DDDEE1' }}

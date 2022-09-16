@@ -350,7 +350,7 @@ export default class App extends React.Component<AppProps, IPSState> {
 
       } catch (error: any) {
 
-        console.log('morten', error)
+        console.log('morten error', error)
       }
 
     } else {
