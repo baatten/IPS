@@ -51,7 +51,7 @@ export class AccountScreen extends React.Component<SettingsProps, settingsState>
         this.form = React.createRef();
         this.PasswordForm = React.createRef();
 
-        this.state = { user: { name: '', surname: '', address: '', city: '', state: '', zipCode: '', email: '', phone: '', mobile: '' }, isLoading: true, accountDetailsIsValid: true, modalVisible: false, showDeleteAccount: true }
+        this.state = { user: { name: '', surname: '', address: '', city: '', state: '', zipCode: '', email: '', phone: '', mobile: '' }, isLoading: true, accountDetailsIsValid: true, modalVisible: false, showDeleteAccount: false }
     }
 
     componentDidMount() {
