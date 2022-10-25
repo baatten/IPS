@@ -212,51 +212,7 @@ export default class App extends React.Component<AppProps, IPSState> {
       }
     }
   }
-  /*
-    openLink = async (url: string) => {
-      try {
   
-        if (await InAppBrowser.isAvailable()) {
-          const result = await InAppBrowser.open(url, {
-            // iOS Properties
-            dismissButtonStyle: 'close',
-            preferredBarTintColor: '#2185d0',
-            preferredControlTintColor: 'white',
-            readerMode: false,
-            animated: true,
-            modalPresentationStyle: 'fullScreen',
-            modalTransitionStyle: 'coverVertical',
-            modalEnabled: true,
-            enableBarCollapsing: false,
-            // Android Properties
-            showTitle: true,
-            toolbarColor: 'grey',
-            secondaryToolbarColor: 'black',
-            navigationBarColor: 'black',
-            navigationBarDividerColor: 'white',
-            enableUrlBarHiding: true,
-            enableDefaultShare: true,
-            forceCloseOnRedirection: false,
-            // Specify full animation resource identifier(package:anim/name)
-            // or only resource name(in case of animation bundled with app).
-            animations: {
-              startEnter: 'slide_in_right',
-              startExit: 'slide_out_left',
-              endEnter: 'slide_in_left',
-              endExit: 'slide_out_right'
-            },
-            headers: {
-              'my-custom-header': 'my custom header value'
-            }
-          })
-          //Alert.alert(JSON.stringify(result))
-        }
-        else Linking.openURL(url)
-      } catch (error) {
-        //Alert.alert(error.message)
-      }
-    }
-  */
   signIn = async (emailAddress: string, password: string) => {
 
     if (emailAddress != null && password != null && await this.checkPermissions()) {
@@ -389,15 +345,25 @@ export default class App extends React.Component<AppProps, IPSState> {
 
     this.setState({ subscribeLoading: true })
 
-
     try {
-      const { purchaserInfo } = await adapty.purchases.makePurchase(product);
 
+      let res;
+
+      const offerId = product.ios?.discounts[0].ios?.identifier
+
+      if (product.introductoryOfferEligibility && offerId) {
+
+        //const offer = this.state.subscriptions.find(e => e.ios.)
+
+        res = await adapty.purchases.makePurchase(product, { ios: { offerId: offerId } });
+      }
+      else
+        res = await adapty.purchases.makePurchase(product);
 
       this.setState({ subscribeLoading: false })
 
       // "premium" is an identifier of default access level
-      if (purchaserInfo?.accessLevels!['premium'].isActive) {
+      if (res.purchaserInfo?.accessLevels!['premium'].isActive) {
         // grant access to premium features
 
         this.setState({ showSubscriptionWall: false })
