@@ -24,7 +24,7 @@
     "favicon": "./assets/favicon.png"
   },
   "android": {
-    "versionCode": 47,
+    "versionCode": 48,
     "package": "com.t65locator.t65",
     "adaptiveIcon": {
       "foregroundImage": "./assets/iconForeground.png",

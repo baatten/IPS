@@ -212,7 +212,7 @@ export default class App extends React.Component<AppProps, IPSState> {
       }
     }
   }
-  
+
   signIn = async (emailAddress: string, password: string) => {
 
     if (emailAddress != null && password != null && await this.checkPermissions()) {
@@ -477,7 +477,7 @@ export default class App extends React.Component<AppProps, IPSState> {
           <ScrollView keyboardShouldPersistTaps='always' style={{ backgroundColor: '#f7fafb', padding: 20, height: '100%', minHeight: '100%' }}>
             <View style={{ backgroundColor: '#f7fafb', padding: 20, justifyContent: 'center' }}>
               <View style={{}}>
-                <Text style={{ fontWeight: '700', fontSize: 28, alignSelf: 'center', color: '#2185d0' }}>T65 Locator</Text>
+                <Text style={{ fontWeight: '700', fontSize: 28, alignSelf: 'center', color: '#2185d0', marginTop:25 }}>T65 Locator</Text>
                 <Text style={{ color: '#606060', fontSize: 16, marginTop: 10, marginBottom: 25, alignSelf: 'center', textAlign: 'center' }}>Please choose a subscription to continue using T65.</Text>
 
               </View>
@@ -511,6 +511,8 @@ export default class App extends React.Component<AppProps, IPSState> {
               </View>
               <Button loading={this.state.subscribeLoading} onPress={() => this.subScribe(this.state.activeSubscription!)} disabled={!this.state.conditionAccepted || this.state.activeSubscription == undefined} title='Buy subscription' containerStyle={{ marginTop: 25 }} buttonStyle={{ paddingVertical: 15, borderRadius: 15 }} titleStyle={{ fontWeight: '600' }} />
               <Button onPress={() => this.signOut()} title='Sign out' containerStyle={{ marginTop: 5 }} titleStyle={{ color: '#2185d0' }} buttonStyle={{ backgroundColor: 'transparent' }} />
+              <Text onPress={() => Linking.openURL('https://api.t-65locator.com/privacyPolicy')} style={{ textAlign:'center', marginTop: 20, color: '#2185d0' }}>Privacy Policy</Text>
+
             </View>
           </ScrollView>
         </Modal>
